@@ -23,7 +23,7 @@ function Login() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/auth/signup",
+        "https://mindcare-ai-hesy.onrender.com/api/auth/signup",
         {
           method: "POST",
           headers: {
@@ -61,7 +61,7 @@ function Login() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/auth/verify-email",
+        "https://mindcare-ai-hesy.onrender.com/api/auth/verify-email",
         {
           method: "POST",
           headers: {
@@ -102,7 +102,7 @@ function Login() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/auth/login",
+        "https://mindcare-ai-hesy.onrender.com/api/auth/login",
         {
           method: "POST",
           headers: {
@@ -144,7 +144,7 @@ function Login() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/auth/forgot-password",
+        "https://mindcare-ai-hesy.onrender.com/api/auth/forgot-password",
         {
           method: "POST",
           headers: {
@@ -182,7 +182,7 @@ function Login() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/auth/verify-reset-otp",
+        "https://mindcare-ai-hesy.onrender.com/api/auth/verify-reset-otp",
         {
           method: "POST",
           headers: {
@@ -233,7 +233,7 @@ function Login() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/auth/reset-password",
+        "https://mindcare-ai-hesy.onrender.com/api/auth/reset-password",
         {
           method: "POST",
           headers: {

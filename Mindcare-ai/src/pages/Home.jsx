@@ -12,7 +12,7 @@ function Home() {
   useEffect(() => {
     async function fetchScores() {
       try {
-        const response = await fetch("http://localhost:5000/api/scores", {
+        const response = await fetch("https://mindcare-ai-hesy.onrender.com/api/scores", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

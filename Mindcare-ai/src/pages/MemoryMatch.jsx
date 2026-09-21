@@ -59,7 +59,7 @@ function MemoryMatch() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/scores/adaptive/Memory%20Match",
+        "https://mindcare-ai-hesy.onrender.com/api/scores/adaptive/Memory%20Match",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -196,7 +196,7 @@ function MemoryMatch() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/scores",
+        "https://mindcare-ai-hesy.onrender.com/api/scores",
         {
           method: "POST",
           headers: {

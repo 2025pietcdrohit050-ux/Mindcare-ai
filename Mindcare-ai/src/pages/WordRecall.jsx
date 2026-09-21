@@ -343,7 +343,7 @@ function WordRecall() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/scores",
+        "https://mindcare-ai-hesy.onrender.com/api/scores",
         {
           method: "POST",
 

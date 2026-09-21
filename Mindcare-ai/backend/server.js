@@ -41,5 +41,5 @@ app.get("/api/health", (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`MindCare backend running on http://localhost:5000`);
+  console.log(`MindCare backend running on https://mindcare-ai-hesy.onrender.com);
 });

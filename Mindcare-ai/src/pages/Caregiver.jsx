@@ -17,7 +17,7 @@ function Caregiver() {
     async function loadCaregiverData() {
       try {
         const accessResponse = await fetch(
-          "http://localhost:5000/api/caregiver/status",
+          "https://mindcare-ai-hesy.onrender.com/api/caregiver/status",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -31,7 +31,7 @@ function Caregiver() {
         setAccess(accessData.access);
 
         const scoreResponse = await fetch(
-          "http://localhost:5000/api/scores",
+          "https://mindcare-ai-hesy.onrender.com/api/scores",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -67,7 +67,7 @@ function Caregiver() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/caregiver/authorize",
+        "https://mindcare-ai-hesy.onrender.com/api/caregiver/authorize",
         {
           method: "POST",
           headers: {
@@ -98,7 +98,7 @@ function Caregiver() {
   async function revokeAccess() {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/caregiver/revoke",
+        "https://mindcare-ai-hesy.onrender.com/api/caregiver/revoke",
         {
           method: "POST",
           headers: {
