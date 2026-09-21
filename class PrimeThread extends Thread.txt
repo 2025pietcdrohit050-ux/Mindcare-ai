@@ -1,0 +1,63 @@
+import java.io.*;
+class PrimeThread extends Thread
+{
+    public void run()
+    {
+        for(int n=2; n<=100; n++)
+        {
+            int count=0;
+
+            for(int i=1; i<=n; i++)
+            {
+                if(n%i==0)
+                {
+                    count++;
+                }
+            }
+
+            if(count==2)
+            {
+                System.out.println("Prime : " + n);
+
+                try
+                {
+                    Thread.sleep(500);
+                }
+                catch(Exception e)
+                {
+                }
+            }
+        }
+    }
+}
+
+class CubeThread extends Thread
+{
+    public void run()
+    {
+        for(int i=1; i<=50; i++)
+        {
+            System.out.println("Cubes : " + (i*i*i));
+
+            try
+            {
+                Thread.sleep(1000);
+            }
+            catch(Exception e)
+            {
+            }
+        }
+    }
+}
+
+class Challenge
+{
+    public static void main(String args[])
+    {
+        PrimeThread t1 = new PrimeThread();
+        CubeThread t2 = new CubeThread();
+
+        t1.start();
+        t2.start();
+    }
+}

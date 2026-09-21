@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-scale: 1;
+    --primary: #059669;
+    --primary-light: #10b981;
+    --primary-dark: #047857;
+    --secondary-blue: #2563eb;
+    --secondary-purple: #7c3aed;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-800 antialiased font-sans selection:bg-emerald-100 selection:text-emerald-900;
+    font-size: calc(1rem * var(--font-scale));
+    min-height: 100vh;
+  }
+
+  /* High contrast mode */
+  .high-contrast {
+    filter: contrast(125%);
+  }
+  
+  .high-contrast body {
+    @apply bg-white text-black;
+  }
+
+  .high-contrast .card-contrast {
+    @apply border-2 border-black shadow-none bg-white text-black;
+  }
+
+  /* Reduced motion */
+  .reduced-motion *,
+  .reduced-motion *::before,
+  .reduced-motion *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  /* Font scales */
+  .font-scale-large {
+    --font-scale: 1.15;
+  }
+
+  .font-scale-xl {
+    --font-scale: 1.30;
+  }
+}
+
+/* Custom smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Accessible focus outline */
+*:focus-visible {
+  outline: 3px solid #10b981;
+  outline-offset: 2px;
+}

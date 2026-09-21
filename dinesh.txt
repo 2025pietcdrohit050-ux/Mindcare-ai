@@ -1,0 +1,242 @@
+#include <iostream>
+using namespace std;
+
+// 🔹 Abstract Base Class
+class Employee {
+protected:
+    string name;
+    const int id;        // const data member
+    static int count;    // static data member
+
+public:
+    // Constructor with initializer list
+    Employee(string n, int i) : name(n), id(i) {
+        count++;
+    }
+
+    // Pure Virtual Function
+    virtual void calculateSalary() = 0;
+
+    // Const Member Function
+    void show() const {
+        cout << "Name: " << name << ", ID: " << id << endl;
+    }
+
+    // Static Function
+    static void totalEmployees() {
+        cout << "Total Employees: " << count << endl;
+    }
+};
+
+int Employee::count = 0;
+
+
+// 🔹 Derived Class 1
+class Manager : public Employee {
+    int bonus;
+public:
+    Manager(string n, int i, int b) : Employee(n, i), bonus(b) {}
+
+    void calculateSalary() override {
+        cout << "Manager Salary: " << 50000 + bonus << endl;
+    }
+};
+
+// 🔹 Derived Class 2
+class Developer : public Employee {
+    int overtime;
+public:
+    Developer(string n, int i, int ot) : Employee(n, i), overtime(ot) {}
+
+    void calculateSalary() override {
+        cout << "Developer Salary: " << 40000 + overtime << endl;
+    }
+};
+
+
+// 🔹 Operator Overloading Class
+class Complex {
+    int real, imag;
+public:
+    Complex(int r=0, int i=0) {
+        real = r;
+        imag = i;
+    }
+
+    // Operator Overloading
+    Complex operator+(Complex c) {
+        return Complex(real + c.real, imag + c.imag);
+    }
+
+    void display() {
+        cout << real << " + " << imag << "i" << endl;
+    }
+};
+
+
+// 🔹 Function Overloading
+class Calculator {
+public:
+    int add(int a, int b) {
+        return a + b;
+    }
+
+    float add(float a, float b) {
+        return a + b;
+    }
+};
+
+
+int main() {
+
+    // 🔥 Runtime Polymorphism + Dynamic Binding
+    Employee* e;
+
+    Manager m("Aadi", 1, 10000);
+    Developer d("Rohit", 2, 5000);
+
+    e = &m;
+    e->show();
+    e->calculateSalary();   // Manager call
+
+    e = &d;
+    e->show();
+    e->calculateSalary();   // Developer call
+
+    // 🔹 Static Function Call
+    Employee::totalEmployees();
+
+    // 🔹 Operator Overloading
+    Complex c1(2,3), c2(4,5);
+    Complex c3 = c1 + c2;
+    c3.display();
+
+    // 🔹 Function Overloading
+    Calculator calc;
+    cout << "Int Add: " << calc.add(2,3) << endl;
+    cout << "Float Add: " << calc.add(2.5f,3.5f) << endl;
+
+    return 0;
+}
+
+
+
+
+#include <iostream>
+using namespace std;
+
+// 🔹 Abstract Base Class
+class Account {
+protected:
+    string name;
+    const int accNo;       // const data member
+    static int totalAcc;   // static member
+
+public:
+    Account(string n, int a) : name(n), accNo(a) {
+        totalAcc++;
+    }
+
+    // Pure virtual function
+    virtual void calculateInterest() = 0;
+
+    // const function
+    void show() const {
+        cout << "Name: " << name << ", Acc No: " << accNo << endl;
+    }
+
+    // static function
+    static void totalAccounts() {
+        cout << "Total Accounts: " << totalAcc << endl;
+    }
+};
+
+int Account::totalAcc = 0;
+
+
+// 🔹 Derived Class 1
+class Savings : public Account {
+    float balance;
+public:
+    Savings(string n, int a, float b) : Account(n,a), balance(b) {}
+
+    void calculateInterest() override {
+        cout << "Savings Interest: " << balance * 0.05 << endl;
+    }
+};
+
+
+// 🔹 Derived Class 2
+class Current : public Account {
+    float balance;
+public:
+    Current(string n, int a, float b) : Account(n,a), balance(b) {}
+
+    void calculateInterest() override {
+        cout << "Current Interest: " << balance * 0.02 << endl;
+    }
+};
+
+
+// 🔹 Operator Overloading (Money Add)
+class Money {
+    int amount;
+public:
+    Money(int a=0) {
+        amount = a;
+    }
+
+    Money operator+(Money m) {
+        return Money(amount + m.amount);
+    }
+
+    void display() {
+        cout << "Total Money: " << amount << endl;
+    }
+};
+
+
+// 🔹 Function Overloading
+class Calculator {
+public:
+    int multiply(int a, int b) {
+        return a * b;
+    }
+
+    float multiply(float a, float b) {
+        return a * b;
+    }
+};
+
+
+int main() {
+
+    // 🔥 Runtime Polymorphism
+    Account* a;
+
+    Savings s("Aadi", 101, 10000);
+    Current c("Rohit", 102, 20000);
+
+    a = &s;
+    a->show();
+    a->calculateInterest();   // Savings
+
+    a = &c;
+    a->show();
+    a->calculateInterest();   // Current
+
+    // 🔹 Static
+    Account::totalAccounts();
+
+    // 🔹 Operator Overloading
+    Money m1(500), m2(700);
+    Money m3 = m1 + m2;
+    m3.display();
+
+    // 🔹 Function Overloading
+    Calculator calc;
+    cout << "Int Multiply: " << calc.multiply(2,3) << endl;
+    cout << "Float Multiply: " << calc.multiply(2.5f,3.5f) << endl;
+
+    return 0;
+}
