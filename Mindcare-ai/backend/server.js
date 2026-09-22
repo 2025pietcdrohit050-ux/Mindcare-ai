@@ -24,6 +24,7 @@ app.use("/api/scores", require("./scores"));
 app.use("/api/chat", chatRouter);
 app.use("/api/caregiver", require("./caregiver"));
 app.use("/api/feedback", require("./feedback"));
+app.use("/api/admin", require("./admin"));
 
 app.get("/", (req, res) => {
   res.json({

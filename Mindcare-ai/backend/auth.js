@@ -136,14 +136,19 @@ router.post("/forgot-password", async (req, res) => {
 
     const otp = generateOTP();
 
-    user.resetOTP = otp;
-    user.resetOTPExpires = new Date(
-      Date.now() + 10 * 60 * 1000
-    );
+    await User.updateOne(
+  { _id: user._id },
+  {
+    $set: {
+      resetOTP: otp,
+      resetOTPExpires: new Date(
+        Date.now() + 10 * 60 * 1000
+      ),
+    },
+  }
+);
 
-    await user.save();
-
-    await sendOTP(email, otp);
+await sendOTP(email, otp);
 
     res.json({
       message: "Password reset OTP sent to your email",
