@@ -69,56 +69,119 @@ const wordBank = [
 const uniqueWordBank = [...new Set(wordBank)];
 
 function shuffle(array) {
-  return [...array].sort(() => Math.random() - 0.5);
-}
-
-function getWordCount(level) {
-  return Math.min(
-    5 + Math.floor((level - 1) / 2),
-    8
+  return [...array].sort(
+    () => Math.random() - 0.5
   );
 }
 
-function getDisplayTime(level, wordCount) {
-  const baseTime = 5000 + wordCount * 350;
-  const difficultyReduction =
-    (level - 1) * 250;
-
-  return Math.max(
-    3000,
-    baseTime - difficultyReduction
-  );
-}
-
-function getDifficulty(level) {
-  if (level <= 2) return "Easy";
-  if (level <= 5) return "Medium";
-  return "Hard";
-}
-
-function createRound(wordCount, usedWords) {
-  const available = uniqueWordBank.filter(
-    (word) => !usedWords.includes(word)
-  );
-
-  let sourceWords = available;
-
-  if (sourceWords.length < wordCount) {
-    sourceWords = uniqueWordBank;
+function getSettings(difficulty) {
+  if (difficulty === "Hard") {
+    return {
+      wordCount: 7,
+      displayTime: 3500,
+    };
   }
 
-  const newWords = shuffle(sourceWords).slice(
-    0,
+  if (difficulty === "Moderate") {
+    return {
+      wordCount: 6,
+      displayTime: 4500,
+    };
+  }
+
+  return {
+    wordCount: 5,
+    displayTime: 6000,
+  };
+}
+
+function getWordCount(difficulty, level) {
+  const settings =
+    getSettings(difficulty);
+
+  return Math.min(
+    settings.wordCount +
+      Math.floor((level - 1) / 2),
+    10
+  );
+}
+
+function getDisplayTime(
+  difficulty,
+  level,
+  wordCount
+) {
+  const settings =
+    getSettings(difficulty);
+
+  let baseTime =
+    settings.displayTime +
+    wordCount * 250;
+
+  if (difficulty === "Easy") {
+    baseTime =
+      baseTime -
+      (level - 1) * 100;
+  }
+
+  if (difficulty === "Moderate") {
+    baseTime =
+      baseTime -
+      (level - 1) * 150;
+  }
+
+  if (difficulty === "Hard") {
+    baseTime =
+      baseTime -
+      (level - 1) * 200;
+  }
+
+  return Math.max(
+    2500,
+    baseTime
+  );
+}
+
+function createRound(
+  wordCount,
+  usedWords
+) {
+  const available =
+    uniqueWordBank.filter(
+      (word) =>
+        !usedWords.includes(word)
+    );
+
+  let sourceWords =
+    available;
+
+  if (
+    sourceWords.length <
     wordCount
-  );
+  ) {
+    sourceWords =
+      uniqueWordBank;
+  }
 
-  const distractorPool = uniqueWordBank.filter(
-    (word) => !newWords.includes(word)
-  );
+  const newWords =
+    shuffle(sourceWords).slice(
+      0,
+      wordCount
+    );
 
-  const distractors = shuffle(
-    distractorPool
-  ).slice(0, wordCount);
+  const distractorPool =
+    uniqueWordBank.filter(
+      (word) =>
+        !newWords.includes(word)
+    );
+
+  const distractors =
+    shuffle(
+      distractorPool
+    ).slice(
+      0,
+      wordCount
+    );
 
   return {
     words: newWords,
@@ -130,36 +193,42 @@ function createRound(wordCount, usedWords) {
 }
 
 function WordRecall() {
+  const [difficulty, setDifficulty] =
+    useState("");
+
+  const [gameStarted, setGameStarted] =
+    useState(false);
+
   const usedWords = useRef([]);
 
-  const gameStartTime = useRef(Date.now());
+  const gameStartTime =
+    useRef(Date.now());
 
-  const firstRound = createRound(5, []);
+  const [words, setWords] =
+    useState([]);
 
-  const [words, setWords] = useState(
-    firstRound.words
-  );
-
-  const [options, setOptions] = useState(
-    firstRound.options
-  );
+  const [options, setOptions] =
+    useState([]);
 
   const [selectedWords, setSelectedWords] =
     useState([]);
 
   const [showWords, setShowWords] =
-    useState(true);
+    useState(false);
 
-  const [level, setLevel] = useState(1);
+  const [level, setLevel] =
+    useState(1);
 
-  const [score, setScore] = useState(0);
+  const [score, setScore] =
+    useState(0);
 
   const [elapsedTime, setElapsedTime] =
     useState(0);
 
-  const [message, setMessage] = useState(
-    "Remember these words..."
-  );
+  const [message, setMessage] =
+    useState(
+      "Remember these words..."
+    );
 
   const [gameOver, setGameOver] =
     useState(false);
@@ -167,93 +236,202 @@ function WordRecall() {
   const [scoreSaved, setScoreSaved] =
     useState(false);
 
-  useEffect(() => {
-    usedWords.current = firstRound.words;
-  }, []);
+  const settings =
+    getSettings(difficulty);
 
-  /* GAME TIMER */
+  /*
+    START GAME
+  */
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      if (!gameOver) {
-        const seconds = Math.floor(
-          (Date.now() -
-            gameStartTime.current) /
-            1000
-        );
+  function startGame(
+    selectedDifficulty
+  ) {
+    const firstWordCount =
+      getWordCount(
+        selectedDifficulty,
+        1
+      );
 
-        setElapsedTime(seconds);
-      }
-    }, 1000);
+    const firstRound =
+      createRound(
+        firstWordCount,
+        []
+      );
 
-    return () => clearInterval(timer);
-  }, [gameOver]);
-
-  /* WORD DISPLAY TIMER */
-
-  useEffect(() => {
-    if (!showWords || gameOver) return;
-
-    const displayTime = getDisplayTime(
-      level,
-      words.length
+    setDifficulty(
+      selectedDifficulty
     );
 
-    const timer = setTimeout(() => {
-      setShowWords(false);
+    setGameStarted(true);
 
-      setMessage(
-        "Select only the words you remember."
-      );
-    }, displayTime);
+    usedWords.current =
+      firstRound.words;
 
-    return () => clearTimeout(timer);
+    setWords(
+      firstRound.words
+    );
+
+    setOptions(
+      firstRound.options
+    );
+
+    setSelectedWords([]);
+
+    setLevel(1);
+
+    setScore(0);
+
+    setElapsedTime(0);
+
+    setShowWords(true);
+
+    setGameOver(false);
+
+    setScoreSaved(false);
+
+    setMessage(
+      "Remember these words..."
+    );
+
+    gameStartTime.current =
+      Date.now();
+  }
+
+  /*
+    GAME TIMER
+  */
+
+  useEffect(() => {
+    if (!gameStarted) {
+      return;
+    }
+
+    const timer =
+      setInterval(() => {
+        if (!gameOver) {
+          const seconds =
+            Math.floor(
+              (Date.now() -
+                gameStartTime.current) /
+                1000
+            );
+
+          setElapsedTime(
+            seconds
+          );
+        }
+      }, 1000);
+
+    return () =>
+      clearInterval(timer);
   }, [
+    gameStarted,
+    gameOver,
+  ]);
+
+  /*
+    WORD DISPLAY TIMER
+  */
+
+  useEffect(() => {
+    if (
+      !gameStarted ||
+      !showWords ||
+      gameOver
+    ) {
+      return;
+    }
+
+    const displayTime =
+      getDisplayTime(
+        difficulty,
+        level,
+        words.length
+      );
+
+    const timer =
+      setTimeout(() => {
+        setShowWords(false);
+
+        setMessage(
+          "Select only the words you remember."
+        );
+      }, displayTime);
+
+    return () =>
+      clearTimeout(timer);
+  }, [
+    gameStarted,
+    difficulty,
     level,
     words,
     showWords,
     gameOver,
   ]);
 
+  /*
+    WORD CLICK
+  */
+
   function handleWordClick(word) {
-    if (showWords || gameOver) {
+    if (
+      showWords ||
+      gameOver
+    ) {
       return;
     }
 
-    if (selectedWords.includes(word)) {
-      setSelectedWords((prev) =>
-        prev.filter(
-          (item) => item !== word
-        )
+    if (
+      selectedWords.includes(word)
+    ) {
+      setSelectedWords(
+        (prev) =>
+          prev.filter(
+            (item) =>
+              item !== word
+          )
       );
     } else {
-      setSelectedWords((prev) => [
-        ...prev,
-        word,
-      ]);
+      setSelectedWords(
+        (prev) => [
+          ...prev,
+          word,
+        ]
+      );
     }
   }
 
+  /*
+    CHECK ANSWER
+  */
+
   function checkAnswer() {
-    if (selectedWords.length === 0) {
+    if (
+      selectedWords.length === 0
+    ) {
       setMessage(
         "Select the words you remember first."
       );
+
       return;
     }
 
     const correct =
-      selectedWords.length === words.length &&
-      selectedWords.every((word) =>
-        words.includes(word)
+      selectedWords.length ===
+        words.length &&
+      selectedWords.every(
+        (word) =>
+          words.includes(word)
       );
 
     if (correct) {
       const levelPoints =
-        level * 20 + words.length * 5;
+        level * 20 +
+        words.length * 5;
 
       setScore(
-        (prev) => prev + levelPoints
+        (prev) =>
+          prev + levelPoints
       );
 
       setMessage(
@@ -261,30 +439,47 @@ function WordRecall() {
       );
 
       setTimeout(() => {
-        const nextLevel = level + 1;
+        const nextLevel =
+          level + 1;
 
-        if (nextLevel > 8) {
+        if (
+          nextLevel > 8
+        ) {
           setGameOver(true);
           return;
         }
 
         const nextWordCount =
-          getWordCount(nextLevel);
+          getWordCount(
+            difficulty,
+            nextLevel
+          );
 
-        const nextRound = createRound(
-          nextWordCount,
-          usedWords.current
-        );
+        const nextRound =
+          createRound(
+            nextWordCount,
+            usedWords.current
+          );
 
         usedWords.current = [
           ...usedWords.current,
           ...nextRound.words,
         ];
 
-        setWords(nextRound.words);
-        setOptions(nextRound.options);
+        setWords(
+          nextRound.words
+        );
+
+        setOptions(
+          nextRound.options
+        );
+
         setSelectedWords([]);
-        setLevel(nextLevel);
+
+        setLevel(
+          nextLevel
+        );
+
         setShowWords(true);
 
         setMessage(
@@ -300,25 +495,33 @@ function WordRecall() {
     }
   }
 
+  /*
+    RESTART
+  */
+
   function restartGame() {
-    const newRound = createRound(
-      5,
-      []
-    );
+    setDifficulty("");
 
-    gameStartTime.current = Date.now();
+    setGameStarted(false);
 
-    usedWords.current =
-      newRound.words;
+    usedWords.current = [];
 
-    setWords(newRound.words);
-    setOptions(newRound.options);
+    setWords([]);
+
+    setOptions([]);
+
     setSelectedWords([]);
+
     setLevel(1);
+
     setScore(0);
+
     setElapsedTime(0);
-    setShowWords(true);
+
+    setShowWords(false);
+
     setGameOver(false);
+
     setScoreSaved(false);
 
     setMessage(
@@ -326,43 +529,60 @@ function WordRecall() {
     );
   }
 
+  /*
+    SAVE SCORE
+  */
+
   async function saveScore() {
     const token =
-      localStorage.getItem("token");
+      localStorage.getItem(
+        "token"
+      );
 
-    if (!token || scoreSaved) return;
+    if (
+      !token ||
+      scoreSaved
+    ) {
+      return;
+    }
 
-    const finalTime = Math.max(
-      1,
-      Math.floor(
-        (Date.now() -
-          gameStartTime.current) /
-          1000
-      )
-    );
+    const finalTime =
+      Math.max(
+        1,
+        Math.floor(
+          (Date.now() -
+            gameStartTime.current) /
+            1000
+        )
+      );
 
     try {
-      const response = await fetch(
-        "https://mindcare-ai-hesy.onrender.com/api/scores",
-        {
-          method: "POST",
+      const response =
+        await fetch(
+          "https://mindcare-ai-hesy.onrender.com/api/scores",
+          {
+            method: "POST",
 
-          headers: {
-            "Content-Type":
-              "application/json",
+            headers: {
+              "Content-Type":
+                "application/json",
 
-            Authorization:
-              `Bearer ${token}`,
-          },
+              Authorization:
+                `Bearer ${token}`,
+            },
 
-          body: JSON.stringify({
-            game: "Word Recall",
-            score,
-            time: finalTime,
-            difficulty: "Adaptive",
-          }),
-        }
-      );
+            body: JSON.stringify({
+              game:
+                "Word Recall",
+
+              score,
+
+              time: finalTime,
+
+              difficulty,
+            }),
+          }
+        );
 
       if (!response.ok) {
         throw new Error(
@@ -377,6 +597,7 @@ function WordRecall() {
         {
           score,
           time: finalTime,
+          difficulty,
         }
       );
     } catch (error) {
@@ -387,11 +608,113 @@ function WordRecall() {
     }
   }
 
+  /*
+    SAVE WHEN GAME ENDS
+  */
+
   useEffect(() => {
-    if (gameOver) {
+    if (
+      gameOver &&
+      difficulty
+    ) {
       saveScore();
     }
-  }, [gameOver]);
+  }, [
+    gameOver,
+    difficulty,
+  ]);
+
+  /*
+    DIFFICULTY SELECTION
+  */
+
+  if (!gameStarted) {
+    return (
+      <div className="game-page">
+
+        <div className="game-complete">
+
+          <div className="complete-icon">
+            🧠
+          </div>
+
+          <p className="small-title">
+            MINDCARE COGNITIVE GAME
+          </p>
+
+          <h2>
+            Choose Your Difficulty
+          </h2>
+
+          <p>
+            Select a difficulty level
+            before starting Word Recall.
+          </p>
+
+          <div
+            style={{
+              display:
+                "flex",
+
+              flexDirection:
+                "column",
+
+              gap: "12px",
+
+              width: "100%",
+
+              maxWidth:
+                "360px",
+
+              margin:
+                "20px auto 0",
+            }}
+          >
+
+            <button
+              className="primary-btn"
+              onClick={() =>
+                startGame(
+                  "Easy"
+                )
+              }
+            >
+              🟢 Easy
+            </button>
+
+            <button
+              className="primary-btn"
+              onClick={() =>
+                startGame(
+                  "Moderate"
+                )
+              }
+            >
+              🟡 Moderate
+            </button>
+
+            <button
+              className="primary-btn"
+              onClick={() =>
+                startGame(
+                  "Hard"
+                )
+              }
+            >
+              🔴 Hard
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+    );
+  }
+
+  /*
+    MAIN GAME
+  */
 
   return (
     <div className="game-page">
@@ -401,7 +724,8 @@ function WordRecall() {
         <div>
 
           <p className="small-title">
-            MEMORY GAME · ADAPTIVE
+            MEMORY GAME ·{" "}
+            {difficulty.toUpperCase()}
           </p>
 
           <h1>
@@ -409,18 +733,20 @@ function WordRecall() {
           </h1>
 
           <p className="description">
-            Remember the words before they
-            disappear, then identify them
-            from the options.
+            Remember the words before
+            they disappear, then identify
+            them from the options.
           </p>
 
         </div>
 
         <button
           className="secondary-btn"
-          onClick={restartGame}
+          onClick={
+            restartGame
+          }
         >
-          Restart
+          Change Difficulty
         </button>
 
       </div>
@@ -428,22 +754,50 @@ function WordRecall() {
       <div className="game-stats">
 
         <div>
-          <span>Level</span>
-          <strong>{level}/8</strong>
+          <span>
+            Difficulty
+          </span>
+
+          <strong>
+            {difficulty}
+          </strong>
         </div>
 
         <div>
-          <span>Score</span>
-          <strong>{score}</strong>
+          <span>
+            Level
+          </span>
+
+          <strong>
+            {level}/8
+          </strong>
         </div>
 
         <div>
-          <span>Words</span>
-          <strong>{words.length}</strong>
+          <span>
+            Score
+          </span>
+
+          <strong>
+            {score}
+          </strong>
         </div>
 
         <div>
-          <span>Time</span>
+          <span>
+            Words
+          </span>
+
+          <strong>
+            {words.length}
+          </strong>
+        </div>
+
+        <div>
+          <span>
+            Time
+          </span>
+
           <strong>
             {elapsedTime}s
           </strong>
@@ -467,22 +821,25 @@ function WordRecall() {
 
         </div>
 
-        {showWords && (
+        {showWords &&
+          !gameOver && (
 
-          <div className="word-display">
+            <div className="word-display">
 
-            {words.map((word) => (
-              <div
-                className="word-card"
-                key={word}
-              >
-                {word}
-              </div>
-            ))}
+              {words.map(
+                (word) => (
+                  <div
+                    className="word-card"
+                    key={word}
+                  >
+                    {word}
+                  </div>
+                )
+              )}
 
-          </div>
+            </div>
 
-        )}
+          )}
 
         {!showWords &&
           !gameOver && (
@@ -496,33 +853,37 @@ function WordRecall() {
 
               <div className="word-options">
 
-                {options.map((word) => (
+                {options.map(
+                  (word) => (
 
-                  <button
-                    key={word}
-                    className={
-                      selectedWords.includes(
-                        word
-                      )
-                        ? "word-option selected"
-                        : "word-option"
-                    }
-                    onClick={() =>
-                      handleWordClick(
-                        word
-                      )
-                    }
-                  >
-                    {word}
-                  </button>
+                    <button
+                      key={word}
+                      className={
+                        selectedWords.includes(
+                          word
+                        )
+                          ? "word-option selected"
+                          : "word-option"
+                      }
+                      onClick={() =>
+                        handleWordClick(
+                          word
+                        )
+                      }
+                    >
+                      {word}
+                    </button>
 
-                ))}
+                  )
+                )}
 
               </div>
 
               <button
                 className="primary-btn"
-                onClick={checkAnswer}
+                onClick={
+                  checkAnswer
+                }
               >
                 Check Answer →
               </button>
@@ -544,7 +905,7 @@ function WordRecall() {
             <h2>
               {level >= 8
                 ? "Challenge Complete!"
-                : "Good attempt!"}
+                : "Good Attempt!"}
             </h2>
 
             <p>
@@ -569,22 +930,24 @@ function WordRecall() {
             </p>
 
             <p>
-              Difficulty reached:{" "}
+              Difficulty:{" "}
               <strong>
-                {getDifficulty(level)}
+                {difficulty}
               </strong>
             </p>
 
             <p>
               Your Word Recall score
-              and training time have been
-              saved to your MindCare
-              progress.
+              and training time have
+              been saved to your
+              MindCare progress.
             </p>
 
             <button
               className="primary-btn"
-              onClick={restartGame}
+              onClick={
+                restartGame
+              }
             >
               Play Again
             </button>

@@ -36,90 +36,28 @@ function getCardsForDifficulty(difficulty) {
 }
 
 function MemoryMatch() {
-  const [difficulty, setDifficulty] = useState("Easy");
+  const [difficulty, setDifficulty] = useState("");
   const [cards, setCards] = useState([]);
   const [selected, setSelected] = useState([]);
   const [moves, setMoves] = useState(0);
   const [time, setTime] = useState(0);
   const [scoreSaved, setScoreSaved] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [aiReason, setAiReason] = useState("");
-
-  /* ================================
-     GET ADAPTIVE DIFFICULTY
-  ================================= */
-
-  async function loadAdaptiveDifficulty() {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      startGame("Easy");
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        "https://mindcare-ai-hesy.onrender.com/api/scores/adaptive/Memory%20Match",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Adaptive difficulty request failed");
-      }
-
-      const data = await response.json();
-
-      const selectedDifficulty = data.difficulty || "Easy";
-
-      setDifficulty(selectedDifficulty);
-      setAiReason(data.reason || "");
-
-      startGame(selectedDifficulty);
-    } catch (error) {
-      console.error(
-        "Adaptive difficulty error:",
-        error
-      );
-
-      startGame("Easy");
-    }
-  }
-
-  /* ================================
-     START GAME
-  ================================= */
+  const [gameStarted, setGameStarted] = useState(false);
 
   function startGame(selectedDifficulty) {
-    const values = getCardsForDifficulty(
-      selectedDifficulty
-    );
+    const values = getCardsForDifficulty(selectedDifficulty);
 
+    setDifficulty(selectedDifficulty);
     setCards(shuffleCards(values));
     setSelected([]);
     setMoves(0);
     setTime(0);
     setScoreSaved(false);
-    setLoading(false);
+    setGameStarted(true);
   }
 
-  /* ================================
-     LOAD AI DIFFICULTY
-  ================================= */
-
   useEffect(() => {
-    loadAdaptiveDifficulty();
-  }, []);
-
-  /* ================================
-     TIMER
-  ================================= */
-
-  useEffect(() => {
-    if (loading || cards.length === 0) {
+    if (!gameStarted || cards.length === 0) {
       return;
     }
 
@@ -128,14 +66,12 @@ function MemoryMatch() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [loading, cards.length]);
-
-  /* ================================
-     CARD MATCHING
-  ================================= */
+  }, [gameStarted, cards.length]);
 
   useEffect(() => {
-    if (selected.length !== 2) return;
+    if (selected.length !== 2) {
+      return;
+    }
 
     const first = cards.find(
       (card) => card.id === selected[0]
@@ -145,7 +81,9 @@ function MemoryMatch() {
       (card) => card.id === selected[1]
     );
 
-    if (!first || !second) return;
+    if (!first || !second) {
+      return;
+    }
 
     setMoves((prev) => prev + 1);
 
@@ -168,14 +106,12 @@ function MemoryMatch() {
     }
   }, [selected, cards]);
 
-  /* ================================
-     SAVE SCORE
-  ================================= */
-
   async function saveScore(finalMoves, finalTime) {
     const token = localStorage.getItem("token");
 
-    if (!token || scoreSaved) return;
+    if (!token || scoreSaved) {
+      return;
+    }
 
     const pairCount = cards.length / 2;
 
@@ -218,20 +154,11 @@ function MemoryMatch() {
 
       setScoreSaved(true);
 
-      console.log(
-        "Memory Match score saved ✅"
-      );
+      console.log("Memory Match score saved ✅");
     } catch (error) {
-      console.error(
-        "Score save error:",
-        error
-      );
+      console.error("Score save error:", error);
     }
   }
-
-  /* ================================
-     CHECK COMPLETION
-  ================================= */
 
   const completed =
     cards.length > 0 &&
@@ -254,17 +181,20 @@ function MemoryMatch() {
     difficulty,
   ]);
 
-  /* ================================
-     CARD CLICK
-  ================================= */
-
   function handleCardClick(index) {
-    if (selected.length === 2) return;
-    if (selected.includes(index)) return;
+    if (selected.length === 2) {
+      return;
+    }
+
+    if (selected.includes(cards[index]?.id)) {
+      return;
+    }
 
     const card = cards[index];
 
-    if (!card || card.matched) return;
+    if (!card || card.matched) {
+      return;
+    }
 
     setSelected((prev) => [
       ...prev,
@@ -272,20 +202,17 @@ function MemoryMatch() {
     ]);
   }
 
-  /* ================================
-     RESTART
-  ================================= */
-
   function restartGame() {
-    setLoading(true);
-    loadAdaptiveDifficulty();
+    setDifficulty("");
+    setCards([]);
+    setSelected([]);
+    setMoves(0);
+    setTime(0);
+    setScoreSaved(false);
+    setGameStarted(false);
   }
 
-  /* ================================
-     LOADING SCREEN
-  ================================= */
-
-  if (loading) {
+  if (!gameStarted) {
     return (
       <div className="game-page">
 
@@ -295,15 +222,52 @@ function MemoryMatch() {
             🧠
           </div>
 
+          <p className="small-title">
+            MINDCARE COGNITIVE GAME
+          </p>
+
           <h2>
-            AI is preparing your challenge...
+            Choose Your Difficulty
           </h2>
 
           <p>
-            MindCare is checking your recent
-            performance and selecting a suitable
-            difficulty level.
+            Select a difficulty level before starting
+            your Memory Match challenge.
           </p>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px",
+              width: "100%",
+              maxWidth: "360px",
+              margin: "20px auto 0",
+            }}
+          >
+
+            <button
+              className="primary-btn"
+              onClick={() => startGame("Easy")}
+            >
+              🟢 Easy
+            </button>
+
+            <button
+              className="primary-btn"
+              onClick={() => startGame("Moderate")}
+            >
+              🟡 Moderate
+            </button>
+
+            <button
+              className="primary-btn"
+              onClick={() => startGame("Hard")}
+            >
+              🔴 Hard
+            </button>
+
+          </div>
 
         </div>
 
@@ -321,14 +285,12 @@ function MemoryMatch() {
   return (
     <div className="game-page">
 
-      {/* GAME HEADER */}
-
       <div className="game-header">
 
         <div>
 
           <p className="small-title">
-            MEMORY GAME · AI ADAPTIVE
+            MEMORY GAME
           </p>
 
           <h1>
@@ -336,9 +298,8 @@ function MemoryMatch() {
           </h1>
 
           <p className="description">
-            Match all pairs. MindCare AI
-            automatically adjusts the challenge
-            according to your recent performance.
+            Match all pairs and complete the
+            cognitive memory challenge.
           </p>
 
         </div>
@@ -347,38 +308,15 @@ function MemoryMatch() {
           className="secondary-btn"
           onClick={restartGame}
         >
-          Restart
+          Change Difficulty
         </button>
 
       </div>
 
-
-      {/* AI INSIGHT */}
-
-      {aiReason && (
-        <div
-          className="ai-insight"
-          style={{
-            marginBottom: "20px",
-            padding: "14px 18px",
-            borderRadius: "14px",
-            background: "#f7f2fc",
-            border: "1px solid #e9def5",
-            color: "#624b78",
-          }}
-        >
-          🧠 <strong>MindCare AI:</strong>{" "}
-          {aiReason}
-        </div>
-      )}
-
-
-      {/* GAME STATS */}
-
       <div className="game-stats">
 
         <div>
-          <span>AI Difficulty</span>
+          <span>Difficulty</span>
           <strong>
             {difficulty}
           </strong>
@@ -406,9 +344,6 @@ function MemoryMatch() {
         </div>
 
       </div>
-
-
-      {/* COMPLETED */}
 
       {completed ? (
 
@@ -454,8 +389,6 @@ function MemoryMatch() {
 
       ) : (
 
-        /* MEMORY BOARD */
-
         <div
           className="memory-board"
           style={{
@@ -485,9 +418,11 @@ function MemoryMatch() {
                   handleCardClick(index)
                 }
               >
+
                 {isOpen
                   ? card.value
                   : "?"}
+
               </button>
 
             );

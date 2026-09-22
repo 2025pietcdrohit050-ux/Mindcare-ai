@@ -1,7 +1,28 @@
 import { useEffect, useRef, useState } from "react";
 
+function getSettings(difficulty) {
+  if (difficulty === "Hard") {
+    return {
+      startingLevel: 3,
+      displayTime: 2200,
+    };
+  }
+
+  if (difficulty === "Moderate") {
+    return {
+      startingLevel: 2,
+      displayTime: 2600,
+    };
+  }
+
+  return {
+    startingLevel: 1,
+    displayTime: 3000,
+  };
+}
+
 function createSequence(level) {
-  const length = Math.min(3 + level, 8);
+  const length = Math.min(2 + level, 8);
 
   return Array.from(
     { length },
@@ -10,39 +31,65 @@ function createSequence(level) {
 }
 
 function SequenceRecall() {
+  const [difficulty, setDifficulty] = useState("");
   const [level, setLevel] = useState(1);
-  const [sequence, setSequence] = useState(() => createSequence(1));
+  const [sequence, setSequence] = useState([]);
   const [userSequence, setUserSequence] = useState([]);
-  const [showSequence, setShowSequence] = useState(true);
+  const [showSequence, setShowSequence] = useState(false);
   const [score, setScore] = useState(0);
-  const [message, setMessage] = useState(
-    "Remember the sequence..."
-  );
+  const [message, setMessage] = useState("");
   const [gameOver, setGameOver] = useState(false);
   const [scoreSaved, setScoreSaved] = useState(false);
-
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [gameStarted, setGameStarted] = useState(false);
 
   const gameStartTime = useRef(Date.now());
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      if (!gameOver) {
-        const seconds = Math.floor(
-          (Date.now() - gameStartTime.current) / 1000
-        );
+  function startGame(selectedDifficulty) {
+    const settings = getSettings(selectedDifficulty);
+    const startingLevel = settings.startingLevel;
 
-        setElapsedTime(seconds);
-      }
+    setDifficulty(selectedDifficulty);
+    setLevel(startingLevel);
+    setSequence(createSequence(startingLevel));
+    setUserSequence([]);
+    setScore(0);
+    setElapsedTime(0);
+    setMessage("Remember the sequence...");
+    setShowSequence(true);
+    setGameOver(false);
+    setScoreSaved(false);
+    setGameStarted(true);
+
+    gameStartTime.current = Date.now();
+  }
+
+  useEffect(() => {
+    if (!gameStarted || gameOver) {
+      return;
+    }
+
+    const timer = setInterval(() => {
+      const seconds = Math.floor(
+        (Date.now() - gameStartTime.current) / 1000
+      );
+
+      setElapsedTime(seconds);
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [gameOver]);
+  }, [gameStarted, gameOver]);
 
   useEffect(() => {
+    if (!gameStarted || !showSequence || gameOver) {
+      return;
+    }
+
+    const settings = getSettings(difficulty);
+
     const displayTime = Math.max(
       1800,
-      3000 - level * 100
+      settings.displayTime - (level - settings.startingLevel) * 100
     );
 
     const timer = setTimeout(() => {
@@ -53,29 +100,43 @@ function SequenceRecall() {
     }, displayTime);
 
     return () => clearTimeout(timer);
-  }, [level]);
+  }, [
+    gameStarted,
+    showSequence,
+    difficulty,
+    level,
+    gameOver,
+  ]);
 
   function addNumber(number) {
-    if (showSequence || gameOver) return;
+    if (showSequence || gameOver) {
+      return;
+    }
 
-    if (userSequence.length >= sequence.length) return;
+    if (userSequence.length >= sequence.length) {
+      return;
+    }
 
-    const newSequence = [
-      ...userSequence,
+    setUserSequence((prev) => [
+      ...prev,
       number,
-    ];
-
-    setUserSequence(newSequence);
+    ]);
   }
 
   function removeLastNumber() {
-    if (showSequence || gameOver) return;
+    if (showSequence || gameOver) {
+      return;
+    }
 
-    setUserSequence((prev) => prev.slice(0, -1));
+    setUserSequence((prev) =>
+      prev.slice(0, -1)
+    );
   }
 
   function submitSequence() {
-    if (showSequence || gameOver) return;
+    if (showSequence || gameOver) {
+      return;
+    }
 
     if (userSequence.length !== sequence.length) {
       setMessage(
@@ -90,8 +151,11 @@ function SequenceRecall() {
     );
 
     if (correct) {
-      const levelScore = level * 15;
-      const newScore = score + levelScore;
+      const levelScore =
+        level * 15;
+
+      const newScore =
+        score + levelScore;
 
       setScore(newScore);
 
@@ -100,25 +164,38 @@ function SequenceRecall() {
       );
 
       setTimeout(() => {
-        const nextLevel = level + 1;
+        const nextLevel =
+          Math.min(level + 1, 8);
 
         setLevel(nextLevel);
-        setSequence(createSequence(nextLevel));
+        setSequence(
+          createSequence(nextLevel)
+        );
         setUserSequence([]);
         setShowSequence(true);
       }, 1000);
     } else {
-      setMessage("Incorrect sequence.");
+      setMessage(
+        "Incorrect sequence."
+      );
       setGameOver(true);
     }
   }
 
   useEffect(() => {
     function handleKeyboard(event) {
-      if (showSequence || gameOver) return;
+      if (
+        !gameStarted ||
+        showSequence ||
+        gameOver
+      ) {
+        return;
+      }
 
       if (/^[1-9]$/.test(event.key)) {
-        addNumber(Number(event.key));
+        addNumber(
+          Number(event.key)
+        );
       }
 
       if (event.key === "Backspace") {
@@ -142,6 +219,7 @@ function SequenceRecall() {
       );
     };
   }, [
+    gameStarted,
     showSequence,
     gameOver,
     userSequence,
@@ -149,14 +227,18 @@ function SequenceRecall() {
   ]);
 
   async function saveScore() {
-    const token = localStorage.getItem("token");
+    const token =
+      localStorage.getItem("token");
 
-    if (!token || scoreSaved) return;
+    if (!token || scoreSaved) {
+      return;
+    }
 
     const finalTime = Math.max(
       1,
       Math.floor(
-        (Date.now() - gameStartTime.current) /
+        (Date.now() -
+          gameStartTime.current) /
           1000
       )
     );
@@ -166,17 +248,16 @@ function SequenceRecall() {
         "https://mindcare-ai-hesy.onrender.com/api/scores",
         {
           method: "POST",
-
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
             Authorization: `Bearer ${token}`,
           },
-
           body: JSON.stringify({
             game: "Sequence Recall",
             score,
             time: finalTime,
-            difficulty: "Adaptive",
+            difficulty,
           }),
         }
       );
@@ -194,6 +275,7 @@ function SequenceRecall() {
         {
           score,
           time: finalTime,
+          difficulty,
         }
       );
     } catch (error) {
@@ -211,17 +293,84 @@ function SequenceRecall() {
   }, [gameOver]);
 
   function restartGame() {
-    gameStartTime.current = Date.now();
-
+    setDifficulty("");
     setLevel(1);
-    setSequence(createSequence(1));
+    setSequence([]);
     setUserSequence([]);
     setScore(0);
     setElapsedTime(0);
-    setMessage("Remember the sequence...");
-    setShowSequence(true);
+    setMessage("");
+    setShowSequence(false);
     setGameOver(false);
     setScoreSaved(false);
+    setGameStarted(false);
+  }
+
+  if (!gameStarted) {
+    return (
+      <div className="game-page">
+        <div className="game-complete">
+
+          <div className="complete-icon">
+            🧠
+          </div>
+
+          <p className="small-title">
+            MINDCARE COGNITIVE GAME
+          </p>
+
+          <h2>
+            Choose Your Difficulty
+          </h2>
+
+          <p>
+            Select a difficulty level before
+            starting Sequence Recall.
+          </p>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px",
+              width: "100%",
+              maxWidth: "360px",
+              margin: "20px auto 0",
+            }}
+          >
+
+            <button
+              className="primary-btn"
+              onClick={() =>
+                startGame("Easy")
+              }
+            >
+              🟢 Easy
+            </button>
+
+            <button
+              className="primary-btn"
+              onClick={() =>
+                startGame("Moderate")
+              }
+            >
+              🟡 Moderate
+            </button>
+
+            <button
+              className="primary-btn"
+              onClick={() =>
+                startGame("Hard")
+              }
+            >
+              🔴 Hard
+            </button>
+
+          </div>
+
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -232,7 +381,7 @@ function SequenceRecall() {
         <div>
 
           <p className="small-title">
-            MEMORY GAME · ADAPTIVE
+            MEMORY GAME
           </p>
 
           <h1>
@@ -240,8 +389,9 @@ function SequenceRecall() {
           </h1>
 
           <p className="description">
-            Remember the numbers in the correct order,
-            then reproduce them using your keyboard.
+            Remember the numbers in the
+            correct order, then reproduce
+            them using your keyboard.
           </p>
 
         </div>
@@ -250,7 +400,7 @@ function SequenceRecall() {
           className="secondary-btn"
           onClick={restartGame}
         >
-          Restart
+          Change Difficulty
         </button>
 
       </div>
@@ -258,23 +408,31 @@ function SequenceRecall() {
       <div className="game-stats">
 
         <div>
+          <span>Difficulty</span>
+          <strong>
+            {difficulty}
+          </strong>
+        </div>
+
+        <div>
           <span>Level</span>
-          <strong>{level}</strong>
+          <strong>
+            {level}
+          </strong>
         </div>
 
         <div>
           <span>Score</span>
-          <strong>{score}</strong>
-        </div>
-
-        <div>
-          <span>Sequence</span>
-          <strong>{sequence.length}</strong>
+          <strong>
+            {score}
+          </strong>
         </div>
 
         <div>
           <span>Time</span>
-          <strong>{elapsedTime}s</strong>
+          <strong>
+            {elapsedTime}s
+          </strong>
         </div>
 
       </div>
@@ -284,10 +442,14 @@ function SequenceRecall() {
         <div className="sequence-message">
 
           <span>
-            {showSequence ? "👀" : "⌨️"}
+            {showSequence
+              ? "👀"
+              : "⌨️"}
           </span>
 
-          <h2>{message}</h2>
+          <h2>
+            {message}
+          </h2>
 
         </div>
 
@@ -295,14 +457,16 @@ function SequenceRecall() {
 
           {showSequence ? (
 
-            sequence.map((number, index) => (
-              <div
-                className="sequence-number"
-                key={index}
-              >
-                {number}
-              </div>
-            ))
+            sequence.map(
+              (number, index) => (
+                <div
+                  className="sequence-number"
+                  key={index}
+                >
+                  {number}
+                </div>
+              )
+            )
 
           ) : (
 
@@ -331,70 +495,81 @@ function SequenceRecall() {
 
         </div>
 
-        {!showSequence && !gameOver && (
+        {!showSequence &&
+          !gameOver && (
+            <>
 
-          <>
+              <div className="keyboard-hint">
 
-            <div className="keyboard-hint">
+                <span>⌨️</span>
 
-              <span>⌨️</span>
+                Type numbers using
+                your keyboard
 
-              Type numbers using your keyboard
+                <strong>
+                  1–9
+                </strong>
 
-              <strong>1–9</strong>
+                <span>·</span>
 
-              <span>·</span>
+                Press{" "}
+                <strong>
+                  Enter
+                </strong>{" "}
+                to submit
 
-              Press <strong>Enter</strong> to submit
+              </div>
 
-            </div>
+              <div className="number-grid">
 
-            <div className="number-grid">
+                {[1,2,3,4,5,6,7,8,9].map(
+                  (number) => (
+                    <button
+                      key={number}
+                      className="number-btn"
+                      onClick={() =>
+                        addNumber(number)
+                      }
+                    >
+                      {number}
+                    </button>
+                  )
+                )}
 
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(
-                (number) => (
-                  <button
-                    key={number}
-                    className="number-btn"
-                    onClick={() =>
-                      addNumber(number)
-                    }
-                  >
-                    {number}
-                  </button>
-                )
-              )}
+              </div>
 
-            </div>
+              <div className="sequence-actions">
 
-            <div className="sequence-actions">
+                <button
+                  className="secondary-btn"
+                  onClick={
+                    removeLastNumber
+                  }
+                  disabled={
+                    userSequence.length ===
+                    0
+                  }
+                >
+                  ← Delete
+                </button>
 
-              <button
-                className="secondary-btn"
-                onClick={removeLastNumber}
-                disabled={
-                  userSequence.length === 0
-                }
-              >
-                ← Delete
-              </button>
+                <button
+                  className="primary-btn"
+                  onClick={
+                    submitSequence
+                  }
+                  disabled={
+                    userSequence.length !==
+                    sequence.length
+                  }
+                >
+                  Submit Sequence ✓
+                </button>
 
-              <button
-                className="primary-btn"
-                onClick={submitSequence}
-                disabled={
-                  userSequence.length !==
-                  sequence.length
-                }
-              >
-                Submit Sequence ✓
-              </button>
+              </div>
 
-            </div>
-
-          </>
-
-        )}
+            </>
+          )}
 
         {gameOver && (
 
@@ -410,9 +585,13 @@ function SequenceRecall() {
 
             <p>
               You reached level{" "}
-              <strong>{level}</strong> with a
-              score of{" "}
-              <strong>{score}</strong>.
+              <strong>
+                {level}
+              </strong>{" "}
+              with a score of{" "}
+              <strong>
+                {score}
+              </strong>.
             </p>
 
             <p>
@@ -423,9 +602,10 @@ function SequenceRecall() {
             </p>
 
             <p>
-              Your Sequence Recall score and
-              training time have been saved to
-              your MindCare progress.
+              Your Sequence Recall score
+              and training time have been
+              saved to your MindCare
+              progress.
             </p>
 
             <button

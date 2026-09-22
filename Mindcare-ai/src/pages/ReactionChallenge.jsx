@@ -1,14 +1,40 @@
 import { useEffect, useRef, useState } from "react";
 
-function getWaitTime(round) {
+function getSettings(difficulty) {
+  if (difficulty === "Hard") {
+    return {
+      minWait: 500,
+      maxWait: 2200,
+      totalRounds: 12,
+    };
+  }
+
+  if (difficulty === "Moderate") {
+    return {
+      minWait: 700,
+      maxWait: 3000,
+      totalRounds: 10,
+    };
+  }
+
+  return {
+    minWait: 900,
+    maxWait: 4000,
+    totalRounds: 8,
+  };
+}
+
+function getWaitTime(difficulty, round) {
+  const settings = getSettings(difficulty);
+
   const minimum = Math.max(
-    700,
-    1800 - round * 80
+    settings.minWait,
+    settings.minWait - round * 30
   );
 
   const maximum = Math.max(
-    1800,
-    4000 - round * 100
+    minimum + 500,
+    settings.maxWait - round * 80
   );
 
   return (
@@ -19,10 +45,22 @@ function getWaitTime(round) {
   );
 }
 
-function calculatePoints(time, round) {
+function calculatePoints(time, round, difficulty) {
+  let basePoints = 1200;
+
+  if (difficulty === "Moderate") {
+    basePoints = 1400;
+  }
+
+  if (difficulty === "Hard") {
+    basePoints = 1600;
+  }
+
   const speedPoints = Math.max(
     10,
-    Math.floor(1200 - time * 1.5)
+    Math.floor(
+      basePoints - time * 1.5
+    )
   );
 
   const roundBonus = round * 10;
@@ -31,6 +69,12 @@ function calculatePoints(time, round) {
 }
 
 function ReactionChallenge() {
+  const [difficulty, setDifficulty] =
+    useState("");
+
+  const [gameStarted, setGameStarted] =
+    useState(false);
+
   const [gameState, setGameState] =
     useState("waiting");
 
@@ -55,15 +99,50 @@ function ReactionChallenge() {
   const [scoreSaved, setScoreSaved] =
     useState(false);
 
-  const gameStartTime = useRef(
-    Date.now()
-  );
+  const gameStartTime =
+    useRef(Date.now());
 
-  const totalRounds = 10;
+  const settings =
+    getSettings(difficulty);
 
-  /* TOTAL GAME TIMER */
+  const totalRounds =
+    settings.totalRounds;
+
+  /*
+    START GAME
+  */
+
+  function startGame(selectedDifficulty) {
+    const selectedSettings =
+      getSettings(selectedDifficulty);
+
+    setDifficulty(
+      selectedDifficulty
+    );
+
+    setGameStarted(true);
+    setGameState("waiting");
+    setStartTime(null);
+    setReactionTime(null);
+    setBestTime(null);
+    setRound(1);
+    setScore(0);
+    setElapsedTime(0);
+    setScoreSaved(false);
+
+    gameStartTime.current =
+      Date.now();
+  }
+
+  /*
+    TOTAL GAME TIMER
+  */
 
   useEffect(() => {
+    if (!gameStarted) {
+      return;
+    }
+
     const timer = setInterval(() => {
       if (gameState !== "finished") {
         const seconds = Math.floor(
@@ -76,30 +155,48 @@ function ReactionChallenge() {
       }
     }, 1000);
 
-    return () => clearInterval(timer);
-  }, [gameState]);
+    return () =>
+      clearInterval(timer);
+  }, [
+    gameStarted,
+    gameState,
+  ]);
 
-  /* WAIT FOR SIGNAL */
+  /*
+    WAIT FOR SIGNAL
+  */
 
   useEffect(() => {
-    if (gameState !== "waiting") {
+    if (
+      !gameStarted ||
+      gameState !== "waiting"
+    ) {
       return;
     }
 
-    const delay = getWaitTime(round);
+    const delay =
+      getWaitTime(
+        difficulty,
+        round
+      );
 
     const timer = setTimeout(() => {
       setStartTime(Date.now());
       setGameState("ready");
     }, delay);
 
-    return () => clearTimeout(timer);
-  }, [gameState, round]);
+    return () =>
+      clearTimeout(timer);
+  }, [
+    gameStarted,
+    gameState,
+    round,
+    difficulty,
+  ]);
 
-  function startGame() {
-    setReactionTime(null);
-    setGameState("waiting");
-  }
+  /*
+    CLICK HANDLER
+  */
 
   function handleClick() {
     if (gameState === "waiting") {
@@ -126,7 +223,8 @@ function ReactionChallenge() {
     const points =
       calculatePoints(
         time,
-        round
+        round,
+        difficulty
       );
 
     setScore(
@@ -135,6 +233,10 @@ function ReactionChallenge() {
 
     setGameState("result");
   }
+
+  /*
+    NEXT ROUND
+  */
 
   function nextRound() {
     if (round >= totalRounds) {
@@ -147,40 +249,41 @@ function ReactionChallenge() {
     );
 
     setGameState("waiting");
-
     setReactionTime(null);
   }
 
-  function restartGame() {
-    gameStartTime.current =
-      Date.now();
+  /*
+    TRY AGAIN AFTER TOO EARLY
+  */
 
+  function tryAgain() {
+    setReactionTime(null);
     setGameState("waiting");
-    setStartTime(null);
-    setReactionTime(null);
-    setBestTime(null);
-    setRound(1);
-    setScore(0);
-    setElapsedTime(0);
-    setScoreSaved(false);
   }
+
+  /*
+    SAVE SCORE
+  */
 
   async function saveScore() {
     const token =
-      localStorage.getItem("token");
+      localStorage.getItem(
+        "token"
+      );
 
     if (!token || scoreSaved) {
       return;
     }
 
-    const finalTime = Math.max(
-      1,
-      Math.floor(
-        (Date.now() -
-          gameStartTime.current) /
-          1000
-      )
-    );
+    const finalTime =
+      Math.max(
+        1,
+        Math.floor(
+          (Date.now() -
+            gameStartTime.current) /
+            1000
+        )
+      );
 
     try {
       const response =
@@ -205,8 +308,7 @@ function ReactionChallenge() {
 
               time: finalTime,
 
-              difficulty:
-                "Adaptive",
+              difficulty,
             }),
           }
         );
@@ -223,8 +325,11 @@ function ReactionChallenge() {
         "Reaction Challenge score saved ✅",
         {
           score,
-          trainingTime: finalTime,
-          bestReaction: bestTime,
+          trainingTime:
+            finalTime,
+          bestReaction:
+            bestTime,
+          difficulty,
         }
       );
     } catch (error) {
@@ -235,6 +340,10 @@ function ReactionChallenge() {
     }
   }
 
+  /*
+    SAVE WHEN GAME FINISHES
+  */
+
   useEffect(() => {
     if (
       gameState === "finished"
@@ -242,6 +351,110 @@ function ReactionChallenge() {
       saveScore();
     }
   }, [gameState]);
+
+  /*
+    RESTART / CHANGE DIFFICULTY
+  */
+
+  function restartGame() {
+    setDifficulty("");
+    setGameStarted(false);
+
+    setGameState("waiting");
+
+    setStartTime(null);
+
+    setReactionTime(null);
+
+    setBestTime(null);
+
+    setRound(1);
+
+    setScore(0);
+
+    setElapsedTime(0);
+
+    setScoreSaved(false);
+  }
+
+  /*
+    DIFFICULTY SELECTION SCREEN
+  */
+
+  if (!gameStarted) {
+    return (
+      <div className="game-page">
+
+        <div className="game-complete">
+
+          <div className="complete-icon">
+            ⚡
+          </div>
+
+          <p className="small-title">
+            MINDCARE COGNITIVE GAME
+          </p>
+
+          <h2>
+            Choose Your Difficulty
+          </h2>
+
+          <p>
+            Select a difficulty level
+            before starting the
+            Reaction Challenge.
+          </p>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px",
+              width: "100%",
+              maxWidth: "360px",
+              margin:
+                "20px auto 0",
+            }}
+          >
+
+            <button
+              className="primary-btn"
+              onClick={() =>
+                startGame("Easy")
+              }
+            >
+              🟢 Easy
+            </button>
+
+            <button
+              className="primary-btn"
+              onClick={() =>
+                startGame("Moderate")
+              }
+            >
+              🟡 Moderate
+            </button>
+
+            <button
+              className="primary-btn"
+              onClick={() =>
+                startGame("Hard")
+              }
+            >
+              🔴 Hard
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+    );
+  }
+
+  /*
+    MAIN GAME
+  */
 
   return (
     <div className="game-page">
@@ -251,7 +464,7 @@ function ReactionChallenge() {
         <div>
 
           <p className="small-title">
-            ATTENTION GAME · ADAPTIVE
+            ATTENTION GAME
           </p>
 
           <h1>
@@ -259,18 +472,20 @@ function ReactionChallenge() {
           </h1>
 
           <p className="description">
-            React as quickly as possible
-            when the signal appears. Each
-            round becomes more challenging.
+            Wait for the signal and
+            react as quickly as
+            possible.
           </p>
 
         </div>
 
         <button
           className="secondary-btn"
-          onClick={restartGame}
+          onClick={
+            restartGame
+          }
         >
-          Restart
+          Change Difficulty
         </button>
 
       </div>
@@ -278,7 +493,19 @@ function ReactionChallenge() {
       <div className="game-stats">
 
         <div>
-          <span>Round</span>
+          <span>
+            Difficulty
+          </span>
+
+          <strong>
+            {difficulty}
+          </strong>
+        </div>
+
+        <div>
+          <span>
+            Round
+          </span>
 
           <strong>
             {round}/{totalRounds}
@@ -286,7 +513,9 @@ function ReactionChallenge() {
         </div>
 
         <div>
-          <span>Score</span>
+          <span>
+            Score
+          </span>
 
           <strong>
             {score}
@@ -294,7 +523,9 @@ function ReactionChallenge() {
         </div>
 
         <div>
-          <span>Best Time</span>
+          <span>
+            Best Time
+          </span>
 
           <strong>
             {bestTime !== null
@@ -303,26 +534,22 @@ function ReactionChallenge() {
           </strong>
         </div>
 
-        <div>
-          <span>Training</span>
-
-          <strong>
-            {elapsedTime}s
-          </strong>
-        </div>
-
       </div>
 
       <div className="reaction-game">
 
-        {gameState !== "finished" && (
+        {gameState !==
+          "finished" && (
 
           <button
             className={`reaction-zone ${gameState}`}
-            onClick={handleClick}
+            onClick={
+              handleClick
+            }
           >
 
-            {gameState === "waiting" && (
+            {gameState ===
+              "waiting" && (
               <>
                 <span className="reaction-icon">
                   👀
@@ -338,7 +565,8 @@ function ReactionChallenge() {
               </>
             )}
 
-            {gameState === "ready" && (
+            {gameState ===
+              "ready" && (
               <>
                 <span className="reaction-icon">
                   ⚡
@@ -349,12 +577,14 @@ function ReactionChallenge() {
                 </strong>
 
                 <small>
-                  React as quickly as possible
+                  React as quickly
+                  as possible
                 </small>
               </>
             )}
 
-            {gameState === "too-early" && (
+            {gameState ===
+              "too-early" && (
               <>
                 <span className="reaction-icon">
                   ❌
@@ -365,13 +595,15 @@ function ReactionChallenge() {
                 </strong>
 
                 <small>
-                  Wait for the signal before
+                  Wait for the
+                  signal before
                   clicking.
                 </small>
               </>
             )}
 
-            {gameState === "result" && (
+            {gameState ===
+              "result" && (
               <>
                 <span className="reaction-icon">
                   🎯
@@ -391,7 +623,8 @@ function ReactionChallenge() {
 
         )}
 
-        {gameState === "result" && (
+        {gameState ===
+          "result" && (
 
           <div className="reaction-result">
 
@@ -400,29 +633,39 @@ function ReactionChallenge() {
             </h2>
 
             <div className="reaction-score">
+
               +
               {calculatePoints(
                 reactionTime,
-                round
+                round,
+                difficulty
               )}
+
               {" "}points
+
             </div>
 
             <p>
-              {reactionTime < 250
+              {reactionTime <
+              250
                 ? "Excellent reaction!"
-                : reactionTime < 400
+                : reactionTime <
+                  400
                 ? "Great reaction! Keep going."
-                : reactionTime < 600
+                : reactionTime <
+                  600
                 ? "Good job! Try to react faster."
                 : "Keep practicing to improve your speed."}
             </p>
 
             <button
               className="primary-btn"
-              onClick={nextRound}
+              onClick={
+                nextRound
+              }
             >
-              {round >= totalRounds
+              {round >=
+              totalRounds
                 ? "Finish Challenge →"
                 : "Next Round →"}
             </button>
@@ -431,7 +674,8 @@ function ReactionChallenge() {
 
         )}
 
-        {gameState === "too-early" && (
+        {gameState ===
+          "too-early" && (
 
           <div className="reaction-result">
 
@@ -440,14 +684,17 @@ function ReactionChallenge() {
             </h2>
 
             <p>
-              Wait until the signal appears
-              and then react as quickly as
+              Wait until the signal
+              appears and then
+              react as quickly as
               possible.
             </p>
 
             <button
               className="primary-btn"
-              onClick={startGame}
+              onClick={
+                tryAgain
+              }
             >
               Try Again
             </button>
@@ -456,7 +703,8 @@ function ReactionChallenge() {
 
         )}
 
-        {gameState === "finished" && (
+        {gameState ===
+          "finished" && (
 
           <div className="game-complete">
 
@@ -501,14 +749,16 @@ function ReactionChallenge() {
 
             <p>
               Your Reaction Challenge
-              score and training time have
-              been saved to your MindCare
-              progress.
+              score and training time
+              have been saved to your
+              MindCare progress.
             </p>
 
             <button
               className="primary-btn"
-              onClick={restartGame}
+              onClick={
+                restartGame
+              }
             >
               Play Again
             </button>
