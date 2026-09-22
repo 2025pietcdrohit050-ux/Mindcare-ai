@@ -48,7 +48,7 @@ function sendEmail({ to, subject, html }) {
   });
 }
 
-async function sendOTPEmail(email, otp) {
+async function sendOTP(email, otp) {
   return sendEmail({
     to: email,
     subject: "MindCare AI - Email Verification OTP",
@@ -63,7 +63,7 @@ async function sendOTPEmail(email, otp) {
   });
 }
 
-async function sendResetOTPEmail(email, otp) {
+async function sendResetOTP(email, otp) {
   return sendEmail({
     to: email,
     subject: "MindCare AI - Password Reset OTP",
@@ -104,7 +104,7 @@ async function sendFeedbackNotification(feedback) {
 }
 
 module.exports = {
-  sendOTPEmail,
-  sendResetOTPEmail,
+  sendOTP,
+  sendResetOTP,
   sendFeedbackNotification,
 };
