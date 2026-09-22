@@ -18,6 +18,7 @@ import Caregiver from "./pages/Caregiver";
 import AICompanion from "./pages/AICompanion";
 import Login from "./pages/Login";
 import Help from "./pages/HelpPage";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -207,6 +208,14 @@ function App() {
   element={
     <ProtectedRoute>
       <Help />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/admin"
+  element={
+    <ProtectedRoute>
+      <AdminDashboard />
     </ProtectedRoute>
   }
 />
