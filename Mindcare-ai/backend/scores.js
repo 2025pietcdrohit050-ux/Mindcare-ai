@@ -194,5 +194,129 @@ router.get(
   }
 );
 
+/* ================================
+   LEADERBOARD
+================================ */
 
+router.get(
+  "/leaderboard",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const { period = "weekly" } = req.query;
+
+      const now = new Date();
+      let startDate = null;
+
+      if (period === "daily") {
+        startDate = new Date(now);
+        startDate.setHours(0, 0, 0, 0);
+      }
+
+      if (period === "weekly") {
+        startDate = new Date(now);
+        startDate.setDate(startDate.getDate() - 7);
+      }
+
+      const matchStage = startDate
+        ? {
+            createdAt: {
+              $gte: startDate,
+            },
+          }
+        : {};
+
+      const leaderboard = await GameScore.aggregate([
+        {
+          $match: matchStage,
+        },
+
+        {
+          $group: {
+            _id: "$userId",
+            totalScore: {
+              $sum: "$score",
+            },
+            gamesPlayed: {
+              $sum: 1,
+            },
+            bestScore: {
+              $max: "$score",
+            },
+            averageScore: {
+              $avg: "$score",
+            },
+          },
+        },
+
+        {
+          $sort: {
+            totalScore: -1,
+          },
+        },
+
+        {
+          $limit: 50,
+        },
+
+        {
+          $lookup: {
+            from: "users",
+            localField: "_id",
+            foreignField: "_id",
+            as: "user",
+          },
+        },
+
+        {
+          $unwind: "$user",
+        },
+
+        {
+          $project: {
+            _id: 0,
+            userId: "$_id",
+            name: "$user.name",
+            totalScore: 1,
+            gamesPlayed: 1,
+            bestScore: 1,
+            averageScore: {
+              $round: ["$averageScore", 0],
+            },
+          },
+        },
+      ]);
+
+      const rankedLeaderboard = leaderboard.map(
+        (item, index) => ({
+          rank: index + 1,
+          ...item,
+        })
+      );
+
+      const currentUser = rankedLeaderboard.find(
+        (item) =>
+          item.userId.toString() ===
+          req.userId.toString()
+      );
+
+      res.json({
+        period,
+        leaderboard: rankedLeaderboard,
+        currentUser: currentUser || null,
+      });
+
+    } catch (error) {
+      console.error(
+        "Leaderboard error:",
+        error
+      );
+
+      res.status(500).json({
+        message:
+          "Failed to fetch leaderboard",
+      });
+    }
+  }
+);
 module.exports = router;
