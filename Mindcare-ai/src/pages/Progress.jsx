@@ -14,9 +14,7 @@ function getDateKey(date) {
 
   return `${d.getFullYear()}-${String(
     d.getMonth() + 1
-  ).padStart(2, "0")}-${String(
-    d.getDate()
-  ).padStart(2, "0")}`;
+  ).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
 function getLastSevenDays() {
@@ -44,17 +42,15 @@ function calculateStreak(scores) {
 
   const uniqueDates = [
     ...new Set(
-      scores.map((item) =>
-        getDateKey(item.createdAt)
-      )
+      scores.map((item) => getDateKey(item.createdAt))
     ),
   ];
 
   const dateSet = new Set(uniqueDates);
 
   let current = 0;
-  const today = new Date();
 
+  const today = new Date();
   today.setHours(0, 0, 0, 0);
 
   const todayKey = getDateKey(today);
@@ -65,9 +61,7 @@ function calculateStreak(scores) {
     const checkDate = new Date(today);
 
     while (true) {
-      checkDate.setDate(
-        checkDate.getDate() - 1
-      );
+      checkDate.setDate(checkDate.getDate() - 1);
 
       const key = getDateKey(checkDate);
 
@@ -124,19 +118,14 @@ function Progress() {
         );
 
         if (!response.ok) {
-          throw new Error(
-            "Failed to fetch progress data"
-          );
+          throw new Error("Failed to fetch progress data");
         }
 
         const data = await response.json();
 
         setScores(data.scores || []);
       } catch (error) {
-        console.error(
-          "Progress fetch error:",
-          error
-        );
+        console.error("Progress fetch error:", error);
       } finally {
         setLoading(false);
       }
@@ -152,14 +141,11 @@ function Progress() {
   const gamesCompleted = scores.length;
 
   const totalTime = scores.reduce(
-    (total, item) =>
-      total + Number(item.time || 0),
+    (total, item) => total + Number(item.time || 0),
     0
   );
 
-  const totalMinutes = Math.floor(
-    totalTime / 60
-  );
+  const totalMinutes = Math.floor(totalTime / 60);
 
   const averageScore =
     scores.length > 0
@@ -198,8 +184,7 @@ function Progress() {
         ? Math.round(
             dayScores.reduce(
               (total, item) =>
-                total +
-                Number(item.score || 0),
+                total + Number(item.score || 0),
               0
             ) / dayScores.length
           )
@@ -249,9 +234,7 @@ function Progress() {
 
         const relativePerformance =
           best > 0
-            ? Math.round(
-                (average / best) * 100
-              )
+            ? Math.round((average / best) * 100)
             : 0;
 
         return {
@@ -265,19 +248,17 @@ function Progress() {
     );
   }, [scores]);
 
-  const memoryGames =
-    scores.filter(
-      (item) =>
-        item.game === "Memory Match" ||
-        item.game === "Sequence Recall" ||
-        item.game === "Word Recall"
-    ).length;
+  const memoryGames = scores.filter(
+    (item) =>
+      item.game === "Memory Match" ||
+      item.game === "Sequence Recall" ||
+      item.game === "Word Recall"
+  ).length;
 
-  const attentionGames =
-    scores.filter(
-      (item) =>
-        item.game === "Reaction Challenge"
-    ).length;
+  const attentionGames = scores.filter(
+    (item) =>
+      item.game === "Reaction Challenge"
+  ).length;
 
   const achievements = [
     {
@@ -332,7 +313,6 @@ function Progress() {
       </p>
 
       <div className="progress-header">
-
         <div>
           <h1>
             Track your cognitive journey.
@@ -347,7 +327,6 @@ function Progress() {
         <div className="progress-period">
           Last 7 Days
         </div>
-
       </div>
 
       {/* SUMMARY CARDS */}
@@ -355,7 +334,6 @@ function Progress() {
       <div className="progress-stats">
 
         <div className="progress-stat-card">
-
           <span className="progress-stat-icon">
             🧠
           </span>
@@ -371,11 +349,9 @@ function Progress() {
               Best: {loading ? "..." : bestScore}
             </small>
           </div>
-
         </div>
 
         <div className="progress-stat-card">
-
           <span className="progress-stat-icon green">
             🎯
           </span>
@@ -391,11 +367,9 @@ function Progress() {
               Across {gameStats.length} game types
             </small>
           </div>
-
         </div>
 
         <div className="progress-stat-card">
-
           <span className="progress-stat-icon peach">
             ⏱️
           </span>
@@ -413,11 +387,9 @@ function Progress() {
               Recorded game time
             </small>
           </div>
-
         </div>
 
         <div className="progress-stat-card">
-
           <span className="progress-stat-icon lavender">
             🔥
           </span>
@@ -435,7 +407,6 @@ function Progress() {
               Personal best: {streak.best} days
             </small>
           </div>
-
         </div>
 
       </div>
@@ -444,10 +415,11 @@ function Progress() {
 
       <div className="progress-main">
 
+        {/* DAILY ACTIVITY */}
+
         <div className="progress-chart-card">
 
           <div className="progress-card-header">
-
             <div>
               <span className="card-label">
                 DAILY ACTIVITY
@@ -461,7 +433,6 @@ function Progress() {
             <strong className="chart-score">
               {gamesCompleted}
             </strong>
-
           </div>
 
           {scores.length === 0 ? (
@@ -488,14 +459,14 @@ function Progress() {
                 const height =
                   item.average > 0
                     ? Math.max(
-                        12,
+                        8,
                         Math.round(
                           (item.average /
                             maximumDailyScore) *
                             100
                         )
                       )
-                    : 4;
+                    : 3;
 
                 return (
                   <div
@@ -503,11 +474,13 @@ function Progress() {
                     key={getDateKey(item.date)}
                   >
 
-                    <div className="real-chart-value">
-                      {item.average || ""}
+                    <div className="real-chart-score">
+                      {item.average > 0
+                        ? item.average
+                        : "—"}
                     </div>
 
-                    <div className="real-chart-bar-area">
+                    <div className="real-chart-track">
 
                       <div
                         className="real-chart-bar"
@@ -518,9 +491,16 @@ function Progress() {
 
                     </div>
 
-                    <span>
+                    <div className="real-chart-day">
                       {item.label}
-                    </span>
+                    </div>
+
+                    <div className="real-chart-games">
+                      {item.games}{" "}
+                      {item.games === 1
+                        ? "game"
+                        : "games"}
+                    </div>
 
                   </div>
                 );

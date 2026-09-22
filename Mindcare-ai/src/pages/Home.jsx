@@ -356,10 +356,8 @@ function Home() {
           </p>
 
           <h1>
-            Good morning,{" "}
-            {userName} 👋
-          </h1>
-
+  Hello, {userName} 👋
+</h1>
           <p className="dashboard-subtitle">
             Your personalized
             cognitive wellness space.

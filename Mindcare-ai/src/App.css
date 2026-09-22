@@ -586,7 +586,7 @@
   border-radius: 20px;
   background: white;
   color: #7655a6;
-  font-size: 34px;
+  font-size: 52px;
   font-weight: 800;
   cursor: pointer;
   box-shadow: 0 8px 20px rgba(55, 45, 65, 0.06);
@@ -3483,4 +3483,317 @@
 /* Hover */
 .rating-star:hover {
   transform: translateY(-2px);
+}
+/* =========================
+   LAST 7 DAYS CHART
+========================= */
+
+.real-chart {
+  width: 100%;
+  height: 300px;
+  margin-top: 28px;
+  padding: 20px 10px 0;
+  box-sizing: border-box;
+
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 16px;
+
+  border-bottom: 1px solid #eee7f4;
+}
+
+.real-chart-column {
+  min-width: 0;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.real-chart-score {
+  min-height: 22px;
+  margin-bottom: 8px;
+
+  color: #6f4c9a;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.real-chart-track {
+  width: 100%;
+  max-width: 52px;
+  height: 190px;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+
+  background: #f3eef8;
+  border-radius: 14px 14px 6px 6px;
+  overflow: hidden;
+}
+
+.real-chart-bar {
+  width: 100%;
+  min-height: 5px;
+
+  background: linear-gradient(
+    180deg,
+    #9875bf 0%,
+    #74539f 100%
+  );
+
+  border-radius: 12px 12px 5px 5px;
+
+  transition: height 0.4s ease;
+}
+
+.real-chart-day {
+  margin-top: 12px;
+
+  color: #51465d;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.real-chart-games {
+  margin-top: 4px;
+
+  color: #978e9e;
+  font-size: 10px;
+  text-align: center;
+}
+
+.chart-note {
+  margin: 18px 0 0;
+
+  color: #817786;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+  .real-chart {
+    height: 270px;
+    gap: 7px;
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+
+  .real-chart-track {
+    max-width: 32px;
+    height: 165px;
+  }
+
+  .real-chart-score {
+    font-size: 10px;
+  }
+
+  .real-chart-day {
+    font-size: 11px;
+  }
+
+  .real-chart-games {
+    font-size: 9px;
+  }
+}
+/* =========================================
+   PROFILE ACCESSIBILITY SETTINGS
+========================================= */
+
+/* Large Text */
+
+body.large-text-mode {
+  font-size: 18px;
+}
+
+body.large-text-mode h1 {
+  font-size: 42px;
+}
+
+body.large-text-mode h2 {
+  font-size: 28px;
+}
+
+body.large-text-mode h3 {
+  font-size: 22px;
+}
+
+body.large-text-mode p,
+body.large-text-mode span,
+body.large-text-mode label,
+body.large-text-mode strong,
+body.large-text-mode button,
+body.large-text-mode select {
+  font-size: 1.08em;
+}
+
+
+/* High Contrast */
+
+body.high-contrast-mode {
+  background: #ffffff;
+  color: #111111;
+}
+
+body.high-contrast-mode .settings-section,
+body.high-contrast-mode .progress-stat-card,
+body.high-contrast-mode .progress-chart-card,
+body.high-contrast-mode .game-performance-card {
+  border-color: #222222;
+}
+
+body.high-contrast-mode p,
+body.high-contrast-mode .description {
+  color: #333333;
+}
+
+body.high-contrast-mode h1,
+body.high-contrast-mode h2,
+body.high-contrast-mode h3,
+body.high-contrast-mode strong {
+  color: #111111;
+}
+
+body.high-contrast-mode .setting-row {
+  border-color: #333333;
+}
+
+body.high-contrast-mode .settings-toggle {
+  border: 2px solid #222222;
+}
+
+
+/* Reduced Motion */
+
+body.reduced-motion-mode *,
+body.reduced-motion-mode *::before,
+body.reduced-motion-mode *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+
+/* Setting Controls */
+
+.settings-toggle {
+  min-width: 76px;
+  min-height: 44px;
+  padding: 10px 18px;
+
+  border: none;
+  border-radius: 999px;
+
+  background: #e9e7ed;
+  color: #665d6e;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.settings-toggle:hover {
+  transform: translateY(-1px);
+}
+
+.settings-toggle.on {
+  background: #74539f;
+  color: #ffffff;
+}
+
+
+/* Language Select */
+
+.setting-row select {
+  min-width: 112px;
+  min-height: 48px;
+
+  padding: 0 14px;
+
+  border: 1px solid #ddd4e8;
+  border-radius: 12px;
+
+  background: #ffffff;
+  color: #40364b;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.setting-row select:focus {
+  outline: 3px solid rgba(116, 83, 159, 0.18);
+  border-color: #74539f;
+}
+
+
+/* Help Link */
+
+.profile-help-link {
+  display: inline-flex;
+  align-items: center;
+
+  width: fit-content;
+
+  margin-bottom: 18px;
+  padding: 12px 18px;
+
+  border-radius: 12px;
+
+  background: #f2edf9;
+  color: #74539f;
+
+  text-decoration: none;
+
+  font-weight: 700;
+
+  transition: 0.2s ease;
+}
+
+.profile-help-link:hover {
+  background: #e8def5;
+  transform: translateY(-1px);
+}
+
+
+/* Mobile */
+
+@media (max-width: 700px) {
+
+  .setting-row {
+    gap: 18px;
+  }
+
+  .setting-row select {
+    min-width: 100px;
+  }
+
+  .settings-toggle {
+    min-width: 68px;
+  }
+
+  body.large-text-mode h1 {
+    font-size: 34px;
+  }
+
+  body.large-text-mode h2 {
+    font-size: 24px;
+  }
 }
