@@ -1,60 +1,110 @@
-const nodemailer = require("nodemailer");
+const https = require("https");
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  family: 4,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_APP_PASSWORD,
-  },
-});
+function sendEmail({ to, subject, html }) {
+  return new Promise((resolve, reject) => {
+    const data = JSON.stringify({
+      from: "MindCare AI <onboarding@resend.dev>",
+      to: [to],
+      subject,
+      html,
+    });
 
-// SEND OTP
-async function sendOTP(email, otp) {
-  await transporter.sendMail({
-    from: `"MindCare AI" <${process.env.EMAIL_USER}>`,
+    const options = {
+      hostname: "api.resend.com",
+      path: "/emails",
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+        "Content-Length": Buffer.byteLength(data),
+      },
+    };
+
+    const req = https.request(options, (res) => {
+      let body = "";
+
+      res.on("data", (chunk) => {
+        body += chunk;
+      });
+
+      res.on("end", () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          console.log("Email sent successfully ✅");
+          resolve(JSON.parse(body));
+        } else {
+          console.error("Resend error:", body);
+          reject(new Error(`Resend API error: ${res.statusCode}`));
+        }
+      });
+    });
+
+    req.on("error", (error) => {
+      console.error("Email request failed:", error);
+      reject(error);
+    });
+
+    req.write(data);
+    req.end();
+  });
+}
+
+async function sendOTPEmail(email, otp) {
+  return sendEmail({
     to: email,
-    subject: "MindCare AI - Verification OTP",
-    text: `Your MindCare AI verification OTP is ${otp}. This OTP is valid for 10 minutes.`,
+    subject: "MindCare AI - Email Verification OTP",
+    html: `
+      <div style="font-family:Arial,sans-serif">
+        <h2>MindCare AI</h2>
+        <p>Your verification OTP is:</p>
+        <h1>${otp}</h1>
+        <p>This OTP is valid for 10 minutes.</p>
+      </div>
+    `,
   });
 }
 
+async function sendResetOTPEmail(email, otp) {
+  return sendEmail({
+    to: email,
+    subject: "MindCare AI - Password Reset OTP",
+    html: `
+      <div style="font-family:Arial,sans-serif">
+        <h2>MindCare AI</h2>
+        <p>Your password reset OTP is:</p>
+        <h1>${otp}</h1>
+        <p>This OTP is valid for 10 minutes.</p>
+      </div>
+    `,
+  });
+}
 
-// SEND FEEDBACK NOTIFICATION
 async function sendFeedbackNotification(feedback) {
-  await transporter.sendMail({
-    from: `"MindCare AI" <${process.env.EMAIL_USER}>`,
-    to: process.env.EMAIL_USER,
+  const adminEmail = process.env.ADMIN_EMAIL;
 
-    subject: `MindCare AI - New Feedback ⭐ ${feedback.rating}/5`,
+  if (!adminEmail) {
+    console.log("ADMIN_EMAIL not configured.");
+    return;
+  }
 
-    text: `
-New feedback has been submitted on MindCare AI.
-
-USER DETAILS
-Name: ${feedback.userName}
-Email: ${feedback.userEmail}
-
-FEEDBACK DETAILS
-Category: ${feedback.category}
-Game: ${feedback.game || "Not related to a game"}
-Rating: ${feedback.rating}/5
-Difficulty: ${feedback.difficulty || "Not specified"}
-
-MESSAGE
-${feedback.message}
-
-Status: ${feedback.status}
-
-Submitted: ${new Date(feedback.createdAt).toLocaleString("en-IN")}
-`,
+  return sendEmail({
+    to: adminEmail,
+    subject: `MindCare AI - New Feedback from ${feedback.userName}`,
+    html: `
+      <div style="font-family:Arial,sans-serif">
+        <h2>New MindCare AI Feedback</h2>
+        <p><strong>Name:</strong> ${feedback.userName}</p>
+        <p><strong>Email:</strong> ${feedback.userEmail}</p>
+        <p><strong>Category:</strong> ${feedback.category}</p>
+        <p><strong>Rating:</strong> ${feedback.rating}/5</p>
+        <p><strong>Message:</strong></p>
+        <p>${feedback.message}</p>
+      </div>
+    `,
   });
 }
-
 
 module.exports = {
-  sendOTP,
+  sendOTPEmail,
+  sendResetOTPEmail,
   sendFeedbackNotification,
 };
