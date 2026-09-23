@@ -30,6 +30,12 @@ function App() {
   const user = JSON.parse(localStorage.getItem("user"));
   const userName = user?.name || "User";
 
+  // Admin email
+ const isAdmin =
+  isLoggedIn &&
+  user?.email?.toLowerCase() ===
+    "2025pietcdrohit050@poornima.org";
+
   function handleLogout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -69,7 +75,9 @@ function App() {
                 <span className="navbar-user">
                   👋 {userName}
                 </span>
-
+<Link to="/admin" className="admin-nav-btn">
+  🛡️ Admin
+</Link>
                 <Link to="/profile" className="profile-btn">
                   Profile
                 </Link>
@@ -206,30 +214,33 @@ function App() {
               }
             />
 
-      <Route
-  path="/help"
-  element={
-    <ProtectedRoute>
-      <Help />
-    </ProtectedRoute>
-  }
-/>
-<Route
-  path="/admin"
-  element={
-    <ProtectedRoute>
-      <AdminDashboard />
-    </ProtectedRoute>
-  }
-/>
-<Route
-  path="/leaderboard"
-  element={
-    <ProtectedRoute>
-      <Leaderboard />
-    </ProtectedRoute>
-  }
-/>
+            <Route
+              path="/help"
+              element={
+                <ProtectedRoute>
+                  <Help />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/leaderboard"
+              element={
+                <ProtectedRoute>
+                  <Leaderboard />
+                </ProtectedRoute>
+              }
+            />
+
           </Routes>
 
         </main>

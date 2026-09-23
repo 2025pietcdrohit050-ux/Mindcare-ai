@@ -4652,3 +4652,25 @@ body.reduced-motion-mode *::after {
   }
 
 }
+.admin-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  background: #f1e9fb;
+  color: #68458c !important;
+  border: 1px solid #dfd0ef;
+  padding: 10px 15px;
+  min-height: 42px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.2s ease;
+}
+
+.admin-nav-btn:hover {
+  background: #e6d8f5;
+  transform: translateY(-1px);
+}
