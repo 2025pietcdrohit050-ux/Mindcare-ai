@@ -14,83 +14,59 @@ function HelpPage() {
   const [feedbackStatus, setFeedbackStatus] = useState("");
 
   const faqs = [
-    {
-      question: isHindi
-        ? "मैं कॉग्निटिव गेम कैसे शुरू करूँ?"
-        : "How do I start a cognitive game?",
-      answer: isHindi
-        ? "Games सेक्शन खोलें, कोई गेम चुनें और Start Game दबाएँ। गेम पूरा होने के बाद आपका स्कोर और ट्रेनिंग समय अपने आप सेव हो जाता है।"
-        : "Open the Games section, choose a game and press Start Game. Your score and training time are saved automatically after completion.",
-    },
-    {
-      question: isHindi
-        ? "Memory Vault कैसे काम करता है?"
-        : "How does Memory Vault work?",
-      answer: isHindi
-        ? "Memory Vault आपको लोगों, स्थानों, घटनाओं, रूटीन और नोट्स जैसी व्यक्तिगत यादों को सेव करने में मदद करता है।"
-        : "Memory Vault helps you store personal memories such as people, places, events, routines and notes.",
-    },
-    {
-      question: isHindi
-        ? "AI Companion का उपयोग कैसे करें?"
-        : "How do I use AI Companion?",
-      answer: isHindi
-        ? "AI Companion खोलें और अपना सवाल या मैसेज लिखें। MindCare AI दोस्ताना cognitive wellness support प्रदान करता है।"
-        : "Open AI Companion and type your question or message. MindCare AI provides friendly cognitive wellness support.",
-    },
-    {
-      question: isHindi
-        ? "Reminders कैसे काम करते हैं?"
-        : "How do reminders work?",
-      answer: isHindi
-        ? "Reminders खोलकर daily cognitive training और memory review जैसी गतिविधियों के लिए reminders बनाएँ और manage करें।"
-        : "Open Reminders to create and manage reminders for activities such as daily cognitive training and memory review.",
-    },
-    {
-      question: isHindi
-        ? "Caregiver access कैसे काम करता है?"
-        : "How does Caregiver access work?",
-      answer: isHindi
-        ? "आप caregiver के email address का उपयोग करके उसे authorize कर सकते हैं। Authorized caregiver आपकी अनुमति से आपकी training activity देख सकता है।"
-        : "You can authorize a caregiver using their email address. Authorized caregiver access is designed to help review your training activity with your permission.",
-    },
-    {
-      question: isHindi
-        ? "क्या MindCare AI medical diagnosis system है?"
-        : "Is MindCare AI a medical diagnosis system?",
-      answer: isHindi
-        ? "नहीं। MindCare AI cognitive wellness, memory support और brain-training activities के लिए बनाया गया है। यह medical diagnosis या treatment system नहीं है।"
-        : "No. MindCare AI is designed for cognitive wellness, memory support and brain-training activities. It is not a medical diagnosis or treatment system.",
-    },
-  ];
+  {
+    question: isHindi ? "मैं मानसिक क्षमता वाला गेम कैसे शुरू करूँ?" : "How do I start a cognitive game?",
+    answer: isHindi ? "गेम वाला भाग खोलें, कोई गेम चुनें और गेम शुरू करें बटन दबाएँ। गेम पूरा होने के बाद आपका अंक और प्रशिक्षण समय अपने आप सुरक्षित हो जाता है।" : "Open the Games section, choose a game and press Start Game. Your score and training time are saved automatically after completion.",
+  },
+  {
+    question: isHindi ? "स्मृति वॉल्ट कैसे काम करता है?" : "How does Memory Vault work?",
+    answer: isHindi ? "स्मृति वॉल्ट आपको लोगों, स्थानों, घटनाओं, दिनचर्याओं और नोट्स जैसी व्यक्तिगत यादों को सुरक्षित रखने में मदद करता है।" : "Memory Vault helps you store personal memories such as people, places, events, routines and notes.",
+  },
+  {
+    question: isHindi ? "एआई सहायक का उपयोग कैसे करें?" : "How do I use AI Companion?",
+    answer: isHindi ? "एआई सहायक खोलें और अपना सवाल या संदेश लिखें। माइंडकेयर एआई मित्रवत मानसिक क्षमता और स्मृति सहायता प्रदान करता है।" : "Open AI Companion and type your question or message. MindCare AI provides friendly cognitive wellness support.",
+  },
+  {
+    question: isHindi ? "रिमाइंडर कैसे काम करते हैं?" : "How do reminders work?",
+    answer: isHindi ? "रिमाइंडर खोलकर दैनिक मानसिक क्षमता अभ्यास और स्मृति समीक्षा जैसी गतिविधियों के लिए रिमाइंडर बनाएँ और व्यवस्थित करें।" : "Open Reminders to create and manage reminders for activities such as daily cognitive training and memory review.",
+  },
+  {
+    question: isHindi ? "देखभालकर्ता की अनुमति कैसे काम करती है?" : "How does Caregiver access work?",
+    answer: isHindi ? "आप देखभालकर्ता के ईमेल पते का उपयोग करके उसे अनुमति दे सकते हैं। अनुमति प्राप्त देखभालकर्ता आपकी अनुमति से आपकी प्रशिक्षण गतिविधि देख सकता है।" : "You can authorize a caregiver using their email address. Authorized caregiver access is designed to help review your training activity with your permission.",
+  },
+  {
+    question: isHindi ? "क्या माइंडकेयर एआई चिकित्सीय जांच की व्यवस्था है?" : "Is MindCare AI a medical diagnosis system?",
+    answer: isHindi ? "नहीं। माइंडकेयर एआई मानसिक क्षमता, स्मृति सहायता और मस्तिष्क अभ्यास जैसी गतिविधियों के लिए बनाया गया है। यह चिकित्सीय जांच या उपचार की व्यवस्था नहीं है।" : "No. MindCare AI is designed for cognitive wellness, memory support and brain-training activities. It is not a medical diagnosis or treatment system.",
+  },
+];
 
   const categoryLabels = {
-    General: isHindi ? "सामान्य" : "General",
-    Games: isHindi ? "गेम्स" : "Games",
-    "AI Companion": "AI Companion",
-    "Memory Vault": "Memory Vault",
-    Reminders: isHindi ? "रिमाइंडर" : "Reminders",
-    Caregiver: isHindi ? "केयरगिवर" : "Caregiver",
-    Progress: isHindi ? "प्रोग्रेस" : "Progress",
-    "Technical Issue": isHindi ? "तकनीकी समस्या" : "Technical Issue",
-    Other: isHindi ? "अन्य" : "Other",
-  };
+  General: isHindi ? "सामान्य" : "General",
+  Games: isHindi ? "गेम" : "Games",
+  "AI Companion": isHindi ? "एआई सहायक" : "AI Companion",
+  "Memory Vault": isHindi ? "स्मृति वॉल्ट" : "Memory Vault",
+  Reminders: isHindi ? "रिमाइंडर" : "Reminders",
+  Caregiver: isHindi ? "देखभालकर्ता" : "Caregiver",
+  Progress: isHindi ? "प्रगति" : "Progress",
+  "Technical Issue": isHindi ? "तकनीकी समस्या" : "Technical Issue",
+  Other: isHindi ? "अन्य" : "Other",
+};
 
   const gameLabels = {
-    "": isHindi ? "गेम से संबंधित नहीं" : "Not related to a game",
-    "Memory Match": "Memory Match",
-    "Sequence Recall": "Sequence Recall",
-    "Reaction Challenge": "Reaction Challenge",
-    "Word Recall": "Word Recall",
-  };
+  "": isHindi ? "गेम से संबंधित नहीं" : "Not related to a game",
+  "Memory Match": isHindi ? "स्मृति मिलान" : "Memory Match",
+  "Sequence Recall": isHindi ? "क्रम स्मरण" : "Sequence Recall",
+  "Reaction Challenge": isHindi ? "प्रतिक्रिया चुनौती" : "Reaction Challenge",
+  "Word Recall": isHindi ? "शब्द स्मरण" : "Word Recall",
+};
 
   const difficultyLabels = {
-    "Too Easy": isHindi ? "बहुत आसान" : "Too Easy",
-    Easy: isHindi ? "आसान" : "Easy",
-    Moderate: isHindi ? "मध्यम" : "Moderate",
-    Difficult: isHindi ? "कठिन" : "Difficult",
-    "Too Difficult": isHindi ? "बहुत कठिन" : "Too Difficult",
-  };
+  "Too Easy": isHindi ? "बहुत आसान" : "Too Easy",
+  Easy: isHindi ? "आसान" : "Easy",
+  Moderate: isHindi ? "मध्यम" : "Moderate",
+  Difficult: isHindi ? "कठिन" : "Difficult",
+  "Too Difficult": isHindi ? "बहुत कठिन" : "Too Difficult",
+};
 
   async function submitFeedback(event) {
     event.preventDefault();
@@ -101,7 +77,7 @@ function HelpPage() {
     if (!token) {
       setFeedbackStatus(
         isHindi
-          ? "Feedback भेजने से पहले कृपया login करें।"
+          ? "प्रतिक्रिया भेजने से पहले कृपया प्रवेश करें।"
           : "Please login before submitting feedback."
       );
       return;
@@ -110,7 +86,7 @@ function HelpPage() {
     if (!message.trim()) {
       setFeedbackStatus(
         isHindi
-          ? "कृपया अपना feedback लिखें।"
+          ? "कृपया अपनी प्रतिक्रिया लिखें।"
           : "Please write your feedback."
       );
       return;
@@ -141,14 +117,14 @@ function HelpPage() {
         throw new Error(
           data.message ||
             (isHindi
-              ? "Feedback submit नहीं हो सका"
+              ? "प्रतिक्रिया भेजी नहीं जा सकी"
               : "Feedback submission failed")
         );
       }
 
       setFeedbackStatus(
         isHindi
-          ? "धन्यवाद! आपका feedback सफलतापूर्वक submit हो गया। ❤️"
+          ? "धन्यवाद! आपकी प्रतिक्रिया सफलतापूर्वक भेज दी गई। ❤️"
           : "Thank you! Your feedback has been submitted successfully. ❤️"
       );
 
@@ -162,102 +138,54 @@ function HelpPage() {
 
       setFeedbackStatus(
         isHindi
-          ? "Feedback submit नहीं हो पा रहा। कृपया फिर से कोशिश करें।"
+          ? "प्रतिक्रिया भेजी नहीं जा रही है। कृपया फिर से कोशिश करें।"
           : "Feedback submit nahi ho pa raha. Please try again."
       );
     }
   }
 
   const text = {
-    helpSupport: isHindi ? "मदद और सहायता" : "HELP & SUPPORT",
-    heroTitle: isHindi
-      ? "हम आपकी कैसे मदद कर सकते हैं?"
-      : "How can we help you?",
-    heroDescription: isHindi
-      ? "जानें कि MindCare कैसे काम करता है, सामान्य सवालों के जवाब पाएँ या हमारी support team से संपर्क करें।"
-      : "Learn how MindCare works, find answers to common questions, or contact our support team.",
-
-    customerCare: isHindi ? "कस्टमर केयर" : "CUSTOMER CARE",
-    stillNeedHelp: isHindi
-      ? "अभी भी मदद चाहिए?"
-      : "Still need help?",
-    supportDescription: isHindi
-      ? "हमारी support team account, games, reminders, caregiver access और अन्य MindCare features में आपकी मदद कर सकती है।"
-      : "Our support team can help you with account, games, reminders, caregiver access and other MindCare features.",
-    emailSupport: isHindi ? "ईमेल सहायता" : "Email Support",
-    customerCareLabel: isHindi ? "कस्टमर केयर" : "Customer Care",
-    callSupport: isHindi ? "कॉल सहायता" : "Call Support",
-
-    gettingStarted: isHindi ? "शुरुआत कैसे करें" : "Getting Started",
-    cognitiveGames: isHindi ? "कॉग्निटिव गेम्स" : "Cognitive Games",
-    cognitiveGamesText: isHindi
-      ? "अलग-अलग cognitive skills का अभ्यास करने के लिए memory, attention, reaction और recall games खेलें।"
-      : "Play memory, attention, reaction and recall games to practice different cognitive skills.",
-    memoryVault: "Memory Vault",
-    memoryVaultText: isHindi
-      ? "महत्वपूर्ण personal memories, notes, people, places और routines को store और review करें।"
-      : "Store and review important personal memories, notes, people, places and routines.",
-    aiCompanion: "AI Companion",
-    aiCompanionText: isHindi
-      ? "Friendly guidance और cognitive wellness support के लिए MindCare AI से बात करें।"
-      : "Talk with MindCare AI for friendly guidance and cognitive wellness support.",
-    reminders: isHindi ? "रिमाइंडर" : "Reminders",
-    remindersText: isHindi
-      ? "Training sessions, memory review और daily activities के लिए reminders बनाएँ।"
-      : "Create reminders for training sessions, memory review and daily activities.",
-    caregiver: isHindi ? "केयरगिवर" : "Caregiver",
-    caregiverText: isHindi
-      ? "अपनी अनुमति से training activity को monitor करने में मदद के लिए caregiver को authorize करें।"
-      : "Authorize a caregiver to help monitor your training activity with your permission.",
-    progress: isHindi ? "प्रोग्रेस" : "Progress",
-    progressText: isHindi
-      ? "अपनी game activity, scores, training time और performance trends देखें।"
-      : "View your game activity, scores, training time and performance trends.",
-
-    faq: isHindi
-      ? "अक्सर पूछे जाने वाले सवाल"
-      : "Frequently Asked Questions",
-
-    feedback: isHindi ? "आपका feedback" : "YOUR FEEDBACK",
-    feedbackTitle: isHindi
-      ? "अपने अनुभव के बारे में बताएँ"
-      : "Tell us about your experience",
-    feedbackDescription: isHindi
-      ? "आपका feedback हमें MindCare को बेहतर बनाने में मदद करता है।"
-      : "Your feedback helps us improve MindCare.",
-    feedbackAbout: isHindi
-      ? "आप किस बारे में feedback देना चाहते हैं?"
-      : "What would you like to give feedback about?",
-    likedGame: isHindi
-      ? "आपको कौन सा गेम पसंद आया?"
-      : "Which game did you like?",
-    gameDifficulty: isHindi
-      ? "गेम की difficulty कैसी थी?"
-      : "How was the game difficulty?",
-    rateExperience: isHindi
-      ? "अपने अनुभव को रेट करें"
-      : "Rate your experience",
-    feedbackText: isHindi ? "आपका feedback" : "Your feedback",
-    feedbackPlaceholder: isHindi
-      ? "बताएँ कि आपको क्या पसंद आया या हम क्या बेहतर कर सकते हैं..."
-      : "Tell us what you liked or what we can improve...",
-    submitFeedback: isHindi
-      ? "Feedback भेजें"
-      : "Submit Feedback",
-
-    veryPoor: isHindi ? "बहुत खराब" : "Very Poor",
-    poor: isHindi ? "खराब" : "Poor",
-    okay: isHindi ? "ठीक" : "Okay",
-    good: isHindi ? "अच्छा" : "Good",
-    excellent: isHindi ? "बहुत अच्छा" : "Excellent",
-
-    privacyTitle: isHindi
-      ? "आपकी privacy महत्वपूर्ण है।"
-      : "Your privacy matters.",
-    privacyText: isHindi
-      ? "Support team के साथ personal information केवल जरूरत होने पर ही साझा करें।"
-      : "Only share personal information with support when necessary.",
-  };
+  helpSupport: isHindi ? "मदद और सहायता" : "HELP & SUPPORT",
+  heroTitle: isHindi ? "हम आपकी कैसे मदद कर सकते हैं?" : "How can we help you?",
+  heroDescription: isHindi ? "जानें कि माइंडकेयर कैसे काम करता है, सामान्य सवालों के जवाब पाएँ या हमारी सहायता टीम से संपर्क करें।" : "Learn how MindCare works, find answers to common questions, or contact our support team.",
+  customerCare: isHindi ? "ग्राहक सहायता" : "CUSTOMER CARE",
+  stillNeedHelp: isHindi ? "अभी भी मदद चाहिए?" : "Still need help?",
+  supportDescription: isHindi ? "हमारी सहायता टीम खाते, गेम, रिमाइंडर, देखभालकर्ता की अनुमति और माइंडकेयर की अन्य सुविधाओं में आपकी मदद कर सकती है।" : "Our support team can help you with account, games, reminders, caregiver access and other MindCare features.",
+  emailSupport: isHindi ? "ईमेल सहायता" : "Email Support",
+  customerCareLabel: isHindi ? "ग्राहक सहायता" : "Customer Care",
+  callSupport: isHindi ? "फोन सहायता" : "Call Support",
+  gettingStarted: isHindi ? "शुरुआत कैसे करें" : "Getting Started",
+  cognitiveGames: isHindi ? "मानसिक क्षमता वाले गेम" : "Cognitive Games",
+  cognitiveGamesText: isHindi ? "अलग-अलग मानसिक क्षमताओं का अभ्यास करने के लिए स्मृति, ध्यान, प्रतिक्रिया और याददाश्त वाले गेम खेलें।" : "Play memory, attention, reaction and recall games to practice different cognitive skills.",
+  memoryVault: isHindi ? "स्मृति वॉल्ट" : "Memory Vault",
+  memoryVaultText: isHindi ? "महत्वपूर्ण व्यक्तिगत यादों, नोट्स, लोगों, स्थानों और दिनचर्याओं को सुरक्षित रखें और दोबारा देखें।" : "Store and review important personal memories, notes, people, places and routines.",
+  aiCompanion: isHindi ? "एआई सहायक" : "AI Companion",
+  aiCompanionText: isHindi ? "मित्रवत मार्गदर्शन और मानसिक क्षमता सहायता के लिए माइंडकेयर एआई से बात करें।" : "Talk with MindCare AI for friendly guidance and cognitive wellness support.",
+  reminders: isHindi ? "रिमाइंडर" : "Reminders",
+  remindersText: isHindi ? "प्रशिक्षण सत्र, स्मृति समीक्षा और दैनिक गतिविधियों के लिए रिमाइंडर बनाएँ।" : "Create reminders for training sessions, memory review and daily activities.",
+  caregiver: isHindi ? "देखभालकर्ता" : "Caregiver",
+  caregiverText: isHindi ? "अपनी अनुमति से प्रशिक्षण गतिविधि देखने में मदद के लिए देखभालकर्ता को अनुमति दें।" : "Authorize a caregiver to help monitor your training activity with your permission.",
+  progress: isHindi ? "प्रगति" : "Progress",
+  progressText: isHindi ? "अपनी गेम गतिविधि, अंक, प्रशिक्षण समय और प्रदर्शन में हुए बदलाव देखें।" : "View your game activity, scores, training time and performance trends.",
+  faq: isHindi ? "अक्सर पूछे जाने वाले सवाल" : "Frequently Asked Questions",
+  feedback: isHindi ? "आपकी प्रतिक्रिया" : "YOUR FEEDBACK",
+  feedbackTitle: isHindi ? "अपने अनुभव के बारे में बताएँ" : "Tell us about your experience",
+  feedbackDescription: isHindi ? "आपकी प्रतिक्रिया हमें माइंडकेयर को बेहतर बनाने में मदद करती है।" : "Your feedback helps us improve MindCare.",
+  feedbackAbout: isHindi ? "आप किस बारे में प्रतिक्रिया देना चाहते हैं?" : "What would you like to give feedback about?",
+  likedGame: isHindi ? "आपको कौन सा गेम पसंद आया?" : "Which game did you like?",
+  gameDifficulty: isHindi ? "गेम का कठिनाई स्तर कैसा था?" : "How was the game difficulty?",
+  rateExperience: isHindi ? "अपने अनुभव को अंक दें" : "Rate your experience",
+  feedbackText: isHindi ? "आपकी प्रतिक्रिया" : "Your feedback",
+  feedbackPlaceholder: isHindi ? "बताएँ कि आपको क्या पसंद आया या हम क्या बेहतर कर सकते हैं..." : "Tell us what you liked or what we can improve...",
+  submitFeedback: isHindi ? "प्रतिक्रिया भेजें" : "Submit Feedback",
+  veryPoor: isHindi ? "बहुत खराब" : "Very Poor",
+  poor: isHindi ? "खराब" : "Poor",
+  okay: isHindi ? "ठीक" : "Okay",
+  good: isHindi ? "अच्छा" : "Good",
+  excellent: isHindi ? "बहुत अच्छा" : "Excellent",
+  privacyTitle: isHindi ? "आपकी निजता महत्वपूर्ण है।" : "Your privacy matters.",
+  privacyText: isHindi ? "सहायता टीम के साथ व्यक्तिगत जानकारी केवल आवश्यकता होने पर ही साझा करें।" : "Only share personal information with support when necessary.",
+};
 
   const ratingText =
     rating === 1
