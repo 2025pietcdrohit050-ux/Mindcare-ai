@@ -22,8 +22,14 @@ router.post("/signup", async (req, res) => {
       });
     }
 
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedPhone = phone.trim();
+
     const existingUser = await User.findOne({
-      $or: [{ email }, { phone }],
+      $or: [
+        { email: normalizedEmail },
+        { phone: normalizedPhone },
+      ],
     });
 
     if (existingUser) {
@@ -38,16 +44,23 @@ router.post("/signup", async (req, res) => {
 
     const user = await User.create({
       name,
-      email,
-      phone,
+      email: normalizedEmail,
+      phone: normalizedPhone,
       password: hashedPassword,
       emailVerified: false,
       phoneVerified: false,
       emailOTP: otp,
-      emailOTPExpires: new Date(Date.now() + 10 * 60 * 1000),
+      emailOTPExpires: new Date(
+        Date.now() + 10 * 60 * 1000
+      ),
     });
 
-    await sendResetOTP(email, otp);
+    try {
+      await sendOTP(normalizedEmail, otp);
+    } catch (emailError) {
+      await User.deleteOne({ _id: user._id });
+      throw emailError;
+    }
 
     res.status(201).json({
       message: "Account created. OTP sent to your email.",
@@ -88,17 +101,27 @@ router.post("/verify-email", async (req, res) => {
       });
     }
 
-    if (!user.emailOTPExpires || user.emailOTPExpires < new Date()) {
+    if (
+      !user.emailOTPExpires ||
+      user.emailOTPExpires < new Date()
+    ) {
       return res.status(400).json({
         message: "OTP has expired",
       });
     }
 
-    user.emailVerified = true;
-    user.emailOTP = null;
-    user.emailOTPExpires = null;
-
-    await user.save();
+    await User.updateOne(
+      { _id: user._id },
+      {
+        $set: {
+          emailVerified: true,
+        },
+        $unset: {
+          emailOTP: "",
+          emailOTPExpires: "",
+        },
+      }
+    );
 
     res.json({
       message: "Email verified successfully",
@@ -124,8 +147,10 @@ router.post("/forgot-password", async (req, res) => {
       });
     }
 
+    const normalizedEmail = email.trim().toLowerCase();
+
     const user = await User.findOne({
-      email: email.trim().toLowerCase(),
+      email: normalizedEmail,
     });
 
     if (!user) {
@@ -137,18 +162,18 @@ router.post("/forgot-password", async (req, res) => {
     const otp = generateOTP();
 
     await User.updateOne(
-  { _id: user._id },
-  {
-    $set: {
-      resetOTP: otp,
-      resetOTPExpires: new Date(
-        Date.now() + 10 * 60 * 1000
-      ),
-    },
-  }
-);
+      { _id: user._id },
+      {
+        $set: {
+          resetOTP: otp,
+          resetOTPExpires: new Date(
+            Date.now() + 10 * 60 * 1000
+          ),
+        },
+      }
+    );
 
-await sendOTP(email, otp);
+    await sendResetOTP(normalizedEmail, otp);
 
     res.json({
       message: "Password reset OTP sent to your email",
@@ -174,8 +199,10 @@ router.post("/verify-reset-otp", async (req, res) => {
       });
     }
 
+    const normalizedEmail = email.trim().toLowerCase();
+
     const user = await User.findOne({
-      email: email.trim().toLowerCase(),
+      email: normalizedEmail,
     });
 
     if (!user) {
@@ -245,8 +272,10 @@ router.post("/reset-password", async (req, res) => {
       });
     }
 
+    const normalizedEmail = email.trim().toLowerCase();
+
     const user = await User.findOne({
-      email: email.trim().toLowerCase(),
+      email: normalizedEmail,
     });
 
     if (!user) {
@@ -275,12 +304,18 @@ router.post("/reset-password", async (req, res) => {
       10
     );
 
-    user.password = hashedPassword;
-
-    user.resetOTP = null;
-    user.resetOTPExpires = null;
-
-    await user.save();
+    await User.updateOne(
+      { _id: user._id },
+      {
+        $set: {
+          password: hashedPassword,
+        },
+        $unset: {
+          resetOTP: "",
+          resetOTPExpires: "",
+        },
+      }
+    );
 
     res.json({
       message: "Password changed successfully",
@@ -300,7 +335,17 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required",
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const user = await User.findOne({
+      email: normalizedEmail,
+    });
 
     if (!user) {
       return res.status(401).json({
