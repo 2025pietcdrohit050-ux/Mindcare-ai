@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useLanguage } from "../LanguageContext";
 
 function getGameIcon(game) {
   if (game === "Memory Match") return "🧩";
@@ -100,6 +101,8 @@ function calculateStreak(scores) {
 }
 
 function Progress() {
+  const { t } = useLanguage();
+
   const [scores, setScores] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -263,69 +266,82 @@ function Progress() {
   const achievements = [
     {
       icon: "🎮",
-      title: "First Game",
-      description:
-        "Completed your first cognitive activity.",
+      title: t("firstGame"),
+      description: t("firstGameDescription"),
       unlocked: gamesCompleted >= 1,
     },
     {
       icon: "🧠",
-      title: "Memory Explorer",
-      description:
-        "Complete 5 memory-focused activities.",
+      title: t("memoryExplorer"),
+      description: t("memoryExplorerDescription"),
       unlocked: memoryGames >= 5,
     },
     {
       icon: "🎯",
-      title: "Focus Builder",
-      description:
-        "Complete 5 attention activities.",
+      title: t("focusBuilder"),
+      description: t("focusBuilderDescription"),
       unlocked: attentionGames >= 5,
     },
     {
       icon: "🔥",
-      title: "7 Day Streak",
-      description:
-        "Train on 7 consecutive days.",
+      title: t("sevenDayStreak"),
+      description: t("sevenDayStreakDescription"),
       unlocked: streak.best >= 7,
     },
     {
       icon: "🏆",
-      title: "10 Games",
-      description:
-        "Complete 10 cognitive activities.",
+      title: t("tenGames"),
+      description: t("tenGamesDescription"),
       unlocked: gamesCompleted >= 10,
     },
     {
       icon: "🚀",
-      title: "25 Games",
-      description:
-        "Complete 25 cognitive activities.",
+      title: t("twentyFiveGames"),
+      description: t("twentyFiveGamesDescription"),
       unlocked: gamesCompleted >= 25,
     },
   ];
+
+  function getGameName(game) {
+    if (game === "Memory Match") {
+      return t("memoryMatch");
+    }
+
+    if (game === "Sequence Recall") {
+      return t("sequenceRecall");
+    }
+
+    if (game === "Reaction Challenge") {
+      return t("reactionChallenge");
+    }
+
+    if (game === "Word Recall") {
+      return t("wordRecall");
+    }
+
+    return game;
+  }
 
   return (
     <div className="page">
 
       <p className="small-title">
-        PROGRESS & ANALYTICS
+        {t("progressAnalytics")}
       </p>
 
       <div className="progress-header">
         <div>
           <h1>
-            Track your cognitive journey.
+            {t("trackCognitiveJourney")}
           </h1>
 
           <p className="description">
-            Review your actual activity, scores and
-            training progress over time.
+            {t("reviewActivityScores")}
           </p>
         </div>
 
         <div className="progress-period">
-          Last 7 Days
+          {t("lastSevenDays")}
         </div>
       </div>
 
@@ -334,82 +350,106 @@ function Progress() {
       <div className="progress-stats">
 
         <div className="progress-stat-card">
+
           <span className="progress-stat-icon">
             🧠
           </span>
 
           <div>
-            <span>Average Game Score</span>
+            <span>
+              {t("averageGameScore")}
+            </span>
 
             <strong>
               {loading ? "..." : averageScore}
             </strong>
 
             <small>
-              Best: {loading ? "..." : bestScore}
+              {t("best")}:{" "}
+              {loading ? "..." : bestScore}
             </small>
           </div>
+
         </div>
 
+
         <div className="progress-stat-card">
+
           <span className="progress-stat-icon green">
             🎯
           </span>
 
           <div>
-            <span>Games Completed</span>
+            <span>
+              {t("gamesCompleted")}
+            </span>
 
             <strong>
               {loading ? "..." : gamesCompleted}
             </strong>
 
             <small>
-              Across {gameStats.length} game types
+              {t("acrossGameTypes", {
+                count: gameStats.length,
+              })}
             </small>
           </div>
+
         </div>
 
+
         <div className="progress-stat-card">
+
           <span className="progress-stat-icon peach">
             ⏱️
           </span>
 
           <div>
-            <span>Training Time</span>
+            <span>
+              {t("trainingTime")}
+            </span>
 
             <strong>
               {loading
                 ? "..."
-                : `${totalMinutes} min`}
+                : `${totalMinutes} ${t("minutes")}`}
             </strong>
 
             <small>
-              Recorded game time
+              {t("recordedGameTime")}
             </small>
           </div>
+
         </div>
 
+
         <div className="progress-stat-card">
+
           <span className="progress-stat-icon lavender">
             🔥
           </span>
 
           <div>
-            <span>Current Streak</span>
+            <span>
+              {t("currentStreak")}
+            </span>
 
             <strong>
               {loading
                 ? "..."
-                : `${streak.current} days`}
+                : `${streak.current} ${t("days")}`}
             </strong>
 
             <small>
-              Personal best: {streak.best} days
+              {t("personalBest")}:{" "}
+              {streak.best} {t("days")}
             </small>
           </div>
+
         </div>
 
       </div>
+
 
       {/* MAIN ANALYTICS */}
 
@@ -420,34 +460,40 @@ function Progress() {
         <div className="progress-chart-card">
 
           <div className="progress-card-header">
+
             <div>
+
               <span className="card-label">
-                DAILY ACTIVITY
+                {t("dailyActivity")}
               </span>
 
               <h2>
-                Last 7 Days
+                {t("lastSevenDays")}
               </h2>
+
             </div>
 
             <strong className="chart-score">
               {gamesCompleted}
             </strong>
+
           </div>
+
 
           {scores.length === 0 ? (
 
             <div className="progress-empty">
+
               <span>📊</span>
 
               <h3>
-                No activity yet
+                {t("noActivityYet")}
               </h3>
 
               <p>
-                Complete a cognitive game to start
-                building your progress history.
+                {t("completeGameToStartProgress")}
               </p>
+
             </div>
 
           ) : (
@@ -469,6 +515,7 @@ function Progress() {
                     : 3;
 
                 return (
+
                   <div
                     className="real-chart-column"
                     key={getDateKey(item.date)}
@@ -498,11 +545,12 @@ function Progress() {
                     <div className="real-chart-games">
                       {item.games}{" "}
                       {item.games === 1
-                        ? "game"
-                        : "games"}
+                        ? t("game")
+                        : t("games")}
                     </div>
 
                   </div>
+
                 );
               })}
 
@@ -511,35 +559,39 @@ function Progress() {
           )}
 
           {scores.length > 0 && (
+
             <p className="chart-note">
-              Daily values show the average score from
-              games completed on each day.
+              {t("dailyValuesNote")}
             </p>
+
           )}
 
         </div>
+
 
         {/* GAME PERFORMANCE */}
 
         <div className="game-performance-card">
 
           <span className="card-label">
-            GAME PERFORMANCE
+            {t("gamePerformance")}
           </span>
 
           <h2>
-            Activity Breakdown
+            {t("activityBreakdown")}
           </h2>
+
 
           {gameStats.length === 0 ? (
 
             <div className="progress-empty small">
+
               <span>🧠</span>
 
               <p>
-                Game performance will appear after
-                you complete an activity.
+                {t("gamePerformanceEmpty")}
               </p>
+
             </div>
 
           ) : (
@@ -552,14 +604,16 @@ function Progress() {
               >
 
                 <div>
+
                   <span>
                     {getGameIcon(item.game)}{" "}
-                    {item.game}
+                    {getGameName(item.game)}
                   </span>
 
                   <strong>
                     {item.average}
                   </strong>
+
                 </div>
 
                 <div className="performance-bar">
@@ -576,9 +630,9 @@ function Progress() {
                 <small className="performance-meta">
                   {item.count}{" "}
                   {item.count === 1
-                    ? "game"
-                    : "games"}{" "}
-                  · Best score {item.best}
+                    ? t("game")
+                    : t("games")}{" "}
+                  · {t("bestScore")} {item.best}
                 </small>
 
               </div>
@@ -591,18 +645,21 @@ function Progress() {
 
       </div>
 
+
       {/* ACHIEVEMENTS */}
 
       <section className="achievements-section">
 
         <div>
+
           <span className="card-label">
-            ACHIEVEMENTS
+            {t("achievements")}
           </span>
 
           <h2>
-            Your Milestones
+            {t("yourMilestones")}
           </h2>
+
         </div>
 
         <div className="achievement-grid">
@@ -623,6 +680,7 @@ function Progress() {
               </span>
 
               <div>
+
                 <h3>
                   {achievement.title}
                 </h3>
@@ -630,6 +688,7 @@ function Progress() {
                 <p>
                   {achievement.description}
                 </p>
+
               </div>
 
             </div>

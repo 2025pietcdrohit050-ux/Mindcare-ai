@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { useLanguage } from "../LanguageContext";
 
 function Reminders() {
+  const { t } = useLanguage();
+
   const [reminders, setReminders] = useState([
     {
       id: 1,
@@ -71,6 +74,18 @@ function Reminders() {
     );
   }
 
+  function getReminderType(typeName) {
+    const typeKeys = {
+      "Cognitive Exercise": "cognitiveExercise",
+      Memory: "memoryReminder",
+      "Daily Routine": "dailyRoutine",
+      "Medication Reminder": "medicationReminder",
+      Personal: "personalReminder",
+    };
+
+    return t(typeKeys[typeName]);
+  }
+
   return (
     <div className="page">
 
@@ -78,14 +93,15 @@ function Reminders() {
 
         <div>
           <p className="small-title">
-            SMART REMINDERS
+            {t("smartReminders")}
           </p>
 
-          <h1>Stay on track with gentle reminders.</h1>
+          <h1>
+            {t("stayOnTrack")}
+          </h1>
 
           <p className="description">
-            Create reminders for cognitive exercises,
-            memory reviews and daily routines.
+            {t("reminderDescription")}
           </p>
         </div>
 
@@ -93,11 +109,12 @@ function Reminders() {
           className="primary-btn"
           onClick={() => setShowForm(!showForm)}
         >
-          {showForm ? "Close" : "+ Add Reminder"}
+          {showForm
+            ? t("close")
+            : t("addReminder")}
         </button>
 
       </div>
-
 
       {showForm && (
         <form
@@ -105,16 +122,20 @@ function Reminders() {
           onSubmit={addReminder}
         >
 
-          <h2>Create Reminder</h2>
+          <h2>
+            {t("createReminder")}
+          </h2>
 
           <div className="reminder-form-grid">
 
             <div>
-              <label>Reminder Title</label>
+              <label>
+                {t("reminderTitle")}
+              </label>
 
               <input
                 type="text"
-                placeholder="e.g. Morning brain exercise"
+                placeholder={t("reminderTitlePlaceholder")}
                 value={title}
                 onChange={(event) =>
                   setTitle(event.target.value)
@@ -122,9 +143,10 @@ function Reminders() {
               />
             </div>
 
-
             <div>
-              <label>Time</label>
+              <label>
+                {t("time")}
+              </label>
 
               <input
                 type="time"
@@ -137,9 +159,10 @@ function Reminders() {
 
           </div>
 
-
           <div>
-            <label>Reminder Type</label>
+            <label>
+              {t("reminderType")}
+            </label>
 
             <select
               value={type}
@@ -147,25 +170,37 @@ function Reminders() {
                 setType(event.target.value)
               }
             >
-              <option>Cognitive Exercise</option>
-              <option>Memory</option>
-              <option>Daily Routine</option>
-              <option>Medication Reminder</option>
-              <option>Personal</option>
+              <option value="Cognitive Exercise">
+                {t("cognitiveExercise")}
+              </option>
+
+              <option value="Memory">
+                {t("memoryReminder")}
+              </option>
+
+              <option value="Daily Routine">
+                {t("dailyRoutine")}
+              </option>
+
+              <option value="Medication Reminder">
+                {t("medicationReminder")}
+              </option>
+
+              <option value="Personal">
+                {t("personalReminder")}
+              </option>
             </select>
           </div>
-
 
           <button
             type="submit"
             className="primary-btn"
           >
-            Save Reminder
+            {t("saveReminder")}
           </button>
 
         </form>
       )}
-
 
       <div className="reminder-list">
 
@@ -184,19 +219,21 @@ function Reminders() {
               ⏰
             </div>
 
-
             <div className="reminder-info">
 
               <span className="reminder-type">
-                {reminder.type}
+                {getReminderType(reminder.type)}
               </span>
 
-              <h3>{reminder.title}</h3>
+              <h3>
+                {reminder.title}
+              </h3>
 
-              <strong>{reminder.time}</strong>
+              <strong>
+                {reminder.time}
+              </strong>
 
             </div>
-
 
             <div className="reminder-actions">
 
@@ -209,6 +246,11 @@ function Reminders() {
                 onClick={() =>
                   toggleReminder(reminder.id)
                 }
+                aria-label={
+                  reminder.active
+                    ? t("disableReminder")
+                    : t("enableReminder")
+                }
               >
                 <span></span>
               </button>
@@ -218,6 +260,7 @@ function Reminders() {
                 onClick={() =>
                   deleteReminder(reminder.id)
                 }
+                aria-label={t("deleteReminder")}
               >
                 ×
               </button>

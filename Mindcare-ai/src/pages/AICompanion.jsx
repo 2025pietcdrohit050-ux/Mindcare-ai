@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
+import { useLanguage } from "../LanguageContext";
 
 function AICompanion() {
-  const [language, setLanguage] = useState("English");
+  const { language: globalLanguage } = useLanguage();
+
+  const [language, setLanguage] = useState(
+    globalLanguage || "English"
+  );
 
   const [messages, setMessages] = useState([
     {
@@ -11,17 +16,14 @@ function AICompanion() {
   ]);
 
   const [input, setInput] = useState("");
-
   const [loading, setLoading] = useState(false);
-
   const [isListening, setIsListening] = useState(false);
-
   const [speechSupported, setSpeechSupported] =
     useState(true);
 
-  /*
-    CHECK VOICE SUPPORT
-  */
+  useEffect(() => {
+    setLanguage(globalLanguage || "English");
+  }, [globalLanguage]);
 
   useEffect(() => {
     const SpeechRecognition =
@@ -32,10 +34,6 @@ function AICompanion() {
       setSpeechSupported(false);
     }
   }, []);
-
-  /*
-    LANGUAGE CHANGE
-  */
 
   function changeLanguage(selectedLanguage) {
     setLanguage(selectedLanguage);
@@ -59,10 +57,6 @@ function AICompanion() {
       ]);
     }
   }
-
-  /*
-    VOICE INPUT
-  */
 
   function startVoiceInput() {
     const SpeechRecognition =
@@ -92,9 +86,7 @@ function AICompanion() {
         : "en-IN";
 
     recognition.continuous = false;
-
     recognition.interimResults = false;
-
     recognition.maxAlternatives = 1;
 
     recognition.onstart = () => {
@@ -106,7 +98,6 @@ function AICompanion() {
         event.results[0][0].transcript;
 
       setInput(spokenText);
-
       setIsListening(false);
     };
 
@@ -118,10 +109,7 @@ function AICompanion() {
 
       setIsListening(false);
 
-      if (
-        event.error ===
-        "not-allowed"
-      ) {
+      if (event.error === "not-allowed") {
         alert(
           language === "Hindi"
             ? "Microphone permission allow करें।"
@@ -137,23 +125,15 @@ function AICompanion() {
     recognition.start();
   }
 
-  /*
-    TEXT TO SPEECH
-  */
-
   function speakText(text) {
-    if (
-      !("speechSynthesis" in window)
-    ) {
+    if (!("speechSynthesis" in window)) {
       return;
     }
 
     window.speechSynthesis.cancel();
 
     const speech =
-      new SpeechSynthesisUtterance(
-        text
-      );
+      new SpeechSynthesisUtterance(text);
 
     speech.lang =
       language === "Hindi"
@@ -161,30 +141,19 @@ function AICompanion() {
         : "en-IN";
 
     speech.rate = 0.9;
-
     speech.pitch = 1;
 
-    window.speechSynthesis.speak(
-      speech
-    );
+    window.speechSynthesis.speak(speech);
   }
-
-  /*
-    SEND MESSAGE
-  */
 
   async function sendMessage(event) {
     event.preventDefault();
 
-    if (
-      !input.trim() ||
-      loading
-    ) {
+    if (!input.trim() || loading) {
       return;
     }
 
-    const userText =
-      input.trim();
+    const userText = input.trim();
 
     const userMessage = {
       sender: "user",
@@ -197,7 +166,6 @@ function AICompanion() {
     ]);
 
     setInput("");
-
     setLoading(true);
 
     try {
@@ -228,23 +196,20 @@ This is a cognitive wellness and memory support application. Do not diagnose med
 User message:
 ${userText}`;
 
-      const response =
-        await fetch(
-          "https://mindcare-ai-hesy.onrender.com/api/chat",
-          {
-            method: "POST",
+      const response = await fetch(
+        "https://mindcare-ai-hesy.onrender.com/api/chat",
+        {
+          method: "POST",
 
-            headers: {
-              "Content-Type":
-                "application/json",
-            },
+          headers: {
+            "Content-Type": "application/json",
+          },
 
-            body: JSON.stringify({
-              message:
-                languageInstruction,
-            }),
-          }
-        );
+          body: JSON.stringify({
+            message: languageInstruction,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(
@@ -252,8 +217,7 @@ ${userText}`;
         );
       }
 
-      const data =
-        await response.json();
+      const data = await response.json();
 
       const aiMessage = {
         sender: "ai",
@@ -265,11 +229,8 @@ ${userText}`;
         aiMessage,
       ]);
 
-      /*
-        AUTOMATICALLY SPEAK AI RESPONSE
-      */
-
       speakText(data.reply);
+
     } catch (error) {
       console.error(error);
 
@@ -286,46 +247,37 @@ ${userText}`;
         },
       ]);
 
-      speakText(
-        errorMessage
-      );
+      speakText(errorMessage);
+
     } finally {
       setLoading(false);
     }
   }
-
-  /*
-    QUICK PROMPTS
-  */
 
   const quickPrompts =
     language === "Hindi"
       ? [
           {
             icon: "🧠",
-            label:
-              "याददाश्त अभ्यास",
+            label: "याददाश्त अभ्यास",
             prompt:
               "मुझे याददाश्त का एक आसान अभ्यास बताइए।",
           },
           {
             icon: "⏰",
-            label:
-              "मेरी दिनचर्या",
+            label: "मेरी दिनचर्या",
             prompt:
               "मेरी रोज़ की दिनचर्या बेहतर बनाने में मदद कीजिए।",
           },
           {
             icon: "🎯",
-            label:
-              "ध्यान अभ्यास",
+            label: "ध्यान अभ्यास",
             prompt:
               "मुझे ध्यान बढ़ाने के लिए एक आसान गतिविधि बताइए।",
           },
           {
             icon: "📊",
-            label:
-              "मेरी प्रगति",
+            label: "मेरी प्रगति",
             prompt:
               "मुझे अपनी cognitive training progress बेहतर करने के सुझाव दीजिए।",
           },
@@ -333,29 +285,25 @@ ${userText}`;
       : [
           {
             icon: "🧠",
-            label:
-              "Memory exercise",
+            label: "Memory exercise",
             prompt:
               "Give me a simple memory exercise.",
           },
           {
             icon: "⏰",
-            label:
-              "My routine",
+            label: "My routine",
             prompt:
               "Help me improve my daily routine.",
           },
           {
             icon: "🎯",
-            label:
-              "Focus activity",
+            label: "Focus activity",
             prompt:
               "Give me a simple activity to improve my focus.",
           },
           {
             icon: "📊",
-            label:
-              "My progress",
+            label: "My progress",
             prompt:
               "Give me suggestions to improve my cognitive training progress.",
           },
@@ -375,7 +323,9 @@ ${userText}`;
         <div>
 
           <p className="small-title">
-            AI COMPANION
+            {language === "Hindi"
+              ? "AI सहायक"
+              : "AI COMPANION"}
           </p>
 
           <h1>
@@ -394,14 +344,14 @@ ${userText}`;
 
       </div>
 
+
       {/* LANGUAGE */}
 
       <div
         style={{
           display: "flex",
           alignItems: "center",
-          justifyContent:
-            "space-between",
+          justifyContent: "space-between",
           gap: "15px",
           flexWrap: "wrap",
           marginBottom: "20px",
@@ -412,12 +362,14 @@ ${userText}`;
 
           <p
             style={{
-              margin:
-                "0 0 5px",
+              margin: "0 0 5px",
               fontWeight: "700",
             }}
           >
-            🌐 Select Language
+            🌐{" "}
+            {language === "Hindi"
+              ? "भाषा चुनें"
+              : "Select Language"}
           </p>
 
           <span
@@ -426,8 +378,9 @@ ${userText}`;
               color: "#777",
             }}
           >
-            Choose your preferred
-            AI language
+            {language === "Hindi"
+              ? "AI के लिए अपनी पसंदीदा भाषा चुनें"
+              : "Choose your preferred AI language"}
           </span>
 
         </div>
@@ -442,15 +395,12 @@ ${userText}`;
           <button
             type="button"
             className={
-              language ===
-              "English"
+              language === "English"
                 ? "primary-btn"
                 : "secondary-btn"
             }
             onClick={() =>
-              changeLanguage(
-                "English"
-              )
+              changeLanguage("English")
             }
           >
             🇬🇧 English
@@ -459,15 +409,12 @@ ${userText}`;
           <button
             type="button"
             className={
-              language ===
-              "Hindi"
+              language === "Hindi"
                 ? "primary-btn"
                 : "secondary-btn"
             }
             onClick={() =>
-              changeLanguage(
-                "Hindi"
-              )
+              changeLanguage("Hindi")
             }
           >
             🇮🇳 हिंदी
@@ -476,6 +423,7 @@ ${userText}`;
         </div>
 
       </div>
+
 
       {/* CHAT */}
 
@@ -491,6 +439,7 @@ ${userText}`;
 
         </div>
 
+
         <div className="ai-messages">
 
           {messages.map(
@@ -499,16 +448,14 @@ ${userText}`;
               <div
                 key={index}
                 className={
-                  message.sender ===
-                  "user"
+                  message.sender === "user"
                     ? "ai-message user-message"
                     : "ai-message"
                 }
               >
 
                 <div className="message-avatar">
-                  {message.sender ===
-                  "user"
+                  {message.sender === "user"
                     ? "👤"
                     : "🤖"}
                 </div>
@@ -516,8 +463,7 @@ ${userText}`;
                 <div
                   className="message-bubble"
                   style={{
-                    position:
-                      "relative",
+                    position: "relative",
                   }}
                 >
 
@@ -525,6 +471,7 @@ ${userText}`;
 
                   {message.sender ===
                     "ai" && (
+
                     <button
                       type="button"
                       onClick={() =>
@@ -532,22 +479,22 @@ ${userText}`;
                           message.text
                         )
                       }
-                      title="Listen"
+                      title={
+                        language === "Hindi"
+                          ? "सुनें"
+                          : "Listen"
+                      }
                       style={{
-                        marginLeft:
-                          "10px",
-                        border:
-                          "none",
-                        background:
-                          "transparent",
-                        cursor:
-                          "pointer",
-                        fontSize:
-                          "16px",
+                        marginLeft: "10px",
+                        border: "none",
+                        background: "transparent",
+                        cursor: "pointer",
+                        fontSize: "16px",
                       }}
                     >
                       🔊
                     </button>
+
                   )}
 
                 </div>
@@ -556,6 +503,7 @@ ${userText}`;
 
             )
           )}
+
 
           {loading && (
 
@@ -577,35 +525,35 @@ ${userText}`;
 
         </div>
 
+
         {/* INPUT */}
 
         <form
           className="ai-input-area"
-          onSubmit={
-            sendMessage
-          }
+          onSubmit={sendMessage}
         >
 
           <button
             type="button"
             className="voice-btn"
-            onClick={
-              startVoiceInput
-            }
+            onClick={startVoiceInput}
             disabled={
               !speechSupported ||
               isListening
             }
             title={
               isListening
-                ? "Listening..."
+                ? language === "Hindi"
+                  ? "सुन रहा हूँ..."
+                  : "Listening..."
+                : language === "Hindi"
+                ? "वॉइस इनपुट"
                 : "Voice input"
             }
             style={{
-              background:
-                isListening
-                  ? "#e9dafa"
-                  : "",
+              background: isListening
+                ? "#e9dafa"
+                : "",
             }}
           >
             {isListening
@@ -616,8 +564,7 @@ ${userText}`;
           <input
             type="text"
             placeholder={
-              language ===
-              "Hindi"
+              language === "Hindi"
                 ? "अपना संदेश लिखें या 🎤 दबाकर बोलें..."
                 : "Type your message or press 🎤 to speak..."
             }
@@ -639,32 +586,30 @@ ${userText}`;
 
         </form>
 
+
         {/* VOICE STATUS */}
 
         {isListening && (
+
           <div
             style={{
-              textAlign:
-                "center",
-              padding:
-                "10px",
-              color:
-                "#74539f",
-              fontSize:
-                "13px",
-              fontWeight:
-                "600",
+              textAlign: "center",
+              padding: "10px",
+              color: "#74539f",
+              fontSize: "13px",
+              fontWeight: "600",
             }}
           >
             🎤{" "}
-            {language ===
-            "Hindi"
+            {language === "Hindi"
               ? "सुन रहा हूँ... बोलिए"
               : "Listening... Speak now"}
           </div>
+
         )}
 
       </div>
+
 
       {/* QUICK PROMPTS */}
 

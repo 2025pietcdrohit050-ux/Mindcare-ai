@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
+import { useLanguage } from "../LanguageContext";
 
 function Caregiver() {
+  const { t } = useLanguage();
+
   const [authorized, setAuthorized] = useState(false);
   const [caregiverEmail, setCaregiverEmail] = useState("");
   const [access, setAccess] = useState(null);
@@ -61,7 +64,7 @@ function Caregiver() {
 
   async function authorizeCaregiver() {
     if (!caregiverEmail.trim()) {
-      alert("Please enter caregiver email.");
+      alert(t("enterCaregiverEmail"));
       return;
     }
 
@@ -83,7 +86,9 @@ function Caregiver() {
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.message || "Authorization failed");
+        alert(
+          data.message || t("authorizationFailed")
+        );
         return;
       }
 
@@ -91,7 +96,7 @@ function Caregiver() {
       setAccess(data.access);
     } catch (error) {
       console.error(error);
-      alert("Could not connect to backend.");
+      alert(t("backendConnectionError"));
     }
   }
 
@@ -110,7 +115,9 @@ function Caregiver() {
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.message || "Could not revoke access");
+        alert(
+          data.message || t("revokeAccessFailed")
+        );
         return;
       }
 
@@ -119,24 +126,28 @@ function Caregiver() {
       setCaregiverEmail("");
     } catch (error) {
       console.error(error);
-      alert("Could not connect to backend.");
+      alert(t("backendConnectionError"));
     }
   }
 
   const gamesCompleted = scores.length;
 
   const totalTime = scores.reduce(
-    (total, item) => total + (item.time || 0),
+    (total, item) =>
+      total + (item.time || 0),
     0
   );
 
-  const totalMinutes = Math.floor(totalTime / 60);
+  const totalMinutes = Math.floor(
+    totalTime / 60
+  );
 
   const averageScore =
     scores.length > 0
       ? Math.round(
           scores.reduce(
-            (total, item) => total + item.score,
+            (total, item) =>
+              total + item.score,
             0
           ) / scores.length
         )
@@ -151,7 +162,9 @@ function Caregiver() {
   const activityDates = [
     ...new Set(
       scores.map((item) =>
-        new Date(item.createdAt).toDateString()
+        new Date(
+          item.createdAt
+        ).toDateString()
       )
     ),
   ];
@@ -163,27 +176,68 @@ function Caregiver() {
 
   const recentScores = scores.slice(0, 5);
 
-  if (loading) {
-    return (
-      <div className="page">
+  function getGameIcon(game) {
+    if (game === "Memory Match") {
+      return "🧩";
+    }
+
+    if (game === "Sequence Recall") {
+      return "🔢";
+    }
+
+    if (game === "Reaction Challenge") {
+      return "⚡";
+    }
+
+    if (game === "Word Recall") {
+      return "🔤";
+    }
+
+    return "🧠";
+  }
+
+  function getGameName(game) {
+    if (game === "Memory Match") {
+      return t("memoryMatch");
+    }
+
+    if (game === "Sequence Recall") {
+      return t("sequenceRecall");
+    }
+
+    if (game === "Reaction Challenge") {
+      return t("reactionChallenge");
+    }
+
+    if (game === "Word Recall") {
+      return t("wordRecall");
+    }
+
+    return game;
+  }
+
+  return (
+    <div className="page">
+
+      {loading ? (
+
         <div className="caregiver-access">
+
           <div className="caregiver-icon">
             👥
           </div>
 
-          <h1>Loading caregiver dashboard...</h1>
+          <h1>
+            {t("loadingCaregiverDashboard")}
+          </h1>
 
           <p className="description">
-            Fetching authorized activity from MindCare.
+            {t("fetchingAuthorizedActivity")}
           </p>
-        </div>
-      </div>
-    );
-  }
 
-  if (!authorized) {
-    return (
-      <div className="page">
+        </div>
+
+      ) : !authorized ? (
 
         <div className="caregiver-access">
 
@@ -192,35 +246,34 @@ function Caregiver() {
           </div>
 
           <p className="small-title">
-            CAREGIVER ACCESS
+            {t("caregiverAccessTitle")}
           </p>
 
           <h1>
-            Private support dashboard.
+            {t("privateSupportDashboard")}
           </h1>
 
           <p className="description">
-            Caregiver access is available only after
-            the user explicitly authorizes a caregiver.
+            {t("caregiverAccessDescription")}
           </p>
 
           <div className="authorization-card">
 
             <h3>
-              🔐 Authorization Required
+              🔐 {t("authorizationRequired")}
             </h3>
 
             <p>
-              Enter the caregiver's email address.
-              Your activity will only be shared after
-              you authorize access.
+              {t("authorizationInstructions")}
             </p>
 
             <input
               type="email"
               value={caregiverEmail}
               onChange={(event) =>
-                setCaregiverEmail(event.target.value)
+                setCaregiverEmail(
+                  event.target.value
+                )
               }
               placeholder="caregiver@example.com"
               className="caregiver-input"
@@ -230,262 +283,286 @@ function Caregiver() {
               className="primary-btn"
               onClick={authorizeCaregiver}
             >
-              Authorize Caregiver Access →
+              {t("authorizeCaregiver")} →
             </button>
 
           </div>
 
           <div className="caregiver-privacy-note">
-            🛡️ You can revoke caregiver access at any
-            time.
+            🛡️ {t("revokeAnytime")}
           </div>
 
         </div>
 
-      </div>
-    );
-  }
+      ) : (
 
-  return (
-    <div className="page">
-
-      <div className="caregiver-header">
-
-        <div>
-          <p className="small-title">
-            CAREGIVER DASHBOARD
-          </p>
-
-          <h1>
-            {userName}'s wellness overview.
-          </h1>
-
-          <p className="description">
-            Authorized activity and cognitive training
-            information in one place.
-          </p>
-        </div>
-
-        <button
-          className="secondary-btn"
-          onClick={revokeAccess}
-        >
-          Revoke Access
-        </button>
-
-      </div>
-
-      <div className="caregiver-authorized-banner">
-        <span>🔐</span>
-
-        <div>
-          <strong>
-            Caregiver access is authorized
-          </strong>
-
-          <small>
-            Authorized for {access?.caregiverEmail}
-          </small>
-        </div>
-      </div>
-
-      <div className="caregiver-stats">
-
-        <div className="caregiver-stat">
-          <span>🎮</span>
-
-          <div>
-            <small>Games Completed</small>
-
-            <strong>
-              {gamesCompleted}
-            </strong>
-          </div>
-        </div>
-
-        <div className="caregiver-stat">
-          <span>🧠</span>
-
-          <div>
-            <small>Average Score</small>
-
-            <strong>
-              {averageScore}
-            </strong>
-          </div>
-        </div>
-
-        <div className="caregiver-stat">
-          <span>🔥</span>
-
-          <div>
-            <small>Active Days</small>
-
-            <strong>
-              {currentStreak}
-            </strong>
-          </div>
-        </div>
-
-        <div className="caregiver-stat">
-          <span>⏱️</span>
-
-          <div>
-            <small>Training Time</small>
-
-            <strong>
-              {totalMinutes} min
-            </strong>
-          </div>
-        </div>
-
-      </div>
-
-      <div className="caregiver-grid">
-
-        <div className="caregiver-card">
-
-          <div className="caregiver-card-heading">
+        <>
+          <div className="caregiver-header">
 
             <div>
-              <span className="card-label">
-                RECENT ACTIVITY
-              </span>
 
-              <h2>
-                Training overview
-              </h2>
+              <p className="small-title">
+                {t("caregiverDashboard")}
+              </p>
+
+              <h1>
+                {userName}
+                {t("wellnessOverview")}
+              </h1>
+
+              <p className="description">
+                {t("authorizedActivityInfo")}
+              </p>
+
+            </div>
+
+            <button
+              className="secondary-btn"
+              onClick={revokeAccess}
+            >
+              {t("revokeAccess")}
+            </button>
+
+          </div>
+
+
+          <div className="caregiver-authorized-banner">
+
+            <span>🔐</span>
+
+            <div>
+
+              <strong>
+                {t("caregiverAccessAuthorized")}
+              </strong>
+
+              <small>
+                {t("authorizedFor")}{" "}
+                {access?.caregiverEmail}
+              </small>
+
             </div>
 
           </div>
 
-          {recentScores.length === 0 ? (
 
-            <div className="caregiver-empty">
-              <span>🧠</span>
+          <div className="caregiver-stats">
 
-              <h3>
-                No activity yet
-              </h3>
+            <div className="caregiver-stat">
 
-              <p>
-                Complete a cognitive game and the
-                activity will appear here.
-              </p>
+              <span>🎮</span>
+
+              <div>
+                <small>
+                  {t("gamesCompleted")}
+                </small>
+
+                <strong>
+                  {gamesCompleted}
+                </strong>
+              </div>
+
             </div>
 
-          ) : (
 
-            recentScores.map((item) => (
+            <div className="caregiver-stat">
 
-              <div
-                className="activity-row"
-                key={item._id}
-              >
+              <span>🧠</span>
 
-                <span>
-                  {item.game === "Memory Match"
-                    ? "🧩"
-                    : item.game ===
-                      "Sequence Recall"
-                    ? "🔢"
-                    : item.game ===
-                      "Reaction Challenge"
-                    ? "⚡"
-                    : "🔤"}
-                </span>
+              <div>
+                <small>
+                  {t("averageScore")}
+                </small>
+
+                <strong>
+                  {averageScore}
+                </strong>
+              </div>
+
+            </div>
+
+
+            <div className="caregiver-stat">
+
+              <span>🔥</span>
+
+              <div>
+                <small>
+                  {t("activeDays")}
+                </small>
+
+                <strong>
+                  {currentStreak}
+                </strong>
+              </div>
+
+            </div>
+
+
+            <div className="caregiver-stat">
+
+              <span>⏱️</span>
+
+              <div>
+                <small>
+                  {t("trainingTime")}
+                </small>
+
+                <strong>
+                  {totalMinutes}{" "}
+                  {t("minutes")}
+                </strong>
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div className="caregiver-grid">
+
+            <div className="caregiver-card">
+
+              <div className="caregiver-card-heading">
 
                 <div>
-                  <strong>
-                    {item.game}
-                  </strong>
 
-                  <small>
-                    {new Date(
-                      item.createdAt
-                    ).toLocaleDateString()}{" "}
-                    ·{" "}
-                    {item.difficulty}
-                  </small>
+                  <span className="card-label">
+                    {t("recentActivity")}
+                  </span>
+
+                  <h2>
+                    {t("trainingOverview")}
+                  </h2>
+
                 </div>
-
-                <b>
-                  {item.score}
-                </b>
 
               </div>
 
-            ))
 
-          )}
+              {recentScores.length === 0 ? (
 
-        </div>
+                <div className="caregiver-empty">
 
-        <div className="caregiver-card">
+                  <span>🧠</span>
 
-          <span className="card-label">
-            ACTIVITY SUMMARY
-          </span>
+                  <h3>
+                    {t("noActivityYet")}
+                  </h3>
 
-          <h2>
-            Training overview
-          </h2>
+                  <p>
+                    {t("completeGameActivity")}
+                  </p>
 
-          <p className="description">
-            MindCare tracks completed activities and
-            training history to provide a simple
-            wellness overview.
-          </p>
+                </div>
 
-          <div className="caregiver-insight">
+              ) : (
 
-            <span>✨</span>
+                recentScores.map((item) => (
 
-            <p>
-              {gamesCompleted === 0
-                ? "Start a cognitive game to build your activity history."
-                : `You have completed ${gamesCompleted} cognitive ${
-                    gamesCompleted === 1
-                      ? "activity"
-                      : "activities"
-                  } across ${gameTypes} game ${
-                    gameTypes === 1
-                      ? "type"
-                      : "types"
-                  }.`}
-            </p>
+                  <div
+                    className="activity-row"
+                    key={item._id}
+                  >
+
+                    <span>
+                      {getGameIcon(item.game)}
+                    </span>
+
+                    <div>
+
+                      <strong>
+                        {getGameName(item.game)}
+                      </strong>
+
+                      <small>
+                        {new Date(
+                          item.createdAt
+                        ).toLocaleDateString()}{" "}
+                        ·{" "}
+                        {item.difficulty}
+                      </small>
+
+                    </div>
+
+                    <b>
+                      {item.score}
+                    </b>
+
+                  </div>
+
+                ))
+
+              )}
+
+            </div>
+
+
+            <div className="caregiver-card">
+
+              <span className="card-label">
+                {t("activitySummary")}
+              </span>
+
+              <h2>
+                {t("trainingOverview")}
+              </h2>
+
+              <p className="description">
+                {t("mindcareTrackingDescription")}
+              </p>
+
+
+              <div className="caregiver-insight">
+
+                <span>✨</span>
+
+                <p>
+                  {gamesCompleted === 0
+                    ? t("startCognitiveGame")
+                    : `${t("completedPrefix")} ${gamesCompleted} ${
+                        gamesCompleted === 1
+                          ? t("activity")
+                          : t("activities")
+                      } ${t("across")} ${gameTypes} ${
+                        gameTypes === 1
+                          ? t("gameType")
+                          : t("gameTypes")
+                      }.`}
+                </p>
+
+              </div>
+
+            </div>
 
           </div>
 
-        </div>
 
-      </div>
+          <div className="caregiver-card privacy-card">
 
-      <div className="caregiver-card privacy-card">
+            <span className="card-label">
+              {t("privacy")}
+            </span>
 
-        <span className="card-label">
-          PRIVACY
-        </span>
+            <h2>
+              {t("dataUnderControl")}
+            </h2>
 
-        <h2>
-          Your data stays under your control.
-        </h2>
+            <p className="description">
+              {t("caregiverPrivacyDescription")}
+            </p>
 
-        <p className="description">
-          Caregiver access is currently authorized.
-          The caregiver can view the activity available
-          through this authorized connection. You can
-          revoke access at any time.
-        </p>
+            <button
+              className="secondary-btn"
+              onClick={revokeAccess}
+            >
+              {t("revokeCaregiverAccess")}
+            </button>
 
-        <button
-          className="secondary-btn"
-          onClick={revokeAccess}
-        >
-          Revoke Caregiver Access
-        </button>
+          </div>
+        </>
 
-      </div>
+      )}
 
     </div>
   );

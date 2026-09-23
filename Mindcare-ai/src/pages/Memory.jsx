@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLanguage } from "../LanguageContext";
 
 const categories = [
   "People",
@@ -10,6 +11,8 @@ const categories = [
 ];
 
 function Memory() {
+  const { t } = useLanguage();
+
   const [memories, setMemories] = useState([
     {
       id: 1,
@@ -31,8 +34,7 @@ function Memory() {
     },
   ]);
 
-  const [activeCategory, setActiveCategory] =
-    useState("All");
+  const [activeCategory, setActiveCategory] = useState("All");
 
   const [showForm, setShowForm] = useState(false);
 
@@ -79,6 +81,19 @@ function Memory() {
             memory.category === activeCategory
         );
 
+  function getCategoryName(categoryName) {
+    const categoryKeys = {
+      People: "memoryPeople",
+      Places: "memoryPlaces",
+      Events: "memoryEvents",
+      Notes: "memoryNotes",
+      Routines: "memoryRoutines",
+      "Favorite Things": "memoryFavoriteThings",
+    };
+
+    return t(categoryKeys[categoryName]);
+  }
+
   return (
     <div className="page">
 
@@ -86,16 +101,15 @@ function Memory() {
 
         <div>
           <p className="small-title">
-            MEMORY VAULT
+            {t("memoryVaultTitle")}
           </p>
 
           <h1>
-            Keep the things that matter.
+            {t("memoryKeepThings")}
           </h1>
 
           <p className="description">
-            Save important people, places, events,
-            routines and personal notes in one place.
+            {t("memoryDescription")}
           </p>
         </div>
 
@@ -104,12 +118,11 @@ function Memory() {
           onClick={() => setShowForm(!showForm)}
         >
           {showForm
-            ? "Close"
-            : "+ Add Memory"}
+            ? t("close")
+            : t("addMemory")}
         </button>
 
       </div>
-
 
       {showForm && (
 
@@ -118,16 +131,20 @@ function Memory() {
           onSubmit={addMemory}
         >
 
-          <h2>Add a new memory</h2>
+          <h2>
+            {t("addNewMemory")}
+          </h2>
 
           <div className="memory-form-grid">
 
             <div>
-              <label>Title</label>
+              <label>
+                {t("title")}
+              </label>
 
               <input
                 type="text"
-                placeholder="Memory title"
+                placeholder={t("memoryTitlePlaceholder")}
                 value={title}
                 onChange={(event) =>
                   setTitle(event.target.value)
@@ -135,9 +152,10 @@ function Memory() {
               />
             </div>
 
-
             <div>
-              <label>Category</label>
+              <label>
+                {t("category")}
+              </label>
 
               <select
                 value={category}
@@ -150,7 +168,7 @@ function Memory() {
                     key={item}
                     value={item}
                   >
-                    {item}
+                    {getCategoryName(item)}
                   </option>
                 ))}
               </select>
@@ -158,12 +176,13 @@ function Memory() {
 
           </div>
 
-
           <div>
-            <label>Memory</label>
+            <label>
+              {t("memory")}
+            </label>
 
             <textarea
-              placeholder="Write something you want to remember..."
+              placeholder={t("memoryTextPlaceholder")}
               value={text}
               onChange={(event) =>
                 setText(event.target.value)
@@ -172,18 +191,15 @@ function Memory() {
             />
           </div>
 
-
           <button
             type="submit"
             className="primary-btn"
           >
-            Save Memory
+            {t("saveMemory")}
           </button>
 
         </form>
-
       )}
-
 
       <div className="memory-categories">
 
@@ -197,7 +213,7 @@ function Memory() {
             setActiveCategory("All")
           }
         >
-          🧠 All
+          🧠 {t("all")}
         </button>
 
         {categories.map((item) => (
@@ -213,26 +229,29 @@ function Memory() {
               setActiveCategory(item)
             }
           >
-            {item}
+            {getCategoryName(item)}
           </button>
 
         ))}
 
       </div>
 
-
       <div className="memory-grid">
 
         {filteredMemories.length === 0 ? (
 
           <div className="empty-memory">
+
             <span>🧠</span>
 
-            <h2>No memories here yet.</h2>
+            <h2>
+              {t("noMemories")}
+            </h2>
 
             <p>
-              Add a memory to this category.
+              {t("addMemoryToCategory")}
             </p>
+
           </div>
 
         ) : (
@@ -247,7 +266,7 @@ function Memory() {
               <div className="memory-card-top">
 
                 <span className="memory-category-label">
-                  {memory.category}
+                  {getCategoryName(memory.category)}
                 </span>
 
                 <button
@@ -255,16 +274,20 @@ function Memory() {
                   onClick={() =>
                     deleteMemory(memory.id)
                   }
-                  aria-label="Delete memory"
+                  aria-label={t("deleteMemory")}
                 >
                   ×
                 </button>
 
               </div>
 
-              <h3>{memory.title}</h3>
+              <h3>
+                {memory.title}
+              </h3>
 
-              <p>{memory.text}</p>
+              <p>
+                {memory.text}
+              </p>
 
             </div>
 
