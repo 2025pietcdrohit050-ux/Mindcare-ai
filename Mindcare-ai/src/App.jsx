@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { useState } from "react";
 import "./App.css";
+import "./pages/AdminDashboard.css";
 
 import ProtectedRoute from "./ProtectedRoute";
 
