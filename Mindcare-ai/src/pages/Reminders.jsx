@@ -2,19 +2,20 @@ import { useState } from "react";
 import { useLanguage } from "../LanguageContext";
 
 function Reminders() {
-  const { t } = useLanguage();
+  const { language } = useLanguage();
+  const isHindi = language === "Hindi";
 
   const [reminders, setReminders] = useState([
     {
       id: 1,
-      title: "Daily Mind Training",
+      title: isHindi ? "दैनिक मानसिक प्रशिक्षण" : "Daily Mind Training",
       time: "09:00 AM",
       type: "Cognitive Exercise",
       active: true,
     },
     {
       id: 2,
-      title: "Memory Review",
+      title: isHindi ? "मेमोरी समीक्षा" : "Memory Review",
       time: "06:00 PM",
       type: "Memory",
       active: true,
@@ -22,7 +23,6 @@ function Reminders() {
   ]);
 
   const [showForm, setShowForm] = useState(false);
-
   const [title, setTitle] = useState("");
   const [time, setTime] = useState("");
   const [type, setType] = useState("Cognitive Exercise");
@@ -75,16 +75,80 @@ function Reminders() {
   }
 
   function getReminderType(typeName) {
-    const typeKeys = {
-      "Cognitive Exercise": "cognitiveExercise",
-      Memory: "memoryReminder",
-      "Daily Routine": "dailyRoutine",
-      "Medication Reminder": "medicationReminder",
-      Personal: "personalReminder",
+    const names = {
+      "Cognitive Exercise": isHindi
+        ? "संज्ञानात्मक व्यायाम"
+        : "Cognitive Exercise",
+
+      Memory: isHindi
+        ? "मेमोरी"
+        : "Memory",
+
+      "Daily Routine": isHindi
+        ? "दैनिक दिनचर्या"
+        : "Daily Routine",
+
+      "Medication Reminder": isHindi
+        ? "दवा रिमाइंडर"
+        : "Medication Reminder",
+
+      Personal: isHindi
+        ? "व्यक्तिगत"
+        : "Personal",
     };
 
-    return t(typeKeys[typeName]);
+    return names[typeName] || typeName;
   }
+
+  const text = {
+    title: isHindi ? "स्मार्ट रिमाइंडर" : "SMART REMINDERS",
+
+    heading: isHindi
+      ? "अपनी दिनचर्या के साथ जुड़े रहें।"
+      : "Stay on track with your routine.",
+
+    description: isHindi
+      ? "अपने मानसिक प्रशिक्षण, मेमोरी और दैनिक गतिविधियों के लिए महत्वपूर्ण रिमाइंडर सेट करें।"
+      : "Set important reminders for your mental training, memory and daily activities.",
+
+    add: isHindi ? "रिमाइंडर जोड़ें" : "Add Reminder",
+
+    close: isHindi ? "बंद करें" : "Close",
+
+    create: isHindi
+      ? "नया रिमाइंडर बनाएँ"
+      : "Create Reminder",
+
+    reminderTitle: isHindi
+      ? "रिमाइंडर का शीर्षक"
+      : "Reminder Title",
+
+    titlePlaceholder: isHindi
+      ? "रिमाइंडर का नाम लिखें..."
+      : "Enter reminder title...",
+
+    time: isHindi ? "समय" : "Time",
+
+    type: isHindi
+      ? "रिमाइंडर का प्रकार"
+      : "Reminder Type",
+
+    save: isHindi
+      ? "रिमाइंडर सेव करें"
+      : "Save Reminder",
+
+    disable: isHindi
+      ? "रिमाइंडर बंद करें"
+      : "Disable reminder",
+
+    enable: isHindi
+      ? "रिमाइंडर चालू करें"
+      : "Enable reminder",
+
+    delete: isHindi
+      ? "रिमाइंडर हटाएँ"
+      : "Delete reminder",
+  };
 
   return (
     <div className="page">
@@ -93,15 +157,15 @@ function Reminders() {
 
         <div>
           <p className="small-title">
-            {t("smartReminders")}
+            {text.title}
           </p>
 
           <h1>
-            {t("stayOnTrack")}
+            {text.heading}
           </h1>
 
           <p className="description">
-            {t("reminderDescription")}
+            {text.description}
           </p>
         </div>
 
@@ -109,9 +173,7 @@ function Reminders() {
           className="primary-btn"
           onClick={() => setShowForm(!showForm)}
         >
-          {showForm
-            ? t("close")
-            : t("addReminder")}
+          {showForm ? text.close : text.add}
         </button>
 
       </div>
@@ -123,19 +185,19 @@ function Reminders() {
         >
 
           <h2>
-            {t("createReminder")}
+            {text.create}
           </h2>
 
           <div className="reminder-form-grid">
 
             <div>
               <label>
-                {t("reminderTitle")}
+                {text.reminderTitle}
               </label>
 
               <input
                 type="text"
-                placeholder={t("reminderTitlePlaceholder")}
+                placeholder={text.titlePlaceholder}
                 value={title}
                 onChange={(event) =>
                   setTitle(event.target.value)
@@ -145,7 +207,7 @@ function Reminders() {
 
             <div>
               <label>
-                {t("time")}
+                {text.time}
               </label>
 
               <input
@@ -161,7 +223,7 @@ function Reminders() {
 
           <div>
             <label>
-              {t("reminderType")}
+              {text.type}
             </label>
 
             <select
@@ -171,23 +233,23 @@ function Reminders() {
               }
             >
               <option value="Cognitive Exercise">
-                {t("cognitiveExercise")}
+                {getReminderType("Cognitive Exercise")}
               </option>
 
               <option value="Memory">
-                {t("memoryReminder")}
+                {getReminderType("Memory")}
               </option>
 
               <option value="Daily Routine">
-                {t("dailyRoutine")}
+                {getReminderType("Daily Routine")}
               </option>
 
               <option value="Medication Reminder">
-                {t("medicationReminder")}
+                {getReminderType("Medication Reminder")}
               </option>
 
               <option value="Personal">
-                {t("personalReminder")}
+                {getReminderType("Personal")}
               </option>
             </select>
           </div>
@@ -196,7 +258,7 @@ function Reminders() {
             type="submit"
             className="primary-btn"
           >
-            {t("saveReminder")}
+            {text.save}
           </button>
 
         </form>
@@ -248,8 +310,13 @@ function Reminders() {
                 }
                 aria-label={
                   reminder.active
-                    ? t("disableReminder")
-                    : t("enableReminder")
+                    ? text.disable
+                    : text.enable
+                }
+                title={
+                  reminder.active
+                    ? text.disable
+                    : text.enable
                 }
               >
                 <span></span>
@@ -260,7 +327,8 @@ function Reminders() {
                 onClick={() =>
                   deleteReminder(reminder.id)
                 }
-                aria-label={t("deleteReminder")}
+                aria-label={text.delete}
+                title={text.delete}
               >
                 ×
               </button>

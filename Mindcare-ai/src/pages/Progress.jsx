@@ -101,7 +101,7 @@ function calculateStreak(scores) {
 }
 
 function Progress() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const [scores, setScores] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -195,7 +195,7 @@ function Progress() {
 
     return {
       date,
-      label: date.toLocaleDateString("en-US", {
+      label: date.toLocaleDateString(language === "Hindi" ? "hi-IN" : "en-US", {
         weekday: "short",
       }),
       games: dayScores.length,

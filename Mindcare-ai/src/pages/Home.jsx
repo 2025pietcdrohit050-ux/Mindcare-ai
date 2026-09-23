@@ -1,43 +1,58 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useLanguage } from "../LanguageContext";
 
 const recommendedGames = [
   {
     name: "Memory Match",
     icon: "🧠",
     title: "Your memory training is underway.",
+    hindiTitle: "आपका स्मृति प्रशिक्षण चल रहा है।",
     description:
       "Practice visual memory and matching skills with a quick memory activity.",
+    hindiDescription:
+      "एक छोटी स्मृति गतिविधि के साथ दृश्य स्मृति और मिलान कौशल का अभ्यास करें।",
     path: "/games/memory-match",
   },
   {
     name: "Sequence Recall",
     icon: "🔢",
     title: "Your recall training is underway.",
+    hindiTitle: "आपका याद करने का प्रशिक्षण चल रहा है।",
     description:
       "Challenge yourself to remember and reproduce sequences accurately.",
+    hindiDescription:
+      "क्रमों को याद करके सही तरीके से दोहराने की चुनौती लें।",
     path: "/games/sequence-recall",
   },
   {
     name: "Reaction Challenge",
     icon: "⚡",
     title: "Your attention training is underway.",
+    hindiTitle: "आपका ध्यान प्रशिक्षण चल रहा है।",
     description:
       "Continue practicing attention and reaction speed.",
+    hindiDescription:
+      "ध्यान और प्रतिक्रिया की गति का अभ्यास जारी रखें।",
     path: "/games/reaction-challenge",
   },
   {
     name: "Word Recall",
     icon: "📝",
     title: "Your word recall training is underway.",
+    hindiTitle: "आपका शब्द स्मृति प्रशिक्षण चल रहा है।",
     description:
       "Strengthen your word memory with a short recall exercise.",
+    hindiDescription:
+      "एक छोटे याद करने के अभ्यास से अपनी शब्द स्मृति को मजबूत करें।",
     path: "/games/word-recall",
   },
 ];
 
 function Home() {
   const navigate = useNavigate();
+  const { language } = useLanguage();
+  const isHindi = language === "Hindi";
 
   const user = JSON.parse(
     localStorage.getItem("user")
@@ -45,6 +60,19 @@ function Home() {
 
   const userName =
     user?.name || "Friend";
+
+  function displayGameName(name) {
+    if (!isHindi) return name;
+
+    const names = {
+      "Memory Match": "मेमोरी मैच",
+      "Sequence Recall": "सीक्वेंस रिकॉल",
+      "Reaction Challenge": "रिएक्शन चैलेंज",
+      "Word Recall": "वर्ड रिकॉल",
+    };
+
+    return names[name] || name;
+  }
 
   const token =
     localStorage.getItem("token");
@@ -289,7 +317,7 @@ function Home() {
     averageScore;
 
   /*
-    RECENT ACTIVITY
+    {isHindi ? "हाल की गतिविधि" : "RECENT ACTIVITY"}
   */
 
   const recentScores =
@@ -313,7 +341,7 @@ function Home() {
     return new Date(
       date
     ).toLocaleDateString(
-      "en-IN",
+      isHindi ? "hi-IN" : "en-IN",
       {
         day: "numeric",
         month: "short",
@@ -331,16 +359,15 @@ function Home() {
         <div>
 
           <p className="small-title">
-            PERSONAL DASHBOARD
+            {isHindi ? "व्यक्तिगत डैशबोर्ड" : "PERSONAL DASHBOARD"}
           </p>
 
           <h1>
-            Hello, {userName} 👋
+            {isHindi ? `नमस्ते, ${userName} 👋` : `Hello, ${userName} 👋`}
           </h1>
 
           <p className="dashboard-subtitle">
-            Your personalized
-            cognitive wellness space.
+            {isHindi ? "आपका व्यक्तिगत संज्ञानात्मक स्वास्थ्य स्थान।" : "Your personalized cognitive wellness space."}
           </p>
 
         </div>
@@ -355,24 +382,24 @@ function Home() {
 
             <strong>
               {gamesPlayed > 0
-                ? "Active Learner"
-                : "Start Today"}
+                ? (isHindi ? "सक्रिय उपयोगकर्ता" : "Active Learner")
+                : (isHindi ? "आज शुरू करें" : "Start Today")}
             </strong>
 
             <small>
               {gamesPlayed > 0
                 ? currentStreak > 0
-                  ? `🔥 ${currentStreak} day streak · ${gamesPlayed} game${
-                      gamesPlayed > 1
-                        ? "s"
-                        : ""
-                    } completed`
-                  : `${gamesPlayed} game${
-                      gamesPlayed > 1
-                        ? "s"
-                        : ""
-                    } completed`
-                : "Play your first game"}
+                  ? isHindi
+                    ? `🔥 ${currentStreak} दिन की स्ट्रीक · ${gamesPlayed} गेम पूरे`
+                    : `🔥 ${currentStreak} day streak · ${gamesPlayed} game${
+                        gamesPlayed > 1 ? "s" : ""
+                      } completed`
+                  : isHindi
+                    ? `${gamesPlayed} गेम पूरे`
+                    : `${gamesPlayed} game${
+                        gamesPlayed > 1 ? "s" : ""
+                      } completed`
+                : (isHindi ? "अपना पहला गेम खेलें" : "Play your first game")}
             </small>
 
           </div>
@@ -395,7 +422,7 @@ function Home() {
           <div>
 
             <span>
-              Cognitive Score
+              {isHindi ? "संज्ञानात्मक स्कोर" : "Cognitive Score"}
             </span>
 
             <strong>
@@ -418,7 +445,7 @@ function Home() {
           <div>
 
             <span>
-              Today's Activity
+              {isHindi ? "आज की गतिविधि" : "Today's Activity"}
             </span>
 
             <strong>
@@ -441,13 +468,13 @@ function Home() {
           <div>
 
             <span>
-              Training Time
+              {isHindi ? "प्रशिक्षण समय" : "Training Time"}
             </span>
 
             <strong>
               {loading
                 ? "..."
-                : `${totalMinutes} min`}
+                : isHindi ? `${totalMinutes} मिनट` : `${totalMinutes} min`}
             </strong>
 
           </div>
@@ -464,7 +491,7 @@ function Home() {
           <div>
 
             <span>
-              Achievements
+              {isHindi ? "उपलब्धियाँ" : "Achievements"}
             </span>
 
             <strong>
@@ -495,17 +522,15 @@ function Home() {
         <div className="training-card">
 
           <span className="card-label">
-            TRAINING SUMMARY
+            {isHindi ? "प्रशिक्षण सारांश" : "TRAINING SUMMARY"}
           </span>
 
           <h2>
-            Your activity
+            {isHindi ? "आपकी गतिविधि" : "Your activity"}
           </h2>
 
           <p className="card-description">
-            Keep building your
-            personal cognitive
-            activity history.
+            {isHindi ? "अपनी व्यक्तिगत संज्ञानात्मक गतिविधि का इतिहास बनाते रहें।" : "Keep building your personal cognitive activity history."}
           </p>
 
           <div
@@ -521,7 +546,7 @@ function Home() {
             <div>
 
               <small>
-                Games Played
+                {isHindi ? "खेले गए गेम्स" : "Games Played"}
               </small>
 
               <h3
@@ -538,7 +563,7 @@ function Home() {
             <div>
 
               <small>
-                Best Score
+                {isHindi ? "सर्वश्रेष्ठ स्कोर" : "Best Score"}
               </small>
 
               <h3
@@ -555,7 +580,7 @@ function Home() {
             <div>
 
               <small>
-                Current Streak
+                {isHindi ? "वर्तमान स्ट्रीक" : "Current Streak"}
               </small>
 
               <h3
@@ -564,10 +589,9 @@ function Home() {
                     "5px 0 0",
                 }}
               >
-                🔥 {currentStreak} day
-                {currentStreak !== 1
-                  ? "s"
-                  : ""}
+                {isHindi
+                  ? `🔥 ${currentStreak} दिन`
+                  : `🔥 ${currentStreak} day${currentStreak !== 1 ? "s" : ""}`}
               </h3>
 
             </div>
@@ -575,7 +599,7 @@ function Home() {
             <div>
 
               <small>
-                Today's Games
+                {isHindi ? "आज के गेम्स" : "Today's Games"}
               </small>
 
               <h3
@@ -599,7 +623,7 @@ function Home() {
         <div className="training-card">
 
           <span className="card-label">
-            AI INSIGHT
+            {isHindi ? "AI सुझाव" : "AI INSIGHT"}
           </span>
 
           <div
@@ -612,11 +636,11 @@ function Home() {
           </div>
 
           <h2>
-            {recommendedGame.title}
+            {isHindi ? recommendedGame.hindiTitle : recommendedGame.title}
           </h2>
 
           <p className="card-description">
-            {recommendedGame.description}
+            {isHindi ? recommendedGame.hindiDescription : recommendedGame.description}
           </p>
 
           <button
@@ -640,7 +664,7 @@ function Home() {
               cursor: "pointer",
             }}
           >
-            🎲 Start a Random Game →
+            {isHindi ? "🎲 रैंडम गेम शुरू करें →" : "🎲 Start a Random Game →"}
           </button>
 
         </div>
@@ -653,17 +677,17 @@ function Home() {
       <div className="training-card">
 
         <span className="card-label">
-          RECENT ACTIVITY
+          {isHindi ? "हाल की गतिविधि" : "RECENT ACTIVITY"}
         </span>
 
         <h2>
-          Your latest games
+          {isHindi ? "आपके नवीनतम गेम्स" : "Your latest games"}
         </h2>
 
         {recentScores.length === 0 ? (
 
           <p className="card-description">
-            No games completed yet.
+            {isHindi ? "अभी तक कोई गेम पूरा नहीं किया गया है।" : "No games completed yet."}
           </p>
 
         ) : (
@@ -705,7 +729,7 @@ function Home() {
                   <div>
 
                     <strong>
-                      {item.game}
+                      {displayGameName(item.game)}
                     </strong>
 
                     <small
@@ -763,16 +787,15 @@ function Home() {
         >
 
           <span className="card-label">
-            COGNITIVE TRAINING
+            {isHindi ? "संज्ञानात्मक प्रशिक्षण" : "COGNITIVE TRAINING"}
           </span>
 
           <h2>
-            Play Games 🧠
+            {isHindi ? "गेम्स खेलें 🧠" : "Play Games 🧠"}
           </h2>
 
           <p className="card-description">
-            Challenge your memory,
-            attention and recall.
+            {isHindi ? "अपनी स्मृति, ध्यान और याद करने की क्षमता को चुनौती दें।" : "Challenge your memory, attention and recall."}
           </p>
 
         </Link>
@@ -788,16 +811,15 @@ function Home() {
         >
 
           <span className="card-label">
-            MEMORY VAULT
+            {isHindi ? "मेमोरी वॉल्ट" : "MEMORY VAULT"}
           </span>
 
           <h2>
-            My Memories 💭
+            {isHindi ? "मेरी यादें 💭" : "My Memories 💭"}
           </h2>
 
           <p className="card-description">
-            Keep important memories
-            and personal notes safe.
+            {isHindi ? "महत्वपूर्ण यादों और व्यक्तिगत नोट्स को सुरक्षित रखें।" : "Keep important memories and personal notes safe."}
           </p>
 
         </Link>
@@ -813,16 +835,15 @@ function Home() {
         >
 
           <span className="card-label">
-            PROGRESS
+            {isHindi ? "प्रगति" : "PROGRESS"}
           </span>
 
           <h2>
-            View Progress 📊
+            {isHindi ? "प्रगति देखें 📊" : "View Progress 📊"}
           </h2>
 
           <p className="card-description">
-            Review your cognitive
-            activity and progress.
+            {isHindi ? "अपनी संज्ञानात्मक गतिविधि और प्रगति देखें।" : "Review your cognitive activity and progress."}
           </p>
 
         </Link>

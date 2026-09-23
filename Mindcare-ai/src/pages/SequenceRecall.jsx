@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useLanguage } from "../LanguageContext";
 
 function getSettings(difficulty) {
   if (difficulty === "Hard") {
@@ -37,6 +38,81 @@ function createSequence(level) {
 }
 
 function SequenceRecall() {
+  const { language } = useLanguage();
+  const isHindi = language === "Hindi";
+
+  const tx = isHindi
+    ? {
+        cognitiveGame: "माइंडकेयर कॉग्निटिव गेम",
+        chooseDifficulty: "कठिनाई चुनें",
+        selectDifficulty:
+          "{tx.gameTitle} शुरू करने से पहले कठिनाई स्तर चुनें।",
+        easy: "आसान",
+        moderate: "मध्यम",
+        hard: "कठिन",
+        memoryGame: "मेमोरी गेम",
+        gameTitle: "Sequence Recall",
+        description:
+          "नंबरों का सही क्रम याद रखें और फिर उसे कीबोर्ड से दोहराएँ।",
+        changeDifficulty: "कठिनाई बदलें",
+        difficulty: "कठिनाई",
+        level: "लेवल",
+        score: "स्कोर",
+        time: "समय",
+        remember: "क्रम याद रखें...",
+        typeSequence: "कीबोर्ड का उपयोग करके क्रम टाइप करें।",
+        enterAll: "पहले सभी {count} नंबर दर्ज करें।",
+        excellent: "बहुत बढ़िया! Sequence की लंबाई बढ़ गई।",
+        correct: "सही! इस लेवल पर {count} राउंड बाकी हैं।",
+        incorrect: "गलत क्रम।",
+        typeNumbers: "नंबर टाइप करें...",
+        keyboardHint: "अपने कीबोर्ड से नंबर टाइप करें",
+        submitHint: "सबमिट करने के लिए Enter दबाएँ",
+        delete: "← डिलीट",
+        submit: "Sequence सबमिट करें ✓",
+        goodAttempt: "अच्छा प्रयास!",
+        reached: "आप लेवल {level} तक पहुँचे और आपका स्कोर {score} रहा।",
+        trainingTime: "ट्रेनिंग समय: {time} सेकंड",
+        saved:
+          "आपका {tx.gameTitle} स्कोर और ट्रेनिंग समय MindCare प्रोग्रेस में सेव हो गया है।",
+        tryAgain: "फिर से प्रयास करें",
+      }
+    : {
+        cognitiveGame: "MINDCARE COGNITIVE GAME",
+        chooseDifficulty: "Choose Your Difficulty",
+        selectDifficulty:
+          "Select a difficulty level before starting Sequence Recall.",
+        easy: "Easy",
+        moderate: "Moderate",
+        hard: "Hard",
+        memoryGame: "MEMORY GAME",
+        gameTitle: "Sequence Recall",
+        description:
+          "Remember the numbers in the correct order, then reproduce them using your keyboard.",
+        changeDifficulty: "Change Difficulty",
+        difficulty: "Difficulty",
+        level: "Level",
+        score: "Score",
+        time: "Time",
+        remember: "Remember the sequence...",
+        typeSequence: "Type the sequence using your keyboard.",
+        enterAll: "Enter all {count} numbers first.",
+        excellent: "Excellent! Sequence length increased.",
+        correct: "Correct! {count} rounds remaining at this level.",
+        incorrect: "Incorrect sequence.",
+        typeNumbers: "Type numbers...",
+        keyboardHint: "Type numbers using your keyboard",
+        submitHint: "Press Enter to submit",
+        delete: "← Delete",
+        submit: "Submit Sequence ✓",
+        goodAttempt: "Good attempt!",
+        reached: "You reached level {level} with a score of {score}.",
+        trainingTime: "Training time: {time} seconds",
+        saved:
+          "Your Sequence Recall score and training time have been saved to your MindCare progress.",
+        tryAgain: "Try Again",
+      };
+
   const [difficulty, setDifficulty] =
     useState("");
 
@@ -109,9 +185,7 @@ function SequenceRecall() {
 
     setElapsedTime(0);
 
-    setMessage(
-      "Remember the sequence..."
-    );
+    setMessage(tx.remember);
 
     setShowSequence(true);
 
@@ -181,9 +255,7 @@ function SequenceRecall() {
       setTimeout(() => {
         setShowSequence(false);
 
-        setMessage(
-          "Type the sequence using your keyboard."
-        );
+        setMessage(tx.typeSequence);
       }, displayTime);
 
     return () =>
@@ -246,7 +318,7 @@ function SequenceRecall() {
       sequence.length
     ) {
       setMessage(
-        `Enter all ${sequence.length} numbers first.`
+        tx.enterAll.replace("{count}", sequence.length)
       );
 
       return;
@@ -276,14 +348,10 @@ function SequenceRecall() {
       if (
         nextRound >= 4
       ) {
-        setMessage(
-          "Excellent! Sequence length increased."
-        );
+        setMessage(tx.excellent);
       } else {
         setMessage(
-          `Correct! ${
-            4 - nextRound
-          } rounds remaining at this level.`
+          tx.correct.replace("{count}", 4 - nextRound)
         );
       }
 
@@ -329,9 +397,7 @@ function SequenceRecall() {
       }, 1000);
 
     } else {
-      setMessage(
-        "Incorrect sequence."
-      );
+      setMessage(tx.incorrect);
 
       setGameOver(
         true
@@ -517,16 +583,15 @@ function SequenceRecall() {
           </div>
 
           <p className="small-title">
-            MINDCARE COGNITIVE GAME
+            {tx.cognitiveGame}
           </p>
 
           <h2>
-            Choose Your Difficulty
+            {tx.chooseDifficulty}
           </h2>
 
           <p>
-            Select a difficulty level before
-            starting Sequence Recall.
+            {tx.selectDifficulty}
           </p>
 
           <div
@@ -547,7 +612,7 @@ function SequenceRecall() {
                 startGame("Easy")
               }
             >
-              🟢 Easy
+              🟢 {tx.easy}
             </button>
 
             <button
@@ -558,7 +623,7 @@ function SequenceRecall() {
                 )
               }
             >
-              🟡 Moderate
+              🟡 {tx.moderate}
             </button>
 
             <button
@@ -567,7 +632,7 @@ function SequenceRecall() {
                 startGame("Hard")
               }
             >
-              🔴 Hard
+              🔴 {tx.hard}
             </button>
 
           </div>
@@ -586,17 +651,15 @@ function SequenceRecall() {
         <div>
 
           <p className="small-title">
-            MEMORY GAME
+            {tx.memoryGame}
           </p>
 
           <h1>
-            Sequence Recall
+            {tx.gameTitle}
           </h1>
 
           <p className="description">
-            Remember the numbers in the
-            correct order, then reproduce
-            them using your keyboard.
+            {tx.description}
           </p>
 
         </div>
@@ -607,7 +670,7 @@ function SequenceRecall() {
             restartGame
           }
         >
-          Change Difficulty
+          {tx.changeDifficulty}
         </button>
 
       </div>
@@ -616,7 +679,7 @@ function SequenceRecall() {
 
         <div>
           <span>
-            Difficulty
+            {tx.difficulty}
           </span>
 
           <strong>
@@ -626,7 +689,7 @@ function SequenceRecall() {
 
         <div>
           <span>
-            Level
+            {tx.level}
           </span>
 
           <strong>
@@ -636,7 +699,7 @@ function SequenceRecall() {
 
         <div>
           <span>
-            Score
+            {tx.score}
           </span>
 
           <strong>
@@ -646,7 +709,7 @@ function SequenceRecall() {
 
         <div>
           <span>
-            Time
+            {tx.time}
           </span>
 
           <strong>
@@ -711,7 +774,7 @@ function SequenceRecall() {
                   )
                 : (
                   <div className="hidden-sequence">
-                    Type numbers...
+                    {tx.typeNumbers}
                   </div>
                 )}
 
@@ -785,7 +848,7 @@ function SequenceRecall() {
                     0
                   }
                 >
-                  ← Delete
+                  {tx.delete}
                 </button>
 
                 <button
@@ -798,7 +861,7 @@ function SequenceRecall() {
                     sequence.length
                   }
                 >
-                  Submit Sequence ✓
+                  {tx.submit}
                 </button>
 
               </div>
@@ -815,32 +878,21 @@ function SequenceRecall() {
             </div>
 
             <h2>
-              Good attempt!
+              {tx.goodAttempt}
             </h2>
 
             <p>
-              You reached level{" "}
-              <strong>
-                {level}
-              </strong>{" "}
-              with a score of{" "}
-              <strong>
-                {score}
-              </strong>.
+              {tx.reached
+                .replace("{level}", level)
+                .replace("{score}", score)}
             </p>
 
             <p>
-              Training time:{" "}
-              <strong>
-                {elapsedTime} seconds
-              </strong>
+              {tx.trainingTime.replace("{time}", elapsedTime)}
             </p>
 
             <p>
-              Your Sequence Recall score
-              and training time have been
-              saved to your MindCare
-              progress.
+              {tx.saved}
             </p>
 
             <button
@@ -849,7 +901,7 @@ function SequenceRecall() {
                 restartGame
               }
             >
-              Try Again
+              {tx.tryAgain}
             </button>
 
           </div>

@@ -2,7 +2,63 @@ import { useEffect, useState } from "react";
 import { useLanguage } from "../LanguageContext";
 
 function Caregiver() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
+  const isHindi = language === "Hindi";
+
+  const text = {
+    loading: isHindi ? "केयरगिवर डैशबोर्ड लोड हो रहा है..." : "Loading Caregiver Dashboard...",
+    fetching: isHindi ? "अनुमति प्राप्त गतिविधि लाई जा रही है।" : "Fetching authorized activity.",
+    accessTitle: isHindi ? "केयरगिवर एक्सेस" : "CAREGIVER ACCESS",
+    privateDashboard: isHindi ? "प्राइवेट सपोर्ट डैशबोर्ड" : "Private Support Dashboard",
+    accessDescription: isHindi
+      ? "किसी केयरगिवर को अपनी ट्रेनिंग गतिविधि देखने की अनुमति दें।"
+      : "Authorize a caregiver to view your training activity.",
+    authorizationRequired: isHindi ? "अनुमति आवश्यक है" : "Authorization Required",
+    authorizationInstructions: isHindi
+      ? "केयरगिवर का email address दर्ज करें। एक्सेस केवल आपकी अनुमति के बाद दिया जाएगा।"
+      : "Enter your caregiver's email address. Access is provided only after your authorization.",
+    caregiverEmail: isHindi ? "केयरगिवर ईमेल" : "Caregiver Email",
+    authorize: isHindi ? "केयरगिवर को अनुमति दें" : "Authorize Caregiver",
+    revokeAnytime: isHindi ? "आप किसी भी समय एक्सेस वापस ले सकते हैं।" : "You can revoke access at any time.",
+    dashboard: isHindi ? "केयरगिवर डैशबोर्ड" : "CAREGIVER DASHBOARD",
+    overview: isHindi ? "वेलनेस ओवरव्यू" : "Wellness Overview",
+    authorizedInfo: isHindi
+      ? "यह जानकारी आपकी स्पष्ट अनुमति के आधार पर दिखाई जा रही है।"
+      : "This information is shown based on your explicit authorization.",
+    revoke: isHindi ? "एक्सेस वापस लें" : "Revoke Access",
+    authorized: isHindi ? "केयरगिवर एक्सेस अधिकृत है" : "Caregiver Access Authorized",
+    authorizedFor: isHindi ? "अधिकृत caregiver:" : "Authorized caregiver:",
+    games: isHindi ? "पूरे किए गए गेम्स" : "Games Completed",
+    average: isHindi ? "औसत स्कोर" : "Average Score",
+    activeDays: isHindi ? "सक्रिय दिन" : "Active Days",
+    trainingTime: isHindi ? "ट्रेनिंग समय" : "Training Time",
+    minutes: isHindi ? "मिनट" : "minutes",
+    recentActivity: isHindi ? "हाल की गतिविधि" : "RECENT ACTIVITY",
+    trainingOverview: isHindi ? "ट्रेनिंग ओवरव्यू" : "Training Overview",
+    noActivity: isHindi ? "अभी कोई गतिविधि नहीं है" : "No Activity Yet",
+    completeActivity: isHindi
+      ? "कॉग्निटिव गेम पूरा करने के बाद आपकी गतिविधि यहाँ दिखाई देगी।"
+      : "Your activity will appear here after completing a cognitive game.",
+    activitySummary: isHindi ? "गतिविधि सारांश" : "ACTIVITY SUMMARY",
+    tracking: isHindi
+      ? "MindCare आपकी cognitive training activity और scores को ट्रैक करता है।"
+      : "MindCare tracks your cognitive training activity and scores.",
+    startGame: isHindi
+      ? "अपना पहला cognitive game शुरू करें।"
+      : "Start your first cognitive game.",
+    completed: isHindi ? "आपने" : "You have completed",
+    activity: isHindi ? "गतिविधि" : "activity",
+    activities: isHindi ? "गतिविधियाँ" : "activities",
+    across: isHindi ? "इन" : "across",
+    gameType: isHindi ? "गेम प्रकार" : "game type",
+    gameTypes: isHindi ? "गेम प्रकारों" : "game types",
+    privacy: isHindi ? "प्राइवेसी" : "PRIVACY",
+    dataControl: isHindi ? "डेटा आपके नियंत्रण में है" : "Your Data Is Under Your Control",
+    privacyDescription: isHindi
+      ? "केयरगिवर एक्सेस केवल आपकी अनुमति से उपलब्ध है और आप इसे किसी भी समय वापस ले सकते हैं।"
+      : "Caregiver access is available only with your permission and can be revoked at any time.",
+    revokeAccess: isHindi ? "केयरगिवर एक्सेस वापस लें" : "Revoke Caregiver Access",
+  };
 
   const [authorized, setAuthorized] = useState(false);
   const [caregiverEmail, setCaregiverEmail] = useState("");
@@ -228,11 +284,11 @@ function Caregiver() {
           </div>
 
           <h1>
-            {t("loadingCaregiverDashboard")}
+            {text.loading}
           </h1>
 
           <p className="description">
-            {t("fetchingAuthorizedActivity")}
+            {text.fetching}
           </p>
 
         </div>
@@ -246,25 +302,25 @@ function Caregiver() {
           </div>
 
           <p className="small-title">
-            {t("caregiverAccessTitle")}
+            {text.accessTitle}
           </p>
 
           <h1>
-            {t("privateSupportDashboard")}
+            {text.privateDashboard}
           </h1>
 
           <p className="description">
-            {t("caregiverAccessDescription")}
+            {text.accessDescription}
           </p>
 
           <div className="authorization-card">
 
             <h3>
-              🔐 {t("authorizationRequired")}
+              🔐 {text.authorizationRequired}
             </h3>
 
             <p>
-              {t("authorizationInstructions")}
+              {text.authorizationInstructions}
             </p>
 
             <input
@@ -283,13 +339,13 @@ function Caregiver() {
               className="primary-btn"
               onClick={authorizeCaregiver}
             >
-              {t("authorizeCaregiver")} →
+              {text.authorize} →
             </button>
 
           </div>
 
           <div className="caregiver-privacy-note">
-            🛡️ {t("revokeAnytime")}
+            🛡️ {text.revokeAnytime}
           </div>
 
         </div>
@@ -302,16 +358,16 @@ function Caregiver() {
             <div>
 
               <p className="small-title">
-                {t("caregiverDashboard")}
+                {text.dashboard}
               </p>
 
               <h1>
                 {userName}
-                {t("wellnessOverview")}
+                {text.overview}
               </h1>
 
               <p className="description">
-                {t("authorizedActivityInfo")}
+                {text.authorizedInfo}
               </p>
 
             </div>
@@ -320,7 +376,7 @@ function Caregiver() {
               className="secondary-btn"
               onClick={revokeAccess}
             >
-              {t("revokeAccess")}
+              {text.revoke}
             </button>
 
           </div>
@@ -333,11 +389,11 @@ function Caregiver() {
             <div>
 
               <strong>
-                {t("caregiverAccessAuthorized")}
+                {text.authorized}
               </strong>
 
               <small>
-                {t("authorizedFor")}{" "}
+                {text.authorizedFor}{" "}
                 {access?.caregiverEmail}
               </small>
 
@@ -354,7 +410,7 @@ function Caregiver() {
 
               <div>
                 <small>
-                  {t("gamesCompleted")}
+                  {text.games}
                 </small>
 
                 <strong>
@@ -371,7 +427,7 @@ function Caregiver() {
 
               <div>
                 <small>
-                  {t("averageScore")}
+                  {text.average}
                 </small>
 
                 <strong>
@@ -388,7 +444,7 @@ function Caregiver() {
 
               <div>
                 <small>
-                  {t("activeDays")}
+                  {text.activeDays}
                 </small>
 
                 <strong>
@@ -405,12 +461,12 @@ function Caregiver() {
 
               <div>
                 <small>
-                  {t("trainingTime")}
+                  {text.trainingTime}
                 </small>
 
                 <strong>
                   {totalMinutes}{" "}
-                  {t("minutes")}
+                  {text.minutes}
                 </strong>
               </div>
 
@@ -428,11 +484,11 @@ function Caregiver() {
                 <div>
 
                   <span className="card-label">
-                    {t("recentActivity")}
+                    {text.recentActivity}
                   </span>
 
                   <h2>
-                    {t("trainingOverview")}
+                    {text.trainingOverview}
                   </h2>
 
                 </div>
@@ -447,11 +503,11 @@ function Caregiver() {
                   <span>🧠</span>
 
                   <h3>
-                    {t("noActivityYet")}
+                    {text.noActivity}
                   </h3>
 
                   <p>
-                    {t("completeGameActivity")}
+                    {text.completeActivity}
                   </p>
 
                 </div>
@@ -501,15 +557,15 @@ function Caregiver() {
             <div className="caregiver-card">
 
               <span className="card-label">
-                {t("activitySummary")}
+                {text.activitySummary}
               </span>
 
               <h2>
-                {t("trainingOverview")}
+                {text.trainingOverview}
               </h2>
 
               <p className="description">
-                {t("mindcareTrackingDescription")}
+                {text.tracking}
               </p>
 
 
@@ -524,7 +580,7 @@ function Caregiver() {
                         gamesCompleted === 1
                           ? t("activity")
                           : t("activities")
-                      } ${t("across")} ${gameTypes} ${
+                      } ${text.across} ${gameTypes} ${
                         gameTypes === 1
                           ? t("gameType")
                           : t("gameTypes")
@@ -541,22 +597,22 @@ function Caregiver() {
           <div className="caregiver-card privacy-card">
 
             <span className="card-label">
-              {t("privacy")}
+              {text.privacy}
             </span>
 
             <h2>
-              {t("dataUnderControl")}
+              {text.dataControl}
             </h2>
 
             <p className="description">
-              {t("caregiverPrivacyDescription")}
+              {text.privacyDescription}
             </p>
 
             <button
               className="secondary-btn"
               onClick={revokeAccess}
             >
-              {t("revokeCaregiverAccess")}
+              {text.revokeAccess}
             </button>
 
           </div>

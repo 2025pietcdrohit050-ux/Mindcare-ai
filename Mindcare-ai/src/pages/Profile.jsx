@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useLanguage } from "../LanguageContext";
 
 function Profile() {
-  const { language, changeLanguage, t } = useLanguage();
+  const { language, changeLanguage } = useLanguage();
+  const isHindi = language === "Hindi";
 
   const [largeText, setLargeText] = useState(
     localStorage.getItem("mindcareLargeText") === "true"
@@ -20,9 +21,9 @@ function Profile() {
     localStorage.getItem("user") || "null"
   );
 
-  const userName = user?.name || "User";
-  const userEmail = user?.email || "No email";
-  const userPhone = user?.phone || "No phone";
+  const userName = user?.name || (isHindi ? "उपयोगकर्ता" : "User");
+  const userEmail = user?.email || (isHindi ? "ईमेल उपलब्ध नहीं है" : "No email");
+  const userPhone = user?.phone || (isHindi ? "फोन उपलब्ध नहीं है" : "No phone");
 
   const initials = userName
     .split(" ")
@@ -30,8 +31,6 @@ function Profile() {
     .join("")
     .slice(0, 2)
     .toUpperCase();
-
-  /* ACCESSIBILITY SETTINGS */
 
   useEffect(() => {
     document.body.classList.toggle(
@@ -72,6 +71,136 @@ function Profile() {
     window.location.href = "/login";
   }
 
+  const text = {
+    myProfile: isHindi ? "मेरी प्रोफ़ाइल" : "MY PROFILE",
+
+    welcomeBack: isHindi
+      ? "वापसी पर स्वागत है"
+      : "Welcome back",
+
+    manageProfile: isHindi
+      ? "अपनी प्रोफ़ाइल, प्राथमिकताएँ और एक्सेसिबिलिटी सेटिंग्स प्रबंधित करें।"
+      : "Manage your profile, preferences and accessibility settings.",
+
+    personalInformation: isHindi
+      ? "व्यक्तिगत जानकारी"
+      : "Personal Information",
+
+    basicProfile: isHindi
+      ? "आपकी मूल प्रोफ़ाइल जानकारी।"
+      : "Your basic profile information.",
+
+    fullName: isHindi ? "पूरा नाम" : "Full Name",
+
+    email: isHindi ? "ईमेल" : "Email",
+
+    mobileNumber: isHindi
+      ? "मोबाइल नंबर"
+      : "Mobile Number",
+
+    memberSince: isHindi
+      ? "सदस्य बने"
+      : "Member Since",
+
+    notAvailable: isHindi
+      ? "उपलब्ध नहीं"
+      : "Not Available",
+
+    preferences: isHindi
+      ? "प्राथमिकताएँ"
+      : "Preferences",
+
+    customizeMindcare: isHindi
+      ? "MindCare को अपनी सुविधा के अनुसार अनुकूलित करें।"
+      : "Customize MindCare to suit your needs.",
+
+    language: isHindi ? "भाषा" : "Language",
+
+    chooseLanguage: isHindi
+      ? "अपनी पसंदीदा भाषा चुनें।"
+      : "Choose your preferred language.",
+
+    largeText: isHindi
+      ? "बड़ा टेक्स्ट"
+      : "Large Text",
+
+    easierToRead: isHindi
+      ? "स्क्रीन पर टेक्स्ट को पढ़ना आसान बनाता है।"
+      : "Makes text easier to read on the screen.",
+
+    highContrast: isHindi
+      ? "हाई कॉन्ट्रास्ट"
+      : "High Contrast",
+
+    increaseContrast: isHindi
+      ? "टेक्स्ट और बैकग्राउंड के बीच कंट्रास्ट बढ़ाता है।"
+      : "Increases contrast between text and background.",
+
+    reducedMotion: isHindi
+      ? "कम मोशन"
+      : "Reduced Motion",
+
+    reduceAnimations: isHindi
+      ? "एनिमेशन और मूवमेंट को कम करता है।"
+      : "Reduces animations and movement.",
+
+    on: isHindi ? "चालू" : "On",
+
+    off: isHindi ? "बंद" : "Off",
+
+    privacySafety: isHindi
+      ? "प्राइवेसी और सुरक्षा"
+      : "Privacy & Safety",
+
+    informationControl: isHindi
+      ? "अपनी जानकारी और एक्सेस को नियंत्रित करें।"
+      : "Control your information and access.",
+
+    personalData: isHindi
+      ? "व्यक्तिगत डेटा"
+      : "Personal Data",
+
+    personalDataText: isHindi
+      ? "आपकी व्यक्तिगत जानकारी आपके MindCare खाते से जुड़ी रहती है।"
+      : "Your personal information is associated with your MindCare account.",
+
+    caregiverAccess: isHindi
+      ? "केयरगिवर एक्सेस"
+      : "Caregiver Access",
+
+    caregiverAccessText: isHindi
+      ? "केयरगिवर आपकी अनुमति के बाद ही आपके साझा किए गए डेटा तक पहुँच सकता है।"
+      : "A caregiver can access your shared data only after your authorization.",
+
+    cognitiveWellness: isHindi
+      ? "कॉग्निटिव वेलनेस"
+      : "Cognitive Wellness",
+
+    cognitiveWellnessText: isHindi
+      ? "MindCare संज्ञानात्मक प्रशिक्षण और मेमोरी सहायता के लिए बनाया गया है।"
+      : "MindCare is designed for cognitive training and memory assistance.",
+
+    helpSupport: isHindi
+      ? "मदद और सहायता"
+      : "Help & Support",
+
+    helpDescription: isHindi
+      ? "सहायता प्राप्त करें और कस्टमर केयर से संपर्क करें।"
+      : "Get assistance and contact customer care.",
+
+    customerCare: isHindi
+      ? "कस्टमर केयर"
+      : "Customer Care",
+
+    account: isHindi ? "खाता" : "Account",
+
+    manageAccount: isHindi
+      ? "अपने खाते को प्रबंधित करें।"
+      : "Manage your account.",
+
+    logout: isHindi ? "लॉग आउट" : "Logout",
+  };
+
   return (
     <div className="page profile-page">
 
@@ -85,15 +214,15 @@ function Profile() {
 
         <div>
           <p className="small-title">
-            {t("myProfile")}
+            {text.myProfile}
           </p>
 
           <h1>
-            {t("welcomeBack")}, {userName}.
+            {text.welcomeBack}, {userName}.
           </h1>
 
           <p className="description">
-            {t("manageProfile")}
+            {text.manageProfile}
           </p>
         </div>
 
@@ -110,11 +239,11 @@ function Profile() {
 
           <div>
             <h2>
-              {t("personalInformation")}
+              {text.personalInformation}
             </h2>
 
             <p>
-              {t("basicProfile")}
+              {text.basicProfile}
             </p>
           </div>
 
@@ -125,7 +254,7 @@ function Profile() {
 
           <div className="profile-field">
             <label>
-              {t("fullName")}
+              {text.fullName}
             </label>
 
             <div>
@@ -136,7 +265,7 @@ function Profile() {
 
           <div className="profile-field">
             <label>
-              {t("email")}
+              {text.email}
             </label>
 
             <div>
@@ -147,7 +276,7 @@ function Profile() {
 
           <div className="profile-field">
             <label>
-              {t("mobileNumber")}
+              {text.mobileNumber}
             </label>
 
             <div>
@@ -158,13 +287,13 @@ function Profile() {
 
           <div className="profile-field">
             <label>
-              {t("memberSince")}
+              {text.memberSince}
             </label>
 
             <div>
               {user?.id
                 ? "September 2026"
-                : t("notAvailable")}
+                : text.notAvailable}
             </div>
           </div>
 
@@ -183,11 +312,11 @@ function Profile() {
 
           <div>
             <h2>
-              {t("preferences")}
+              {text.preferences}
             </h2>
 
             <p>
-              {t("customizeMindcare")}
+              {text.customizeMindcare}
             </p>
           </div>
 
@@ -200,11 +329,11 @@ function Profile() {
 
           <div>
             <strong>
-              {t("language")}
+              {text.language}
             </strong>
 
             <p>
-              {t("chooseLanguage")}
+              {text.chooseLanguage}
             </p>
           </div>
 
@@ -213,7 +342,7 @@ function Profile() {
             onChange={(event) =>
               changeLanguage(event.target.value)
             }
-            aria-label={t("chooseLanguage")}
+            aria-label={text.chooseLanguage}
           >
             <option value="English">
               English
@@ -233,11 +362,11 @@ function Profile() {
 
           <div>
             <strong>
-              {t("largeText")}
+              {text.largeText}
             </strong>
 
             <p>
-              {t("easierToRead")}
+              {text.easierToRead}
             </p>
           </div>
 
@@ -254,8 +383,8 @@ function Profile() {
             aria-pressed={largeText}
           >
             {largeText
-              ? t("on")
-              : t("off")}
+              ? text.on
+              : text.off}
           </button>
 
         </div>
@@ -267,11 +396,11 @@ function Profile() {
 
           <div>
             <strong>
-              {t("highContrast")}
+              {text.highContrast}
             </strong>
 
             <p>
-              {t("increaseContrast")}
+              {text.increaseContrast}
             </p>
           </div>
 
@@ -288,8 +417,8 @@ function Profile() {
             aria-pressed={highContrast}
           >
             {highContrast
-              ? t("on")
-              : t("off")}
+              ? text.on
+              : text.off}
           </button>
 
         </div>
@@ -301,11 +430,11 @@ function Profile() {
 
           <div>
             <strong>
-              {t("reducedMotion")}
+              {text.reducedMotion}
             </strong>
 
             <p>
-              {t("reduceAnimations")}
+              {text.reduceAnimations}
             </p>
           </div>
 
@@ -322,8 +451,8 @@ function Profile() {
             aria-pressed={reducedMotion}
           >
             {reducedMotion
-              ? t("on")
-              : t("off")}
+              ? text.on
+              : text.off}
           </button>
 
         </div>
@@ -341,11 +470,11 @@ function Profile() {
 
           <div>
             <h2>
-              {t("privacySafety")}
+              {text.privacySafety}
             </h2>
 
             <p>
-              {t("informationControl")}
+              {text.informationControl}
             </p>
           </div>
 
@@ -356,33 +485,33 @@ function Profile() {
 
           <div>
             <strong>
-              🔐 {t("personalData")}
+              🔐 {text.personalData}
             </strong>
 
             <p>
-              {t("personalDataText")}
+              {text.personalDataText}
             </p>
           </div>
 
 
           <div>
             <strong>
-              👥 {t("caregiverAccess")}
+              👥 {text.caregiverAccess}
             </strong>
 
             <p>
-              {t("caregiverAccessText")}
+              {text.caregiverAccessText}
             </p>
           </div>
 
 
           <div>
             <strong>
-              🧠 {t("cognitiveWellness")}
+              🧠 {text.cognitiveWellness}
             </strong>
 
             <p>
-              {t("cognitiveWellnessText")}
+              {text.cognitiveWellnessText}
             </p>
           </div>
 
@@ -391,7 +520,7 @@ function Profile() {
       </div>
 
 
-      {/* HELP & SUPPORT - MOVED UP */}
+      {/* HELP & SUPPORT */}
 
       <div className="settings-section">
 
@@ -401,11 +530,11 @@ function Profile() {
 
           <div>
             <h2>
-              Help & Support
+              {text.helpSupport}
             </h2>
 
             <p>
-              Get assistance and contact customer care.
+              {text.helpDescription}
             </p>
           </div>
 
@@ -415,7 +544,7 @@ function Profile() {
           href="/help"
           className="profile-help-link"
         >
-          🎧 Customer Care
+          🎧 {text.customerCare}
         </a>
 
       </div>
@@ -431,11 +560,11 @@ function Profile() {
 
           <div>
             <h2>
-              {t("account")}
+              {text.account}
             </h2>
 
             <p>
-              {t("manageAccount")}
+              {text.manageAccount}
             </p>
           </div>
 
@@ -447,7 +576,7 @@ function Profile() {
           className="primary-btn"
           onClick={handleLogout}
         >
-          {t("logout")}
+          {text.logout}
         </button>
 
       </div>

@@ -7,8 +7,10 @@ import {
 import { useLanguage } from "../LanguageContext";
 
 function AICompanion() {
-  const { language: globalLanguage } =
-    useLanguage();
+  const {
+    language: globalLanguage,
+    changeLanguage: changeGlobalLanguage,
+  } = useLanguage();
 
   const [language, setLanguage] =
     useState(
@@ -131,6 +133,8 @@ function AICompanion() {
     setLanguage(
       selectedLanguage
     );
+
+    changeGlobalLanguage(selectedLanguage);
 
     setInput("");
 

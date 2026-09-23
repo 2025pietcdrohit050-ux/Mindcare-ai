@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useLanguage } from "../LanguageContext";
 
 function getSettings(difficulty) {
   if (difficulty === "Hard") {
@@ -68,6 +69,93 @@ function calculatePoints(time, round, difficulty) {
 }
 
 function ReactionChallenge() {
+  const { language } = useLanguage();
+  const isHindi = language === "Hindi";
+
+  const tx = isHindi
+    ? {
+        cognitiveGame: "माइंडकेयर कॉग्निटिव गेम",
+        chooseDifficulty: "कठिनाई चुनें",
+        selectDifficulty: "Reaction Challenge शुरू करने से पहले कठिनाई स्तर चुनें।",
+        easy: "आसान",
+        moderate: "मध्यम",
+        hard: "कठिन",
+        attentionGame: "अटेंशन गेम",
+        gameTitle: "Reaction Challenge",
+        description: "सिग्नल का इंतज़ार करें और जितनी जल्दी हो सके प्रतिक्रिया दें।",
+        changeDifficulty: "कठिनाई बदलें",
+        difficultyLabel: "कठिनाई",
+        roundLabel: "राउंड",
+        scoreLabel: "स्कोर",
+        bestTimeLabel: "सबसे अच्छा समय",
+        wait: "इंतज़ार करें...",
+        dontClick: "अभी क्लिक न करें",
+        clickNow: "अभी क्लिक करें!",
+        reactFast: "जितनी जल्दी हो सके प्रतिक्रिया दें",
+        tooEarly: "बहुत जल्दी!",
+        waitSignal: "क्लिक करने से पहले सिग्नल का इंतज़ार करें।",
+        roundComplete: "राउंड पूरा!",
+        points: "पॉइंट्स",
+        excellent: "बहुत बढ़िया रिएक्शन!",
+        great: "शानदार रिएक्शन! जारी रखें।",
+        good: "अच्छा! थोड़ा और तेज़ प्रतिक्रिया देने की कोशिश करें।",
+        practice: "अपनी स्पीड बेहतर करने के लिए अभ्यास करते रहें।",
+        finish: "चैलेंज पूरा करें →",
+        nextRound: "अगला राउंड →",
+        bePatient: "धैर्य रखें!",
+        waitThenReact: "सिग्नल आने तक इंतज़ार करें और फिर जितनी जल्दी हो सके प्रतिक्रिया दें।",
+        tryAgain: "फिर से प्रयास करें",
+        complete: "चैलेंज पूरा!",
+        completed: "आपने सभी",
+        rounds: "राउंड पूरे कर लिए।",
+        finalScore: "अंतिम स्कोर",
+        bestReaction: "सबसे अच्छा रिएक्शन",
+        trainingTime: "ट्रेनिंग समय",
+        saved: "आपका Reaction Challenge स्कोर और ट्रेनिंग समय MindCare प्रोग्रेस में सेव हो गया है।",
+        playAgain: "फिर से खेलें",
+      }
+    : {
+        cognitiveGame: "MINDCARE COGNITIVE GAME",
+        chooseDifficulty: "Choose Your Difficulty",
+        selectDifficulty: "Select a difficulty level before starting the Reaction Challenge.",
+        easy: "Easy",
+        moderate: "Moderate",
+        hard: "Hard",
+        attentionGame: "ATTENTION GAME",
+        gameTitle: "Reaction Challenge",
+        description: "Wait for the signal and react as quickly as possible.",
+        changeDifficulty: "Change Difficulty",
+        difficultyLabel: "Difficulty",
+        roundLabel: "Round",
+        scoreLabel: "Score",
+        bestTimeLabel: "Best Time",
+        wait: "Wait for it...",
+        dontClick: "Don't click yet",
+        clickNow: "CLICK NOW!",
+        reactFast: "React as quickly as possible",
+        tooEarly: "Too Early!",
+        waitSignal: "Wait for the signal before clicking.",
+        roundComplete: "Round complete!",
+        points: "points",
+        excellent: "Excellent reaction!",
+        great: "Great reaction! Keep going.",
+        good: "Good job! Try to react faster.",
+        practice: "Keep practicing to improve your speed.",
+        finish: "Finish Challenge →",
+        nextRound: "Next Round →",
+        bePatient: "Be patient!",
+        waitThenReact: "Wait until the signal appears and then react as quickly as possible.",
+        tryAgain: "Try Again",
+        complete: "Challenge Complete!",
+        completed: "You completed all",
+        rounds: "rounds.",
+        finalScore: "Final Score",
+        bestReaction: "Best Reaction",
+        trainingTime: "Training Time",
+        saved: "Your Reaction Challenge score and training time have been saved to your MindCare progress.",
+        playAgain: "Play Again",
+      };
+
   const [difficulty, setDifficulty] =
     useState("");
 
@@ -391,17 +479,15 @@ function ReactionChallenge() {
           </div>
 
           <p className="small-title">
-            MINDCARE COGNITIVE GAME
+            {tx.cognitiveGame}
           </p>
 
           <h2>
-            Choose Your Difficulty
+            {tx.chooseDifficulty}
           </h2>
 
           <p>
-            Select a difficulty level
-            before starting the
-            Reaction Challenge.
+            {tx.selectDifficulty}
           </p>
 
           <div
@@ -422,7 +508,7 @@ function ReactionChallenge() {
                 startGame("Easy")
               }
             >
-              🟢 Easy
+              🟢 {tx.easy}
             </button>
 
             <button
@@ -431,7 +517,7 @@ function ReactionChallenge() {
                 startGame("Moderate")
               }
             >
-              🟡 Moderate
+              🟡 {tx.moderate}
             </button>
 
             <button
@@ -440,7 +526,7 @@ function ReactionChallenge() {
                 startGame("Hard")
               }
             >
-              🔴 Hard
+              🔴 {tx.hard}
             </button>
 
           </div>
@@ -463,17 +549,15 @@ function ReactionChallenge() {
         <div>
 
           <p className="small-title">
-            ATTENTION GAME
+            {tx.attentionGame}
           </p>
 
           <h1>
-            Reaction Challenge
+            {tx.gameTitle}
           </h1>
 
           <p className="description">
-            Wait for the signal and
-            react as quickly as
-            possible.
+            {tx.description}
           </p>
 
         </div>
@@ -484,7 +568,7 @@ function ReactionChallenge() {
             restartGame
           }
         >
-          Change Difficulty
+          {tx.changeDifficulty}
         </button>
 
       </div>
@@ -493,7 +577,7 @@ function ReactionChallenge() {
 
         <div>
           <span>
-            Difficulty
+            {tx.difficultyLabel}
           </span>
 
           <strong>
@@ -503,7 +587,7 @@ function ReactionChallenge() {
 
         <div>
           <span>
-            Round
+            {tx.roundLabel}
           </span>
 
           <strong>
@@ -513,7 +597,7 @@ function ReactionChallenge() {
 
         <div>
           <span>
-            Score
+            {tx.scoreLabel}
           </span>
 
           <strong>
@@ -523,7 +607,7 @@ function ReactionChallenge() {
 
         <div>
           <span>
-            Best Time
+            {tx.bestTimeLabel}
           </span>
 
           <strong>
@@ -555,11 +639,11 @@ function ReactionChallenge() {
                 </span>
 
                 <strong>
-                  Wait for it...
+                  {tx.wait}
                 </strong>
 
                 <small>
-                  Don't click yet
+                  {tx.dontClick}
                 </small>
               </>
             )}
@@ -572,12 +656,11 @@ function ReactionChallenge() {
                 </span>
 
                 <strong>
-                  CLICK NOW!
+                  {tx.clickNow}
                 </strong>
 
                 <small>
-                  React as quickly
-                  as possible
+                  {tx.reactFast}
                 </small>
               </>
             )}
@@ -590,13 +673,11 @@ function ReactionChallenge() {
                 </span>
 
                 <strong>
-                  Too Early!
+                  {tx.tooEarly}
                 </strong>
 
                 <small>
-                  Wait for the
-                  signal before
-                  clicking.
+                  {tx.waitSignal}
                 </small>
               </>
             )}
@@ -613,7 +694,7 @@ function ReactionChallenge() {
                 </strong>
 
                 <small>
-                  Round complete!
+                  {tx.roundComplete}
                 </small>
               </>
             )}
@@ -640,21 +721,18 @@ function ReactionChallenge() {
                 difficulty
               )}
 
-              {" "}points
+              {" "}{tx.points}
 
             </div>
 
             <p>
-              {reactionTime <
-              250
-                ? "Excellent reaction!"
-                : reactionTime <
-                  400
-                ? "Great reaction! Keep going."
-                : reactionTime <
-                  600
-                ? "Good job! Try to react faster."
-                : "Keep practicing to improve your speed."}
+              {reactionTime < 250
+                ? tx.excellent
+                : reactionTime < 400
+                ? tx.great
+                : reactionTime < 600
+                ? tx.good
+                : tx.practice}
             </p>
 
             <button
@@ -665,8 +743,8 @@ function ReactionChallenge() {
             >
               {round >=
               totalRounds
-                ? "Finish Challenge →"
-                : "Next Round →"}
+                ? tx.finish
+                : tx.nextRound}
             </button>
 
           </div>
@@ -679,14 +757,11 @@ function ReactionChallenge() {
           <div className="reaction-result">
 
             <h2>
-              Be patient!
+              {tx.bePatient}
             </h2>
 
             <p>
-              Wait until the signal
-              appears and then
-              react as quickly as
-              possible.
+              {tx.waitThenReact}
             </p>
 
             <button
@@ -695,7 +770,7 @@ function ReactionChallenge() {
                 tryAgain
               }
             >
-              Try Again
+              {tx.tryAgain}
             </button>
 
           </div>
@@ -712,26 +787,26 @@ function ReactionChallenge() {
             </div>
 
             <h2>
-              Challenge Complete!
+              {tx.complete}
             </h2>
 
             <p>
-              You completed all{" "}
+              {tx.completed}{" "}
               <strong>
                 {totalRounds}
               </strong>{" "}
-              rounds.
+              {tx.rounds}
             </p>
 
             <p>
-              Final Score:{" "}
+              {tx.finalScore}:{" "}
               <strong>
                 {score}
               </strong>
             </p>
 
             <p>
-              Best Reaction:{" "}
+              {tx.bestReaction}:{" "}
               <strong>
                 {bestTime !== null
                   ? `${bestTime} ms`
@@ -740,17 +815,14 @@ function ReactionChallenge() {
             </p>
 
             <p>
-              Training Time:{" "}
+              {tx.trainingTime}:{" "}
               <strong>
                 {elapsedTime} seconds
               </strong>
             </p>
 
             <p>
-              Your Reaction Challenge
-              score and training time
-              have been saved to your
-              MindCare progress.
+              {tx.saved}
             </p>
 
             <button
@@ -759,7 +831,7 @@ function ReactionChallenge() {
                 restartGame
               }
             >
-              Play Again
+              {tx.playAgain}
             </button>
 
           </div>

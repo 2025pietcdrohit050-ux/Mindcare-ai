@@ -11,33 +11,38 @@ const categories = [
 ];
 
 function Memory() {
-  const { t } = useLanguage();
+  const { language } = useLanguage();
+  const isHindi = language === "Hindi";
 
   const [memories, setMemories] = useState([
     {
       id: 1,
-      title: "Family",
-      text: "Important people in my family.",
+      title: isHindi ? "परिवार" : "Family",
+      text: isHindi
+        ? "मेरे परिवार के महत्वपूर्ण लोग।"
+        : "Important people in my family.",
       category: "People",
     },
     {
       id: 2,
-      title: "Favorite Place",
-      text: "A place that is special to me.",
+      title: isHindi ? "पसंदीदा जगह" : "Favorite Place",
+      text: isHindi
+        ? "एक ऐसी जगह जो मेरे लिए खास है।"
+        : "A place that is special to me.",
       category: "Places",
     },
     {
       id: 3,
-      title: "Daily Routine",
-      text: "Morning study and evening walk.",
+      title: isHindi ? "दैनिक दिनचर्या" : "Daily Routine",
+      text: isHindi
+        ? "सुबह पढ़ाई और शाम की सैर।"
+        : "Morning study and evening walk.",
       category: "Routines",
     },
   ]);
 
   const [activeCategory, setActiveCategory] = useState("All");
-
   const [showForm, setShowForm] = useState(false);
-
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const [category, setCategory] = useState("People");
@@ -56,10 +61,7 @@ function Memory() {
       category,
     };
 
-    setMemories((prev) => [
-      newMemory,
-      ...prev,
-    ]);
+    setMemories((prev) => [newMemory, ...prev]);
 
     setTitle("");
     setText("");
@@ -77,22 +79,54 @@ function Memory() {
     activeCategory === "All"
       ? memories
       : memories.filter(
-          (memory) =>
-            memory.category === activeCategory
+          (memory) => memory.category === activeCategory
         );
 
   function getCategoryName(categoryName) {
-    const categoryKeys = {
-      People: "memoryPeople",
-      Places: "memoryPlaces",
-      Events: "memoryEvents",
-      Notes: "memoryNotes",
-      Routines: "memoryRoutines",
-      "Favorite Things": "memoryFavoriteThings",
+    const names = {
+      People: isHindi ? "लोग" : "People",
+      Places: isHindi ? "स्थान" : "Places",
+      Events: isHindi ? "घटनाएँ" : "Events",
+      Notes: isHindi ? "नोट्स" : "Notes",
+      Routines: isHindi ? "रूटीन" : "Routines",
+      "Favorite Things": isHindi
+        ? "पसंदीदा चीज़ें"
+        : "Favorite Things",
     };
 
-    return t(categoryKeys[categoryName]);
+    return names[categoryName] || categoryName;
   }
+
+  const labels = {
+    vault: isHindi ? "मेमोरी वॉल्ट" : "MEMORY VAULT",
+    heading: isHindi
+      ? "महत्वपूर्ण चीज़ें सुरक्षित रखें जिन्हें आप याद रखना चाहते हैं।"
+      : "Keep important things safe that you want to remember.",
+    description: isHindi
+      ? "व्यक्तिगत यादों, नोट्स और महत्वपूर्ण जानकारी को एक जगह रखें।"
+      : "Keep personal memories, notes and important information in one place.",
+    addMemory: isHindi ? "मेमोरी जोड़ें" : "Add Memory",
+    close: isHindi ? "बंद करें" : "Close",
+    addNew: isHindi ? "नई मेमोरी जोड़ें" : "Add New Memory",
+    title: isHindi ? "शीर्षक" : "Title",
+    category: isHindi ? "श्रेणी" : "Category",
+    memory: isHindi ? "मेमोरी" : "Memory",
+    titlePlaceholder: isHindi
+      ? "मेमोरी का शीर्षक लिखें..."
+      : "Enter memory title...",
+    textPlaceholder: isHindi
+      ? "अपनी मेमोरी या महत्वपूर्ण जानकारी लिखें..."
+      : "Write your memory or important information...",
+    save: isHindi ? "मेमोरी सेव करें" : "Save Memory",
+    all: isHindi ? "सभी" : "All",
+    noMemories: isHindi
+      ? "अभी कोई मेमोरी नहीं है"
+      : "No memories yet",
+    addToCategory: isHindi
+      ? "इस श्रेणी में मेमोरी जोड़ने के लिए ऊपर दिए गए बटन का उपयोग करें।"
+      : "Use the button above to add a memory to this category.",
+    delete: isHindi ? "मेमोरी हटाएँ" : "Delete memory",
+  };
 
   return (
     <div className="page">
@@ -101,15 +135,15 @@ function Memory() {
 
         <div>
           <p className="small-title">
-            {t("memoryVaultTitle")}
+            {labels.vault}
           </p>
 
           <h1>
-            {t("memoryKeepThings")}
+            {labels.heading}
           </h1>
 
           <p className="description">
-            {t("memoryDescription")}
+            {labels.description}
           </p>
         </div>
 
@@ -117,34 +151,31 @@ function Memory() {
           className="primary-btn"
           onClick={() => setShowForm(!showForm)}
         >
-          {showForm
-            ? t("close")
-            : t("addMemory")}
+          {showForm ? labels.close : labels.addMemory}
         </button>
 
       </div>
 
       {showForm && (
-
         <form
           className="memory-form"
           onSubmit={addMemory}
         >
 
           <h2>
-            {t("addNewMemory")}
+            {labels.addNew}
           </h2>
 
           <div className="memory-form-grid">
 
             <div>
               <label>
-                {t("title")}
+                {labels.title}
               </label>
 
               <input
                 type="text"
-                placeholder={t("memoryTitlePlaceholder")}
+                placeholder={labels.titlePlaceholder}
                 value={title}
                 onChange={(event) =>
                   setTitle(event.target.value)
@@ -154,7 +185,7 @@ function Memory() {
 
             <div>
               <label>
-                {t("category")}
+                {labels.category}
               </label>
 
               <select
@@ -178,11 +209,11 @@ function Memory() {
 
           <div>
             <label>
-              {t("memory")}
+              {labels.memory}
             </label>
 
             <textarea
-              placeholder={t("memoryTextPlaceholder")}
+              placeholder={labels.textPlaceholder}
               value={text}
               onChange={(event) =>
                 setText(event.target.value)
@@ -195,7 +226,7 @@ function Memory() {
             type="submit"
             className="primary-btn"
           >
-            {t("saveMemory")}
+            {labels.save}
           </button>
 
         </form>
@@ -209,15 +240,12 @@ function Memory() {
               ? "memory-category active"
               : "memory-category"
           }
-          onClick={() =>
-            setActiveCategory("All")
-          }
+          onClick={() => setActiveCategory("All")}
         >
-          🧠 {t("all")}
+          🧠 {labels.all}
         </button>
 
         {categories.map((item) => (
-
           <button
             key={item}
             className={
@@ -225,13 +253,10 @@ function Memory() {
                 ? "memory-category active"
                 : "memory-category"
             }
-            onClick={() =>
-              setActiveCategory(item)
-            }
+            onClick={() => setActiveCategory(item)}
           >
             {getCategoryName(item)}
           </button>
-
         ))}
 
       </div>
@@ -245,11 +270,11 @@ function Memory() {
             <span>🧠</span>
 
             <h2>
-              {t("noMemories")}
+              {labels.noMemories}
             </h2>
 
             <p>
-              {t("addMemoryToCategory")}
+              {labels.addToCategory}
             </p>
 
           </div>
@@ -271,10 +296,9 @@ function Memory() {
 
                 <button
                   className="delete-memory"
-                  onClick={() =>
-                    deleteMemory(memory.id)
-                  }
-                  aria-label={t("deleteMemory")}
+                  onClick={() => deleteMemory(memory.id)}
+                  aria-label={labels.delete}
+                  title={labels.delete}
                 >
                   ×
                 </button>

@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
+import { useLanguage } from "../LanguageContext";
 
 function Leaderboard() {
+  const { language } = useLanguage();
+  const isHindi = language === "Hindi";
+
   const [period, setPeriod] = useState("weekly");
   const [leaderboard, setLeaderboard] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
@@ -30,7 +34,10 @@ function Leaderboard() {
 
       if (!response.ok) {
         throw new Error(
-          data.message || "Failed to load leaderboard"
+          data.message ||
+            (isHindi
+              ? "लीडरबोर्ड लोड नहीं हो सका"
+              : "Failed to load leaderboard")
         );
       }
 
@@ -46,24 +53,101 @@ function Leaderboard() {
 
   useEffect(() => {
     loadLeaderboard();
-  }, [period]);
+  }, [period, language]);
+
+  const text = {
+    community: isHindi ? "समुदाय" : "COMMUNITY",
+
+    heading: isHindi
+      ? "लीडरबोर्ड 🏆"
+      : "Leaderboard 🏆",
+
+    description: isHindi
+      ? "देखें कि आपकी संज्ञानात्मक प्रशिक्षण प्रगति अन्य MindCare उपयोगकर्ताओं की तुलना में कैसी है।"
+      : "See how your cognitive training progress compares with other MindCare users.",
+
+    daily: isHindi ? "दैनिक" : "Daily",
+
+    weekly: isHindi ? "साप्ताहिक" : "Weekly",
+
+    allTime: isHindi ? "सभी समय" : "All Time",
+
+    yourRank: isHindi ? "आपकी रैंक" : "Your Rank",
+
+    totalScore: isHindi ? "कुल स्कोर" : "Total Score",
+
+    gamesPlayed: isHindi
+      ? "खेले गए गेम"
+      : "Games Played",
+
+    todaysLeaders: isHindi
+      ? "आज के शीर्ष खिलाड़ी"
+      : "Today's Leaders",
+
+    weeklyLeaders: isHindi
+      ? "साप्ताहिक शीर्ष खिलाड़ी"
+      : "Weekly Leaders",
+
+    allTimeLeaders: isHindi
+      ? "सभी समय के शीर्ष खिलाड़ी"
+      : "All Time Leaders",
+
+    scoreBasis: isHindi
+      ? "कुल संज्ञानात्मक गेम स्कोर के आधार पर"
+      : "Based on total cognitive game score",
+
+    loading: isHindi
+      ? "लीडरबोर्ड लोड हो रहा है..."
+      : "Loading leaderboard...",
+
+    noScores: isHindi
+      ? "अभी कोई स्कोर उपलब्ध नहीं है।"
+      : "No scores available yet.",
+
+    playToAppear: isHindi
+      ? "लीडरबोर्ड पर आने के लिए कोई गेम खेलें!"
+      : "Play a game to appear on the leaderboard!",
+
+    point: isHindi ? "पॉइंट" : "point",
+
+    points: isHindi ? "पॉइंट्स" : "points",
+
+    game: isHindi ? "गेम" : "game",
+
+    games: isHindi ? "गेम्स" : "games",
+  };
+
+  const getPeriodHeading = () => {
+    if (period === "daily") {
+      return text.todaysLeaders;
+    }
+
+    if (period === "weekly") {
+      return text.weeklyLeaders;
+    }
+
+    return text.allTimeLeaders;
+  };
 
   return (
     <div className="leaderboard-page">
 
       <div className="leaderboard-header">
+
         <div>
           <p className="leaderboard-label">
-            COMMUNITY
+            {text.community}
           </p>
 
-          <h1>Leaderboard 🏆</h1>
+          <h1>
+            {text.heading}
+          </h1>
 
           <p>
-            See how your cognitive training progress
-            compares with other MindCare users.
+            {text.description}
           </p>
         </div>
+
       </div>
 
 
@@ -79,7 +163,7 @@ function Leaderboard() {
           }
           onClick={() => setPeriod("daily")}
         >
-          Daily
+          {text.daily}
         </button>
 
         <button
@@ -90,7 +174,7 @@ function Leaderboard() {
           }
           onClick={() => setPeriod("weekly")}
         >
-          Weekly
+          {text.weekly}
         </button>
 
         <button
@@ -101,7 +185,7 @@ function Leaderboard() {
           }
           onClick={() => setPeriod("all")}
         >
-          All Time
+          {text.allTime}
         </button>
 
       </div>
@@ -113,7 +197,9 @@ function Leaderboard() {
         <div className="my-rank-card">
 
           <div>
-            <span>Your Rank</span>
+            <span>
+              {text.yourRank}
+            </span>
 
             <strong>
               #{currentUser.rank}
@@ -121,7 +207,9 @@ function Leaderboard() {
           </div>
 
           <div>
-            <span>Total Score</span>
+            <span>
+              {text.totalScore}
+            </span>
 
             <strong>
               {currentUser.totalScore}
@@ -129,7 +217,9 @@ function Leaderboard() {
           </div>
 
           <div>
-            <span>Games Played</span>
+            <span>
+              {text.gamesPlayed}
+            </span>
 
             <strong>
               {currentUser.gamesPlayed}
@@ -145,25 +235,25 @@ function Leaderboard() {
       <div className="leaderboard-card">
 
         <div className="leaderboard-card-header">
+
           <div>
+
             <h2>
-              {period === "daily"
-                ? "Today's Leaders"
-                : period === "weekly"
-                ? "Weekly Leaders"
-                : "All Time Leaders"}
+              {getPeriodHeading()}
             </h2>
 
             <p>
-              Based on total cognitive game score
+              {text.scoreBasis}
             </p>
+
           </div>
+
         </div>
 
 
         {loading && (
           <div className="leaderboard-message">
-            Loading leaderboard...
+            {text.loading}
           </div>
         )}
 
@@ -179,9 +269,13 @@ function Leaderboard() {
           !error &&
           leaderboard.length === 0 && (
             <div className="leaderboard-message">
-              No scores available yet.
+
+              {text.noScores}
+
               <br />
-              Play a game to appear on the leaderboard!
+
+              {text.playToAppear}
+
             </div>
           )}
 
@@ -225,9 +319,11 @@ function Leaderboard() {
 
                     <span>
                       {player.gamesPlayed}{" "}
+
                       {player.gamesPlayed === 1
-                        ? "game"
-                        : "games"}
+                        ? text.game
+                        : text.games}
+
                     </span>
 
                   </div>
@@ -240,7 +336,9 @@ function Leaderboard() {
                     </strong>
 
                     <span>
-                      points
+                      {player.totalScore === 1
+                        ? text.point
+                        : text.points}
                     </span>
 
                   </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLanguage } from "../LanguageContext";
 
 const cardValues = [
   "🧠",
@@ -36,6 +37,59 @@ function getCardsForDifficulty(difficulty) {
 }
 
 function MemoryMatch() {
+  const { language } = useLanguage();
+  const isHindi = language === "Hindi";
+
+  const tx = isHindi
+    ? {
+        gameTitle: "मेमोरी मैच",
+        cognitiveGame: "माइंडकेयर कॉग्निटिव गेम",
+        chooseDifficulty: "कठिनाई चुनें",
+        selectDifficulty:
+          "मेमोरी मैच शुरू करने से पहले कठिनाई स्तर चुनें।",
+        easy: "आसान",
+        moderate: "मध्यम",
+        hard: "कठिन",
+        memoryGame: "मेमोरी गेम",
+        description:
+          "सभी जोड़ियों को मिलाकर संज्ञानात्मक मेमोरी चुनौती पूरी करें।",
+        changeDifficulty: "कठिनाई बदलें",
+        difficulty: "कठिनाई",
+        moves: "चालें",
+        time: "समय",
+        pairs: "जोड़ियाँ",
+        excellent: "बहुत बढ़िया!",
+        completed:
+          "आपने यह मेमोरी मैच चुनौती पूरी कर ली।",
+        scoreSaved:
+          "आपका स्कोर MindCare प्रगति में सेव हो गया है।",
+        playAgain: "फिर से खेलें",
+      }
+    : {
+        gameTitle: "Memory Match",
+        cognitiveGame: "MindCare Cognitive Game",
+        chooseDifficulty: "Choose Difficulty",
+        selectDifficulty:
+          "Select a difficulty level before starting your Memory Match challenge.",
+        easy: "Easy",
+        moderate: "Moderate",
+        hard: "Hard",
+        memoryGame: "Memory Game",
+        description:
+          "Match all pairs and complete the cognitive memory challenge.",
+        changeDifficulty: "Change Difficulty",
+        difficulty: "Difficulty",
+        moves: "Moves",
+        time: "Time",
+        pairs: "Pairs",
+        excellent: "Excellent!",
+        completed:
+          "You completed the Memory Match challenge.",
+        scoreSaved:
+          "Your score has been saved to your MindCare progress.",
+        playAgain: "Play Again",
+      };
+
   const [difficulty, setDifficulty] = useState("");
   const [cards, setCards] = useState([]);
   const [selected, setSelected] = useState([]);
@@ -202,7 +256,7 @@ function MemoryMatch() {
       setScoreSaved(true);
 
       console.log(
-        "Memory Match score saved ✅"
+        "{tx.gameTitle} score saved ✅"
       );
     } catch (error) {
       console.error(
@@ -294,16 +348,15 @@ function MemoryMatch() {
           </div>
 
           <p className="small-title">
-            MINDCARE COGNITIVE GAME
+            {tx.cognitiveGame}
           </p>
 
           <h2>
-            Choose Your Difficulty
+            {tx.chooseDifficulty}
           </h2>
 
           <p>
-            Select a difficulty level before starting
-            your Memory Match challenge.
+            {tx.selectDifficulty}
           </p>
 
           <div
@@ -324,7 +377,7 @@ function MemoryMatch() {
                 startGame("Easy")
               }
             >
-              🟢 Easy
+              🟢 {tx.easy}
             </button>
 
             <button
@@ -335,7 +388,7 @@ function MemoryMatch() {
                 )
               }
             >
-              🟡 Moderate
+              🟡 {tx.moderate}
             </button>
 
             <button
@@ -344,7 +397,7 @@ function MemoryMatch() {
                 startGame("Hard")
               }
             >
-              🔴 Hard
+              🔴 {tx.hard}
             </button>
 
           </div>
@@ -372,16 +425,15 @@ function MemoryMatch() {
         <div>
 
           <p className="small-title">
-            MEMORY GAME
+            {tx.memoryGame}
           </p>
 
           <h1>
-            Memory Match
+            {tx.gameTitle}
           </h1>
 
           <p className="description">
-            Match all pairs and complete the
-            cognitive memory challenge.
+            {tx.description}
           </p>
 
         </div>
@@ -392,7 +444,7 @@ function MemoryMatch() {
             restartGame
           }
         >
-          Change Difficulty
+          {tx.changeDifficulty}
         </button>
 
       </div>
@@ -401,7 +453,7 @@ function MemoryMatch() {
 
         <div>
           <span>
-            Difficulty
+            {tx.difficulty}
           </span>
 
           <strong>
@@ -411,7 +463,7 @@ function MemoryMatch() {
 
         <div>
           <span>
-            Moves
+            {tx.moves}
           </span>
 
           <strong>
@@ -421,7 +473,7 @@ function MemoryMatch() {
 
         <div>
           <span>
-            Time
+            {tx.time}
           </span>
 
           <strong>
@@ -431,7 +483,7 @@ function MemoryMatch() {
 
         <div>
           <span>
-            Pairs
+            {tx.pairs}
           </span>
 
           <strong>
@@ -451,15 +503,15 @@ function MemoryMatch() {
           </div>
 
           <h2>
-            Excellent work!
+            {tx.excellent}
           </h2>
 
           <p>
-            You completed the{" "}
+            {tx.completed}{" "}
             <strong>
               {difficulty}
             </strong>{" "}
-            Memory Match challenge in{" "}
+            {tx.gameTitle} challenge in{" "}
             <strong>
               {moves}
             </strong>{" "}
@@ -471,8 +523,7 @@ function MemoryMatch() {
           </p>
 
           <p>
-            Your score has been saved to your
-            MindCare progress.
+            {tx.scoreSaved}
           </p>
 
           <button
@@ -481,7 +532,7 @@ function MemoryMatch() {
               restartGame
             }
           >
-            Play Again
+            {tx.playAgain}
           </button>
 
         </div>

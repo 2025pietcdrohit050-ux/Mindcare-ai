@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useLanguage } from "../LanguageContext";
 
 const wordBank = [
   "Apple",
@@ -193,6 +194,84 @@ function createRound(
 }
 
 function WordRecall() {
+  const { language } = useLanguage();
+  const isHindi = language === "Hindi";
+
+  const tx = isHindi
+    ? {
+        cognitiveGame: "माइंडकेयर कॉग्निटिव गेम",
+        chooseDifficulty: "कठिनाई चुनें",
+        selectDifficulty:
+          "Word Recall शुरू करने से पहले कठिनाई स्तर चुनें।",
+        easy: "आसान",
+        moderate: "मध्यम",
+        hard: "कठिन",
+        memoryGame: "मेमोरी गेम",
+        gameTitle: "Word Recall",
+        description:
+          "शब्दों के गायब होने से पहले उन्हें याद करें, फिर विकल्पों में से उन्हें पहचानें।",
+        changeDifficulty: "कठिनाई बदलें",
+        difficulty: "कठिनाई",
+        level: "लेवल",
+        score: "स्कोर",
+        words: "शब्द",
+        time: "समय",
+        rememberWords: "इन शब्दों को याद रखें...",
+        selectRemembered:
+          "केवल वही शब्द चुनें जो आपको याद हैं।",
+        selectFirst:
+          "पहले वे शब्द चुनें जो आपको याद हैं।",
+        perfect: "बहुत बढ़िया! +{points} पॉइंट्स",
+        incorrect: "कुछ चुने गए शब्द गलत थे।",
+        selectEvery:
+          "पहले दिखाई दिए हर शब्द को चुनें।",
+        checkAnswer: "उत्तर जांचें →",
+        challengeComplete: "चैलेंज पूरा!",
+        goodAttempt: "अच्छा प्रयास!",
+        reachedLevel: "आप लेवल {level} तक पहुँचे।",
+        finalScore: "अंतिम स्कोर",
+        trainingTime: "ट्रेनिंग समय",
+        difficultyLabel: "कठिनाई",
+        saved:
+          "आपका Word Recall स्कोर और ट्रेनिंग समय MindCare प्रोग्रेस में सेव हो गया है।",
+        playAgain: "फिर से खेलें",
+      }
+    : {
+        cognitiveGame: "{tx.cognitiveGame}",
+        chooseDifficulty: "{tx.chooseDifficulty}",
+        selectDifficulty:
+          "Select a difficulty level before starting Word Recall.",
+        easy: "Easy",
+        moderate: "Moderate",
+        hard: "Hard",
+        memoryGame: "MEMORY GAME",
+        gameTitle: "Word Recall",
+        description:
+          "Remember the words before they disappear, then identify them from the options.",
+        changeDifficulty: "{tx.changeDifficulty}",
+        difficulty: "Difficulty",
+        level: "Level",
+        score: "Score",
+        words: "Words",
+        time: "Time",
+        rememberWords: tx.rememberWords,
+        selectRemembered: tx.selectRemembered,
+        selectFirst: tx.selectFirst,
+        perfect: "Perfect! +{points} points",
+        incorrect: tx.incorrect,
+        selectEvery: "Select every word that appeared earlier.",
+        checkAnswer: "{tx.checkAnswer}",
+        challengeComplete: "Challenge Complete!",
+        goodAttempt: "Good Attempt!",
+        reachedLevel: "You reached level {level}.",
+        finalScore: "Final Score",
+        trainingTime: "Training Time",
+        difficultyLabel: "Difficulty",
+        saved:
+          "Your Word Recall score and training time have been saved to your MindCare progress.",
+        playAgain: "{tx.playAgain}",
+      };
+
   const [difficulty, setDifficulty] =
     useState("");
 
@@ -227,7 +306,7 @@ function WordRecall() {
 
   const [message, setMessage] =
     useState(
-      "Remember these words..."
+      tx.rememberWords
     );
 
   const [gameOver, setGameOver] =
@@ -290,7 +369,7 @@ function WordRecall() {
     setScoreSaved(false);
 
     setMessage(
-      "Remember these words..."
+      tx.rememberWords
     );
 
     gameStartTime.current =
@@ -354,7 +433,7 @@ function WordRecall() {
         setShowWords(false);
 
         setMessage(
-          "Select only the words you remember."
+          tx.selectRemembered
         );
       }, displayTime);
 
@@ -410,7 +489,7 @@ function WordRecall() {
       selectedWords.length === 0
     ) {
       setMessage(
-        "Select the words you remember first."
+        tx.selectFirst
       );
 
       return;
@@ -435,7 +514,7 @@ function WordRecall() {
       );
 
       setMessage(
-        `Perfect! +${levelPoints} points`
+        tx.perfect.replace("{points}", levelPoints)
       );
 
       setTimeout(() => {
@@ -483,12 +562,12 @@ function WordRecall() {
         setShowWords(true);
 
         setMessage(
-          "Remember these words..."
+          tx.rememberWords
         );
       }, 900);
     } else {
       setMessage(
-        "Some selected words were incorrect."
+        tx.incorrect
       );
 
       setGameOver(true);
@@ -525,7 +604,7 @@ function WordRecall() {
     setScoreSaved(false);
 
     setMessage(
-      "Remember these words..."
+      tx.rememberWords
     );
   }
 
@@ -639,16 +718,15 @@ function WordRecall() {
           </div>
 
           <p className="small-title">
-            MINDCARE COGNITIVE GAME
+            {tx.cognitiveGame}
           </p>
 
           <h2>
-            Choose Your Difficulty
+            {tx.chooseDifficulty}
           </h2>
 
           <p>
-            Select a difficulty level
-            before starting Word Recall.
+            {tx.selectDifficulty}
           </p>
 
           <div
@@ -679,7 +757,7 @@ function WordRecall() {
                 )
               }
             >
-              🟢 Easy
+              🟢 {tx.easy}
             </button>
 
             <button
@@ -690,7 +768,7 @@ function WordRecall() {
                 )
               }
             >
-              🟡 Moderate
+              🟡 {tx.moderate}
             </button>
 
             <button
@@ -701,7 +779,7 @@ function WordRecall() {
                 )
               }
             >
-              🔴 Hard
+              🔴 {tx.hard}
             </button>
 
           </div>
@@ -724,18 +802,16 @@ function WordRecall() {
         <div>
 
           <p className="small-title">
-            MEMORY GAME ·{" "}
+            {tx.memoryGame} ·{" "}
             {difficulty.toUpperCase()}
           </p>
 
           <h1>
-            Word Recall
+            {tx.gameTitle}
           </h1>
 
           <p className="description">
-            Remember the words before
-            they disappear, then identify
-            them from the options.
+            {tx.description}
           </p>
 
         </div>
@@ -746,7 +822,7 @@ function WordRecall() {
             restartGame
           }
         >
-          Change Difficulty
+          {tx.changeDifficulty}
         </button>
 
       </div>
@@ -755,7 +831,7 @@ function WordRecall() {
 
         <div>
           <span>
-            Difficulty
+            {tx.difficulty}
           </span>
 
           <strong>
@@ -765,7 +841,7 @@ function WordRecall() {
 
         <div>
           <span>
-            Level
+            {tx.level}
           </span>
 
           <strong>
@@ -775,7 +851,7 @@ function WordRecall() {
 
         <div>
           <span>
-            Score
+            {tx.score}
           </span>
 
           <strong>
@@ -785,7 +861,7 @@ function WordRecall() {
 
         <div>
           <span>
-            Words
+            {tx.words}
           </span>
 
           <strong>
@@ -795,7 +871,7 @@ function WordRecall() {
 
         <div>
           <span>
-            Time
+            {tx.time}
           </span>
 
           <strong>
@@ -847,8 +923,7 @@ function WordRecall() {
             <>
 
               <p className="word-instruction">
-                Select every word that
-                appeared earlier.
+                {tx.selectEvery}
               </p>
 
               <div className="word-options">
@@ -885,7 +960,7 @@ function WordRecall() {
                   checkAnswer
                 }
               >
-                Check Answer →
+                {tx.checkAnswer}
               </button>
 
             </>
@@ -904,43 +979,37 @@ function WordRecall() {
 
             <h2>
               {level >= 8
-                ? "Challenge Complete!"
-                : "Good Attempt!"}
+                ? tx.challengeComplete
+                : tx.goodAttempt}
             </h2>
 
             <p>
-              You reached level{" "}
-              <strong>
-                {level}
-              </strong>.
+              {tx.reachedLevel.replace("{level}", level)}
             </p>
 
             <p>
-              Final Score:{" "}
+              {tx.finalScore}:{" "}
               <strong>
                 {score}
               </strong>
             </p>
 
             <p>
-              Training Time:{" "}
+              {tx.trainingTime}:{" "}
               <strong>
                 {elapsedTime} seconds
               </strong>
             </p>
 
             <p>
-              Difficulty:{" "}
+              {tx.difficultyLabel}:{" "}
               <strong>
                 {difficulty}
               </strong>
             </p>
 
             <p>
-              Your Word Recall score
-              and training time have
-              been saved to your
-              MindCare progress.
+              {tx.saved}
             </p>
 
             <button
@@ -949,7 +1018,7 @@ function WordRecall() {
                 restartGame
               }
             >
-              Play Again
+              {tx.playAgain}
             </button>
 
           </div>

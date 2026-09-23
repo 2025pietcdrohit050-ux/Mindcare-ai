@@ -1,6 +1,83 @@
 import { useState } from "react";
+import { useLanguage } from "../LanguageContext";
 
 function Login() {
+  const { language, changeLanguage } = useLanguage();
+  const isHindi = language === "Hindi";
+
+  const text = {
+    en: {
+      forgot: "{tx.forgot}",
+      registeredEmail: "Enter your registered email address and we will send you a password reset OTP.",
+      registeredEmailPlaceholder: "Registered email address",
+      sendOtp: "Send OTP",
+      verifyOtp: "Verify OTP",
+      otpDescription: "{tx.otpDescription}",
+      otpPlaceholder: "Enter 6-digit OTP",
+      newPassword: "Create New Password 🔑",
+      newPasswordDescription: "{tx.newPasswordDescription}",
+      newPasswordPlaceholder: "New password",
+      confirmPasswordPlaceholder: "Confirm new password",
+      changePassword: "Change Password",
+      backLogin: "{tx.backLogin}",
+      createAccount: "{tx.createAccount}",
+      welcomeBack: "{tx.welcomeBack}",
+      createJourney: "{tx.createJourney}",
+      loginJourney: "{tx.loginJourney}",
+      name: "Your name",
+      email: "Gmail address",
+      phone: "Mobile number",
+      password: "Password",
+      create: "Create Account",
+      login: "Login",
+      verifyEmail: "Verify your email 📧",
+      verifyEmailDescription: "We sent a 6-digit OTP to your email address. Enter it below to verify your account.",
+      resend: "{tx.resend}",
+      already: tx.already,
+      signup: tx.signup,
+      lang: "English",
+      switchLang: "हिंदी",
+    },
+    hi: {
+      forgot: "पासवर्ड भूल गए?",
+      registeredEmail: "अपना रजिस्टर्ड ईमेल पता दर्ज करें। हम आपको पासवर्ड रीसेट OTP भेजेंगे।",
+      registeredEmailPlaceholder: "रजिस्टर्ड ईमेल पता",
+      sendOtp: "OTP भेजें",
+      verifyOtp: "OTP सत्यापित करें",
+      otpDescription: "अपने ईमेल पर भेजा गया 6 अंकों का OTP दर्ज करें।",
+      otpPlaceholder: "6 अंकों का OTP दर्ज करें",
+      newPassword: "नया पासवर्ड बनाएं 🔑",
+      newPasswordDescription: "नीचे अपना नया पासवर्ड दर्ज करें।",
+      newPasswordPlaceholder: "नया पासवर्ड",
+      confirmPasswordPlaceholder: "नया पासवर्ड दोबारा दर्ज करें",
+      changePassword: "पासवर्ड बदलें",
+      backLogin: "← लॉगिन पर वापस जाएँ",
+      createAccount: "अपना अकाउंट बनाएं",
+      welcomeBack: "वापसी पर स्वागत है",
+      createJourney: "अपनी संज्ञानात्मक वेलनेस यात्रा शुरू करने के लिए अकाउंट बनाएं।",
+      loginJourney: "अपनी MindCare यात्रा जारी रखने के लिए लॉगिन करें।",
+      name: "अपना नाम",
+      email: "Gmail पता",
+      phone: "मोबाइल नंबर",
+      password: "पासवर्ड",
+      create: "अकाउंट बनाएं",
+      login: "लॉगिन",
+      verifyEmail: "अपना ईमेल सत्यापित करें 📧",
+      verifyEmailDescription: "हमने आपके ईमेल पर 6 अंकों का OTP भेजा है। अकाउंट सत्यापित करने के लिए इसे दर्ज करें।",
+      resend: "वेरिफिकेशन OTP दोबारा भेजें",
+      already: "पहले से अकाउंट है? लॉगिन करें",
+      signup: "अकाउंट नहीं है? साइन अप करें",
+      lang: "हिंदी",
+      switchLang: "English",
+    },
+  };
+
+  const tx = isHindi ? text.hi : text.en;
+
+  function toggleLanguage() {
+    changeLanguage(isHindi ? "English" : "Hindi");
+  }
+
   const [isSignup, setIsSignup] = useState(false);
   const [showOTP, setShowOTP] = useState(false);
   const [forgotPassword, setForgotPassword] = useState(false);
@@ -281,18 +358,26 @@ function Login() {
           <div className="ai-avatar">🔐</div>
           <p className="small-title">MINDCARE AI</p>
 
+        <button
+          type="button"
+          onClick={toggleLanguage}
+          className="text-btn"
+          style={{ marginBottom: "12px" }}
+        >
+          🌐 {tx.switchLang}
+        </button>
+
           {resetStep === 1 && (
             <>
-              <h1>Forgot Password?</h1>
+              <h1>{tx.forgot}</h1>
               <p className="description">
-                Enter your registered email address and we will send you a
-                password reset OTP.
+                {tx.registeredEmail}
               </p>
 
               <form onSubmit={sendResetOTP}>
                 <input
                   type="email"
-                  placeholder="Registered email address"
+                  placeholder={tx.registeredEmailPlaceholder}
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   required
@@ -307,15 +392,15 @@ function Login() {
 
           {resetStep === 2 && (
             <>
-              <h1>Verify OTP 📧</h1>
+              <h1>{tx.verifyOtp} 📧</h1>
               <p className="description">
-                Enter the 6-digit OTP sent to your email.
+                {tx.otpDescription}
               </p>
 
               <form onSubmit={verifyResetOTP}>
                 <input
                   type="text"
-                  placeholder="Enter 6-digit OTP"
+                  placeholder={tx.otpPlaceholder}
                   value={otp}
                   onChange={(event) => setOtp(event.target.value)}
                   maxLength="6"
@@ -331,15 +416,15 @@ function Login() {
 
           {resetStep === 3 && (
             <>
-              <h1>Create New Password 🔑</h1>
+              <h1>{tx.newPassword}</h1>
               <p className="description">
-                Enter your new password below.
+                {tx.newPasswordDescription}
               </p>
 
               <form onSubmit={resetPassword}>
                 <input
                   type="password"
-                  placeholder="New password"
+                  placeholder={tx.newPasswordPlaceholder}
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   required
@@ -347,7 +432,7 @@ function Login() {
 
                 <input
                   type="password"
-                  placeholder="Confirm new password"
+                  placeholder={tx.confirmPasswordPlaceholder}
                   value={confirmPassword}
                   onChange={(event) =>
                     setConfirmPassword(event.target.value)
@@ -369,7 +454,7 @@ function Login() {
             className="text-btn"
             onClick={backToLogin}
           >
-            ← Back to Login
+            {tx.backLogin}
           </button>
         </div>
       </div>
@@ -382,21 +467,30 @@ function Login() {
         <div className="ai-avatar">🧠</div>
         <p className="small-title">MINDCARE AI</p>
 
+        <button
+          type="button"
+          onClick={toggleLanguage}
+          className="text-btn"
+          style={{ marginBottom: "12px" }}
+        >
+          🌐 {tx.switchLang}
+        </button>
+
         {!showOTP ? (
           <>
-            <h1>{isSignup ? "Create your account" : "Welcome back"}</h1>
+            <h1>{isSignup ? "{tx.createAccount}" : "{tx.welcomeBack}"}</h1>
 
             <p className="description">
               {isSignup
-                ? "Create an account to start your cognitive wellness journey."
-                : "Login to continue your MindCare journey."}
+                ? "{tx.createJourney}"
+                : "{tx.loginJourney}"}
             </p>
 
             <form onSubmit={handleSubmit}>
               {isSignup && (
                 <input
                   type="text"
-                  placeholder="Your name"
+                  placeholder={tx.name}
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   required
@@ -405,7 +499,7 @@ function Login() {
 
               <input
                 type="email"
-                placeholder="Gmail address"
+                placeholder={tx.email}
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 required
@@ -414,7 +508,7 @@ function Login() {
               {isSignup && (
                 <input
                   type="tel"
-                  placeholder="Mobile number"
+                  placeholder={tx.phone}
                   value={phone}
                   onChange={(event) => setPhone(event.target.value)}
                   required
@@ -423,30 +517,29 @@ function Login() {
 
               <input
                 type="password"
-                placeholder="Password"
+                placeholder={tx.password}
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 required
               />
 
               <button type="submit" className="primary-btn">
-                {isSignup ? "Create Account" : "Login"}
+                {isSignup ? tx.create : tx.login}
               </button>
             </form>
           </>
         ) : (
           <>
-            <h1>Verify your email 📧</h1>
+            <h1>{tx.verifyEmail}</h1>
 
             <p className="description">
-              We sent a 6-digit OTP to your email address. Enter it below to
-              verify your account.
+              {tx.verifyEmailDescription}
             </p>
 
             <form onSubmit={verifyOTP}>
               <input
                 type="text"
-                placeholder="Enter 6-digit OTP"
+                placeholder={tx.otpPlaceholder}
                 value={otp}
                 onChange={(event) => setOtp(event.target.value)}
                 maxLength="6"
@@ -480,7 +573,7 @@ function Login() {
       className="forgot-password-btn"
       onClick={resendVerificationOTP}
     >
-      Resend Verification OTP
+      {tx.resend}
     </button>
 
     <button
@@ -492,7 +585,7 @@ function Login() {
         setMessage("");
       }}
     >
-      Forgot Password?
+      {tx.forgot}
     </button>
   </div>
 )}
@@ -507,8 +600,8 @@ function Login() {
               }}
             >
               {isSignup
-                ? "Already have an account? Login"
-                : "Don't have an account? Sign up"}
+                ? tx.already
+                : tx.signup}
             </button>
           </>
         )}
