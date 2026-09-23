@@ -78,9 +78,11 @@ function AppContent() {
                   👋 {userName}
                 </span>
 
-                <Link to="/admin" className="admin-nav-btn">
-                  🛡️ {t("admin")}
-                </Link>
+               {isAdmin && (
+  <Link to="/admin" className="admin-nav-btn">
+    🛡️ {t("admin")}
+  </Link>
+)}
 
                 <Link to="/profile" className="profile-btn">
                   {t("profile")}
