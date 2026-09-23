@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
+import { useLanguage } from "../LanguageContext";
 
 function Profile() {
-  const [language, setLanguage] = useState(
-    localStorage.getItem("mindcareLanguage") || "English"
-  );
+  const { language, changeLanguage, t } = useLanguage();
 
   const [largeText, setLargeText] = useState(
     localStorage.getItem("mindcareLargeText") === "true"
@@ -30,7 +29,7 @@ function Profile() {
     .slice(0, 2)
     .toUpperCase();
 
-  /* APPLY ACCESSIBILITY SETTINGS */
+  /* ACCESSIBILITY SETTINGS */
 
   useEffect(() => {
     document.body.classList.toggle(
@@ -64,26 +63,6 @@ function Profile() {
     );
   }, [largeText, highContrast, reducedMotion]);
 
-  /* SAVE LANGUAGE */
-
-  useEffect(() => {
-    localStorage.setItem(
-      "mindcareLanguage",
-      language
-    );
-  }, [language]);
-
-  function handleLanguageChange(event) {
-    const selectedLanguage = event.target.value;
-
-    setLanguage(selectedLanguage);
-
-    localStorage.setItem(
-      "mindcareLanguage",
-      selectedLanguage
-    );
-  }
-
   function handleLogout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -104,16 +83,15 @@ function Profile() {
 
         <div>
           <p className="small-title">
-            MY PROFILE
+            {t("myProfile")}
           </p>
 
           <h1>
-            Welcome back, {userName}.
+            {t("welcomeBack")}, {userName}.
           </h1>
 
           <p className="description">
-            Manage your profile and personalize your
-            MindCare experience.
+            {t("manageProfile")}
           </p>
         </div>
 
@@ -130,11 +108,11 @@ function Profile() {
 
           <div>
             <h2>
-              Personal Information
+              {t("personalInformation")}
             </h2>
 
             <p>
-              Your basic profile information.
+              {t("basicProfile")}
             </p>
           </div>
 
@@ -145,7 +123,7 @@ function Profile() {
 
           <div className="profile-field">
             <label>
-              Full Name
+              {t("fullName")}
             </label>
 
             <div>
@@ -156,7 +134,7 @@ function Profile() {
 
           <div className="profile-field">
             <label>
-              Email
+              {t("email")}
             </label>
 
             <div>
@@ -167,7 +145,7 @@ function Profile() {
 
           <div className="profile-field">
             <label>
-              Mobile Number
+              {t("mobileNumber")}
             </label>
 
             <div>
@@ -178,13 +156,13 @@ function Profile() {
 
           <div className="profile-field">
             <label>
-              Member Since
+              {t("memberSince")}
             </label>
 
             <div>
               {user?.id
                 ? "September 2026"
-                : "Not available"}
+                : t("notAvailable")}
             </div>
           </div>
 
@@ -203,11 +181,11 @@ function Profile() {
 
           <div>
             <h2>
-              Preferences
+              {t("preferences")}
             </h2>
 
             <p>
-              Customize how MindCare works for you.
+              {t("customizeMindcare")}
             </p>
           </div>
 
@@ -220,26 +198,28 @@ function Profile() {
 
           <div>
             <strong>
-              Language
+              {t("language")}
             </strong>
 
             <p>
-              Choose your preferred language.
+              {t("chooseLanguage")}
             </p>
           </div>
 
 
           <select
             value={language}
-            onChange={handleLanguageChange}
-            aria-label="Preferred language"
+            onChange={(event) =>
+              changeLanguage(event.target.value)
+            }
+            aria-label={t("chooseLanguage")}
           >
             <option value="English">
               English
             </option>
 
             <option value="Hindi">
-              Hindi
+              हिन्दी
             </option>
           </select>
 
@@ -252,11 +232,11 @@ function Profile() {
 
           <div>
             <strong>
-              Large Text
+              {t("largeText")}
             </strong>
 
             <p>
-              Make text easier to read.
+              {t("easierToRead")}
             </p>
           </div>
 
@@ -273,7 +253,9 @@ function Profile() {
             }
             aria-pressed={largeText}
           >
-            {largeText ? "ON" : "OFF"}
+            {largeText
+              ? t("on")
+              : t("off")}
           </button>
 
         </div>
@@ -285,11 +267,11 @@ function Profile() {
 
           <div>
             <strong>
-              High Contrast
+              {t("highContrast")}
             </strong>
 
             <p>
-              Increase visual contrast for accessibility.
+              {t("increaseContrast")}
             </p>
           </div>
 
@@ -306,7 +288,9 @@ function Profile() {
             }
             aria-pressed={highContrast}
           >
-            {highContrast ? "ON" : "OFF"}
+            {highContrast
+              ? t("on")
+              : t("off")}
           </button>
 
         </div>
@@ -318,11 +302,11 @@ function Profile() {
 
           <div>
             <strong>
-              Reduced Motion
+              {t("reducedMotion")}
             </strong>
 
             <p>
-              Reduce animations and visual movement.
+              {t("reduceAnimations")}
             </p>
           </div>
 
@@ -339,7 +323,9 @@ function Profile() {
             }
             aria-pressed={reducedMotion}
           >
-            {reducedMotion ? "ON" : "OFF"}
+            {reducedMotion
+              ? t("on")
+              : t("off")}
           </button>
 
         </div>
@@ -357,12 +343,11 @@ function Profile() {
 
           <div>
             <h2>
-              Privacy & Safety
+              {t("privacySafety")}
             </h2>
 
             <p>
-              Your information should remain under
-              your control.
+              {t("informationControl")}
             </p>
           </div>
 
@@ -373,38 +358,33 @@ function Profile() {
 
           <div>
             <strong>
-              🔐 Personal Data
+              🔐 {t("personalData")}
             </strong>
 
             <p>
-              Your memories and activity data are
-              intended for your personal MindCare
-              experience.
+              {t("personalDataText")}
             </p>
           </div>
 
 
           <div>
             <strong>
-              👥 Caregiver Access
+              👥 {t("caregiverAccess")}
             </strong>
 
             <p>
-              Caregiver access should only be available
-              when you explicitly authorize it.
+              {t("caregiverAccessText")}
             </p>
           </div>
 
 
           <div>
             <strong>
-              🧠 Cognitive Wellness
+              🧠 {t("cognitiveWellness")}
             </strong>
 
             <p>
-              MindCare provides wellness and
-              memory-support activities, not medical
-              diagnosis.
+              {t("cognitiveWellnessText")}
             </p>
           </div>
 
@@ -423,12 +403,11 @@ function Profile() {
 
           <div>
             <h2>
-              Account
+              {t("account")}
             </h2>
 
             <p>
-              Manage your MindCare account and get
-              support.
+              {t("manageAccount")}
             </p>
           </div>
 
@@ -439,7 +418,7 @@ function Profile() {
           href="/help"
           className="profile-help-link"
         >
-          ❓ Help & Support
+          ❓ {t("helpSupport")}
         </a>
 
 
@@ -448,7 +427,7 @@ function Profile() {
           className="primary-btn"
           onClick={handleLogout}
         >
-          Logout
+          {t("logout")}
         </button>
 
       </div>

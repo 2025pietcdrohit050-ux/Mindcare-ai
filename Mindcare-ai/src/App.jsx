@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { useState } from "react";
 import "./App.css";
 import "./pages/AdminDashboard.css";
+import { LanguageProvider, useLanguage } from "./LanguageContext";
 
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -22,19 +23,20 @@ import Help from "./pages/HelpPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import Leaderboard from "./pages/Leaderboard";
 
-function App() {
+function AppContent() {
+  const { t } = useLanguage();
+
   const [isLoggedIn, setIsLoggedIn] = useState(
     !!localStorage.getItem("token")
   );
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = JSON.parse(localStorage.getItem("user") || "null");
   const userName = user?.name || "User";
 
-  // Admin email
- const isAdmin =
-  isLoggedIn &&
-  user?.email?.toLowerCase() ===
-    "2025pietcdrohit050@poornima.org";
+  const isAdmin =
+    isLoggedIn &&
+    user?.email?.toLowerCase() ===
+      "2025pietcdrohit050@poornima.org";
 
   function handleLogout() {
     localStorage.removeItem("token");
@@ -57,14 +59,14 @@ function App() {
 
           {isLoggedIn && (
             <nav>
-              <Link to="/">Home</Link>
-              <Link to="/games">Games</Link>
-              <Link to="/memory">Memory</Link>
-              <Link to="/progress">Progress</Link>
-              <Link to="/reminders">Reminders</Link>
-              <Link to="/caregiver">Caregiver</Link>
-              <Link to="/ai-companion">AI Companion</Link>
-              <Link to="/leaderboard">Leaderboard</Link>
+              <Link to="/">{t("home")}</Link>
+              <Link to="/games">{t("games")}</Link>
+              <Link to="/memory">{t("memory")}</Link>
+              <Link to="/progress">{t("progress")}</Link>
+              <Link to="/reminders">{t("reminders")}</Link>
+              <Link to="/caregiver">{t("caregiver")}</Link>
+              <Link to="/ai-companion">{t("aiCompanion")}</Link>
+              <Link to="/leaderboard">{t("leaderboard")}</Link>
             </nav>
           )}
 
@@ -75,11 +77,13 @@ function App() {
                 <span className="navbar-user">
                   👋 {userName}
                 </span>
-<Link to="/admin" className="admin-nav-btn">
-  🛡️ Admin
-</Link>
+
+                <Link to="/admin" className="admin-nav-btn">
+                  🛡️ {t("admin")}
+                </Link>
+
                 <Link to="/profile" className="profile-btn">
-                  Profile
+                  {t("profile")}
                 </Link>
 
                 <button
@@ -87,12 +91,12 @@ function App() {
                   className="profile-btn"
                   onClick={handleLogout}
                 >
-                  Logout
+                  {t("logout")}
                 </button>
               </>
             ) : (
               <Link to="/login" className="profile-btn">
-                Login
+                {t("login") || "Login"}
               </Link>
             )}
 
@@ -247,6 +251,14 @@ function App() {
 
       </div>
     </BrowserRouter>
+  );
+}
+
+function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
   );
 }
 
