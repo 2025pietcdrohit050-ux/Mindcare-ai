@@ -2,7 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("./models/User");
-const { sendOTP } = require("./email");
+const { sendOTP, sendResetOTP } = require("./email");
 
 const router = express.Router();
 
@@ -47,7 +47,7 @@ router.post("/signup", async (req, res) => {
       emailOTPExpires: new Date(Date.now() + 10 * 60 * 1000),
     });
 
-    await sendOTP(email, otp);
+    await sendResetOTP(email, otp);
 
     res.status(201).json({
       message: "Account created. OTP sent to your email.",
