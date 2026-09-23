@@ -135,6 +135,63 @@ router.post("/verify-email", async (req, res) => {
   }
 });
 
+// RESEND EMAIL VERIFICATION OTP
+router.post("/resend-verification", async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        message: "Email is required",
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const user = await User.findOne({
+      email: normalizedEmail,
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "No account found with this email",
+      });
+    }
+
+    if (user.emailVerified) {
+      return res.status(400).json({
+        message: "Email is already verified",
+      });
+    }
+
+    const otp = generateOTP();
+
+    await User.updateOne(
+      { _id: user._id },
+      {
+        $set: {
+          emailOTP: otp,
+          emailOTPExpires: new Date(
+            Date.now() + 10 * 60 * 1000
+          ),
+        },
+      }
+    );
+
+    await sendOTP(normalizedEmail, otp);
+
+    res.json({
+      message: "Verification OTP sent to your email",
+      userId: user._id,
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Failed to send verification OTP",
+    });
+  }
+});
 
 // FORGOT PASSWORD - SEND OTP
 router.post("/forgot-password", async (req, res) => {
