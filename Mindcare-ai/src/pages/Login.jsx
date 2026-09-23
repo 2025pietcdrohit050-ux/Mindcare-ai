@@ -7,23 +7,23 @@ function Login() {
 
   const text = {
     en: {
-      forgot: "{tx.forgot}",
+      forgot: "Forgot Password?",
       registeredEmail: "Enter your registered email address and we will send you a password reset OTP.",
       registeredEmailPlaceholder: "Registered email address",
       sendOtp: "Send OTP",
       verifyOtp: "Verify OTP",
-      otpDescription: "{tx.otpDescription}",
+      otpDescription: "Enter the 6-digit OTP sent to your email.",
       otpPlaceholder: "Enter 6-digit OTP",
       newPassword: "Create New Password 🔑",
-      newPasswordDescription: "{tx.newPasswordDescription}",
+      newPasswordDescription: "Enter your new password below.",
       newPasswordPlaceholder: "New password",
       confirmPasswordPlaceholder: "Confirm new password",
       changePassword: "Change Password",
-      backLogin: "{tx.backLogin}",
-      createAccount: "{tx.createAccount}",
-      welcomeBack: "{tx.welcomeBack}",
-      createJourney: "{tx.createJourney}",
-      loginJourney: "{tx.loginJourney}",
+      backLogin: "← Back to Login",
+      createAccount: "Create Account",
+      welcomeBack: "Welcome Back",
+      createJourney: "Create an account to begin your cognitive wellness journey.",
+      loginJourney: "Login to continue your MindCare journey.",
       name: "Your name",
       email: "Gmail address",
       phone: "Mobile number",
@@ -32,9 +32,9 @@ function Login() {
       login: "Login",
       verifyEmail: "Verify your email 📧",
       verifyEmailDescription: "We sent a 6-digit OTP to your email address. Enter it below to verify your account.",
-      resend: "{tx.resend}",
-      already: tx.already,
-      signup: tx.signup,
+      resend: "Resend Verification OTP",
+      already: "Already have an account? Login",
+      signup: "Don't have an account? Sign up",
       lang: "English",
       switchLang: "हिंदी",
     },
@@ -478,12 +478,12 @@ function Login() {
 
         {!showOTP ? (
           <>
-            <h1>{isSignup ? "{tx.createAccount}" : "{tx.welcomeBack}"}</h1>
+            <h1>{isSignup ? tx.createAccount : tx.welcomeBack}</h1>
 
             <p className="description">
               {isSignup
-                ? "{tx.createJourney}"
-                : "{tx.loginJourney}"}
+                ? tx.createJourney
+                : tx.loginJourney}
             </p>
 
             <form onSubmit={handleSubmit}>
