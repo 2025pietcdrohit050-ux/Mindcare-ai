@@ -19,6 +19,7 @@ import AICompanion from "./pages/AICompanion";
 import Login from "./pages/Login";
 import Help from "./pages/HelpPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import Leaderboard from "./pages/Leaderboard";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -56,6 +57,7 @@ function App() {
               <Link to="/reminders">Reminders</Link>
               <Link to="/caregiver">Caregiver</Link>
               <Link to="/ai-companion">AI Companion</Link>
+              <Link to="/leaderboard">Leaderboard</Link>
             </nav>
           )}
 
@@ -219,7 +221,14 @@ function App() {
     </ProtectedRoute>
   }
 />
-
+<Route
+  path="/leaderboard"
+  element={
+    <ProtectedRoute>
+      <Leaderboard />
+    </ProtectedRoute>
+  }
+/>
           </Routes>
 
         </main>
