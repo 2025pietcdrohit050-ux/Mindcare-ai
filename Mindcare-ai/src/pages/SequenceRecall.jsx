@@ -22,84 +22,172 @@ function getSettings(difficulty) {
 }
 
 function createSequence(level) {
-  const length = Math.min(2 + level, 8);
+  const length = Math.min(
+    2 + level,
+    8
+  );
 
   return Array.from(
     { length },
-    () => Math.floor(Math.random() * 9) + 1
+    () =>
+      Math.floor(
+        Math.random() * 9
+      ) + 1
   );
 }
 
 function SequenceRecall() {
-  const [difficulty, setDifficulty] = useState("");
-  const [level, setLevel] = useState(1);
-  const [sequence, setSequence] = useState([]);
-  const [userSequence, setUserSequence] = useState([]);
-  const [showSequence, setShowSequence] = useState(false);
-  const [score, setScore] = useState(0);
-  const [message, setMessage] = useState("");
-  const [gameOver, setGameOver] = useState(false);
-  const [scoreSaved, setScoreSaved] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState(0);
-  const [gameStarted, setGameStarted] = useState(false);
+  const [difficulty, setDifficulty] =
+    useState("");
 
-  const gameStartTime = useRef(Date.now());
+  const [level, setLevel] =
+    useState(1);
 
-  function startGame(selectedDifficulty) {
-    const settings = getSettings(selectedDifficulty);
-    const startingLevel = settings.startingLevel;
+  const [levelRounds, setLevelRounds] =
+    useState(0);
 
-    setDifficulty(selectedDifficulty);
-    setLevel(startingLevel);
-    setSequence(createSequence(startingLevel));
+  const [sequence, setSequence] =
+    useState([]);
+
+  const [userSequence, setUserSequence] =
+    useState([]);
+
+  const [showSequence, setShowSequence] =
+    useState(false);
+
+  const [score, setScore] =
+    useState(0);
+
+  const [message, setMessage] =
+    useState("");
+
+  const [gameOver, setGameOver] =
+    useState(false);
+
+  const [scoreSaved, setScoreSaved] =
+    useState(false);
+
+  const [elapsedTime, setElapsedTime] =
+    useState(0);
+
+  const [gameStarted, setGameStarted] =
+    useState(false);
+
+  const gameStartTime =
+    useRef(Date.now());
+
+  function startGame(
+    selectedDifficulty
+  ) {
+    const settings =
+      getSettings(
+        selectedDifficulty
+      );
+
+    const startingLevel =
+      settings.startingLevel;
+
+    setDifficulty(
+      selectedDifficulty
+    );
+
+    setLevel(
+      startingLevel
+    );
+
+    setLevelRounds(0);
+
+    setSequence(
+      createSequence(
+        startingLevel
+      )
+    );
+
     setUserSequence([]);
+
     setScore(0);
+
     setElapsedTime(0);
-    setMessage("Remember the sequence...");
+
+    setMessage(
+      "Remember the sequence..."
+    );
+
     setShowSequence(true);
+
     setGameOver(false);
+
     setScoreSaved(false);
+
     setGameStarted(true);
 
-    gameStartTime.current = Date.now();
+    gameStartTime.current =
+      Date.now();
   }
 
   useEffect(() => {
-    if (!gameStarted || gameOver) {
+    if (
+      !gameStarted ||
+      gameOver
+    ) {
       return;
     }
 
-    const timer = setInterval(() => {
-      const seconds = Math.floor(
-        (Date.now() - gameStartTime.current) / 1000
-      );
+    const timer =
+      setInterval(() => {
+        const seconds =
+          Math.floor(
+            (Date.now() -
+              gameStartTime.current) /
+              1000
+          );
 
-      setElapsedTime(seconds);
-    }, 1000);
+        setElapsedTime(
+          seconds
+        );
+      }, 1000);
 
-    return () => clearInterval(timer);
-  }, [gameStarted, gameOver]);
+    return () =>
+      clearInterval(timer);
+  }, [
+    gameStarted,
+    gameOver,
+  ]);
 
   useEffect(() => {
-    if (!gameStarted || !showSequence || gameOver) {
+    if (
+      !gameStarted ||
+      !showSequence ||
+      gameOver
+    ) {
       return;
     }
 
-    const settings = getSettings(difficulty);
-
-    const displayTime = Math.max(
-      1800,
-      settings.displayTime - (level - settings.startingLevel) * 100
-    );
-
-    const timer = setTimeout(() => {
-      setShowSequence(false);
-      setMessage(
-        "Type the sequence using your keyboard."
+    const settings =
+      getSettings(
+        difficulty
       );
-    }, displayTime);
 
-    return () => clearTimeout(timer);
+    const displayTime =
+      Math.max(
+        1800,
+        settings.displayTime -
+          (level -
+            settings.startingLevel) *
+            100
+      );
+
+    const timer =
+      setTimeout(() => {
+        setShowSequence(false);
+
+        setMessage(
+          "Type the sequence using your keyboard."
+        );
+      }, displayTime);
+
+    return () =>
+      clearTimeout(timer);
   }, [
     gameStarted,
     showSequence,
@@ -109,46 +197,67 @@ function SequenceRecall() {
   ]);
 
   function addNumber(number) {
-    if (showSequence || gameOver) {
+    if (
+      showSequence ||
+      gameOver
+    ) {
       return;
     }
 
-    if (userSequence.length >= sequence.length) {
+    if (
+      userSequence.length >=
+      sequence.length
+    ) {
       return;
     }
 
-    setUserSequence((prev) => [
-      ...prev,
-      number,
-    ]);
+    setUserSequence(
+      (prev) => [
+        ...prev,
+        number,
+      ]
+    );
   }
 
   function removeLastNumber() {
-    if (showSequence || gameOver) {
+    if (
+      showSequence ||
+      gameOver
+    ) {
       return;
     }
 
-    setUserSequence((prev) =>
-      prev.slice(0, -1)
+    setUserSequence(
+      (prev) =>
+        prev.slice(0, -1)
     );
   }
 
   function submitSequence() {
-    if (showSequence || gameOver) {
+    if (
+      showSequence ||
+      gameOver
+    ) {
       return;
     }
 
-    if (userSequence.length !== sequence.length) {
+    if (
+      userSequence.length !==
+      sequence.length
+    ) {
       setMessage(
         `Enter all ${sequence.length} numbers first.`
       );
+
       return;
     }
 
-    const correct = userSequence.every(
-      (value, index) =>
-        value === sequence[index]
-    );
+    const correct =
+      userSequence.every(
+        (value, index) =>
+          value ===
+          sequence[index]
+      );
 
     if (correct) {
       const levelScore =
@@ -157,33 +266,83 @@ function SequenceRecall() {
       const newScore =
         score + levelScore;
 
-      setScore(newScore);
-
-      setMessage(
-        "Correct! Get ready for the next level."
+      setScore(
+        newScore
       );
 
-      setTimeout(() => {
-        const nextLevel =
-          Math.min(level + 1, 8);
+      const nextRound =
+        levelRounds + 1;
 
-        setLevel(nextLevel);
-        setSequence(
-          createSequence(nextLevel)
+      if (
+        nextRound >= 4
+      ) {
+        setMessage(
+          "Excellent! Sequence length increased."
         );
+      } else {
+        setMessage(
+          `Correct! ${
+            4 - nextRound
+          } rounds remaining at this level.`
+        );
+      }
+
+      setTimeout(() => {
+        let nextLevel =
+          level;
+
+        let nextLevelRounds =
+          nextRound;
+
+        if (
+          nextRound >= 4
+        ) {
+          nextLevel =
+            Math.min(
+              level + 1,
+              8
+            );
+
+          nextLevelRounds =
+            0;
+        }
+
+        setLevel(
+          nextLevel
+        );
+
+        setLevelRounds(
+          nextLevelRounds
+        );
+
+        setSequence(
+          createSequence(
+            nextLevel
+          )
+        );
+
         setUserSequence([]);
-        setShowSequence(true);
+
+        setShowSequence(
+          true
+        );
       }, 1000);
+
     } else {
       setMessage(
         "Incorrect sequence."
       );
-      setGameOver(true);
+
+      setGameOver(
+        true
+      );
     }
   }
 
   useEffect(() => {
-    function handleKeyboard(event) {
+    function handleKeyboard(
+      event
+    ) {
       if (
         !gameStarted ||
         showSequence ||
@@ -192,17 +351,27 @@ function SequenceRecall() {
         return;
       }
 
-      if (/^[1-9]$/.test(event.key)) {
+      if (
+        /^[1-9]$/.test(
+          event.key
+        )
+      ) {
         addNumber(
           Number(event.key)
         );
       }
 
-      if (event.key === "Backspace") {
+      if (
+        event.key ===
+        "Backspace"
+      ) {
         removeLastNumber();
       }
 
-      if (event.key === "Enter") {
+      if (
+        event.key ===
+        "Enter"
+      ) {
         submitSequence();
       }
     }
@@ -228,39 +397,55 @@ function SequenceRecall() {
 
   async function saveScore() {
     const token =
-      localStorage.getItem("token");
+      localStorage.getItem(
+        "token"
+      );
 
-    if (!token || scoreSaved) {
+    if (
+      !token ||
+      scoreSaved
+    ) {
       return;
     }
 
-    const finalTime = Math.max(
-      1,
-      Math.floor(
-        (Date.now() -
-          gameStartTime.current) /
-          1000
-      )
-    );
+    const finalTime =
+      Math.max(
+        1,
+        Math.floor(
+          (Date.now() -
+            gameStartTime.current) /
+            1000
+        )
+      );
 
     try {
-      const response = await fetch(
-        "https://mindcare-ai-hesy.onrender.com/api/scores",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            game: "Sequence Recall",
-            score,
-            time: finalTime,
-            difficulty,
-          }),
-        }
-      );
+      const response =
+        await fetch(
+          "https://mindcare-ai-hesy.onrender.com/api/scores",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+
+              Authorization:
+                `Bearer ${token}`,
+            },
+
+            body: JSON.stringify({
+              game:
+                "Sequence Recall",
+
+              score,
+
+              time:
+                finalTime,
+
+              difficulty,
+            }),
+          }
+        );
 
       if (!response.ok) {
         throw new Error(
@@ -268,7 +453,9 @@ function SequenceRecall() {
         );
       }
 
-      setScoreSaved(true);
+      setScoreSaved(
+        true
+      );
 
       console.log(
         "Sequence Recall score saved ✅",
@@ -278,6 +465,7 @@ function SequenceRecall() {
           difficulty,
         }
       );
+
     } catch (error) {
       console.error(
         "Sequence Recall score save error:",
@@ -294,21 +482,34 @@ function SequenceRecall() {
 
   function restartGame() {
     setDifficulty("");
+
     setLevel(1);
+
+    setLevelRounds(0);
+
     setSequence([]);
+
     setUserSequence([]);
+
     setScore(0);
+
     setElapsedTime(0);
+
     setMessage("");
+
     setShowSequence(false);
+
     setGameOver(false);
+
     setScoreSaved(false);
+
     setGameStarted(false);
   }
 
   if (!gameStarted) {
     return (
       <div className="game-page">
+
         <div className="game-complete">
 
           <div className="complete-icon">
@@ -335,7 +536,8 @@ function SequenceRecall() {
               gap: "12px",
               width: "100%",
               maxWidth: "360px",
-              margin: "20px auto 0",
+              margin:
+                "20px auto 0",
             }}
           >
 
@@ -351,7 +553,9 @@ function SequenceRecall() {
             <button
               className="primary-btn"
               onClick={() =>
-                startGame("Moderate")
+                startGame(
+                  "Moderate"
+                )
               }
             >
               🟡 Moderate
@@ -369,6 +573,7 @@ function SequenceRecall() {
           </div>
 
         </div>
+
       </div>
     );
   }
@@ -398,7 +603,9 @@ function SequenceRecall() {
 
         <button
           className="secondary-btn"
-          onClick={restartGame}
+          onClick={
+            restartGame
+          }
         >
           Change Difficulty
         </button>
@@ -408,28 +615,40 @@ function SequenceRecall() {
       <div className="game-stats">
 
         <div>
-          <span>Difficulty</span>
+          <span>
+            Difficulty
+          </span>
+
           <strong>
             {difficulty}
           </strong>
         </div>
 
         <div>
-          <span>Level</span>
+          <span>
+            Level
+          </span>
+
           <strong>
             {level}
           </strong>
         </div>
 
         <div>
-          <span>Score</span>
+          <span>
+            Score
+          </span>
+
           <strong>
             {score}
           </strong>
         </div>
 
         <div>
-          <span>Time</span>
+          <span>
+            Time
+          </span>
+
           <strong>
             {elapsedTime}s
           </strong>
@@ -458,7 +677,10 @@ function SequenceRecall() {
           {showSequence ? (
 
             sequence.map(
-              (number, index) => (
+              (
+                number,
+                index
+              ) => (
                 <div
                   className="sequence-number"
                   key={index}
@@ -472,9 +694,13 @@ function SequenceRecall() {
 
             <div className="typed-sequence">
 
-              {userSequence.length > 0
+              {userSequence.length >
+              0
                 ? userSequence.map(
-                    (number, index) => (
+                    (
+                      number,
+                      index
+                    ) => (
                       <div
                         className="sequence-number"
                         key={index}
@@ -501,7 +727,9 @@ function SequenceRecall() {
 
               <div className="keyboard-hint">
 
-                <span>⌨️</span>
+                <span>
+                  ⌨️
+                </span>
 
                 Type numbers using
                 your keyboard
@@ -510,7 +738,9 @@ function SequenceRecall() {
                   1–9
                 </strong>
 
-                <span>·</span>
+                <span>
+                  ·
+                </span>
 
                 Press{" "}
                 <strong>
@@ -522,13 +752,18 @@ function SequenceRecall() {
 
               <div className="number-grid">
 
-                {[1,2,3,4,5,6,7,8,9].map(
+                {[
+                  1,2,3,4,5,
+                  6,7,8,9
+                ].map(
                   (number) => (
                     <button
                       key={number}
                       className="number-btn"
                       onClick={() =>
-                        addNumber(number)
+                        addNumber(
+                          number
+                        )
                       }
                     >
                       {number}
@@ -610,7 +845,9 @@ function SequenceRecall() {
 
             <button
               className="primary-btn"
-              onClick={restartGame}
+              onClick={
+                restartGame
+              }
             >
               Try Again
             </button>

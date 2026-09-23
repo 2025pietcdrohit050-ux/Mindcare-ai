@@ -464,29 +464,38 @@ function Login() {
 
         {!showOTP && (
           <>
-            {!isSignup && (
-              <button
-                type="button"
-                className="forgot-password-btn"
-                onClick={resendVerificationOTP}
-              >
-                Resend Verification OTP
-              </button>
-            )}
+           {!isSignup && (
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      gap: "24px",
+      marginTop: "14px",
+      flexWrap: "wrap",
+    }}
+  >
+    <button
+      type="button"
+      className="forgot-password-btn"
+      onClick={resendVerificationOTP}
+    >
+      Resend Verification OTP
+    </button>
 
-            {!isSignup && (
-              <button
-                type="button"
-                className="forgot-password-btn"
-                onClick={() => {
-                  setForgotPassword(true);
-                  setVerificationRequired(false);
-                  setMessage("");
-                }}
-              >
-                Forgot Password?
-              </button>
-            )}
+    <button
+      type="button"
+      className="forgot-password-btn"
+      onClick={() => {
+        setForgotPassword(true);
+        setVerificationRequired(false);
+        setMessage("");
+      }}
+    >
+      Forgot Password?
+    </button>
+  </div>
+)}
 
             <button
               type="button"

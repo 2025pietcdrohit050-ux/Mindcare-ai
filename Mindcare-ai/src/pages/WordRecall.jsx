@@ -84,13 +84,13 @@ function getSettings(difficulty) {
 
   if (difficulty === "Moderate") {
     return {
-      wordCount: 6,
+      wordCount: 5,
       displayTime: 4500,
     };
   }
 
   return {
-    wordCount: 5,
+    wordCount: 3,
     displayTime: 6000,
   };
 }

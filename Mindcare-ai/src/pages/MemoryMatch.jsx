@@ -25,14 +25,14 @@ function shuffleCards(values) {
 
 function getCardsForDifficulty(difficulty) {
   if (difficulty === "Hard") {
-    return cardValues;
-  }
-
-  if (difficulty === "Moderate") {
     return cardValues.slice(0, 7);
   }
 
-  return cardValues.slice(0, 6);
+  if (difficulty === "Moderate") {
+    return cardValues.slice(0, 5);
+  }
+
+  return cardValues.slice(0, 3);
 }
 
 function MemoryMatch() {
@@ -45,7 +45,10 @@ function MemoryMatch() {
   const [gameStarted, setGameStarted] = useState(false);
 
   function startGame(selectedDifficulty) {
-    const values = getCardsForDifficulty(selectedDifficulty);
+    const values =
+      getCardsForDifficulty(
+        selectedDifficulty
+      );
 
     setDifficulty(selectedDifficulty);
     setCards(shuffleCards(values));
@@ -57,16 +60,26 @@ function MemoryMatch() {
   }
 
   useEffect(() => {
-    if (!gameStarted || cards.length === 0) {
+    if (
+      !gameStarted ||
+      cards.length === 0
+    ) {
       return;
     }
 
-    const timer = setInterval(() => {
-      setTime((prev) => prev + 1);
-    }, 1000);
+    const timer =
+      setInterval(() => {
+        setTime(
+          (prev) => prev + 1
+        );
+      }, 1000);
 
-    return () => clearInterval(timer);
-  }, [gameStarted, cards.length]);
+    return () =>
+      clearInterval(timer);
+  }, [
+    gameStarted,
+    cards.length,
+  ]);
 
   useEffect(() => {
     if (selected.length !== 2) {
@@ -74,27 +87,40 @@ function MemoryMatch() {
     }
 
     const first = cards.find(
-      (card) => card.id === selected[0]
+      (card) =>
+        card.id === selected[0]
     );
 
     const second = cards.find(
-      (card) => card.id === selected[1]
+      (card) =>
+        card.id === selected[1]
     );
 
     if (!first || !second) {
       return;
     }
 
-    setMoves((prev) => prev + 1);
+    setMoves(
+      (prev) => prev + 1
+    );
 
-    if (first.value === second.value) {
+    if (
+      first.value ===
+      second.value
+    ) {
       setTimeout(() => {
-        setCards((prev) =>
-          prev.map((card) =>
-            selected.includes(card.id)
-              ? { ...card, matched: true }
-              : card
-          )
+        setCards(
+          (prev) =>
+            prev.map((card) =>
+              selected.includes(
+                card.id
+              )
+                ? {
+                    ...card,
+                    matched: true,
+                  }
+                : card
+            )
         );
 
         setSelected([]);
@@ -104,65 +130,93 @@ function MemoryMatch() {
         setSelected([]);
       }, 900);
     }
-  }, [selected, cards]);
+  }, [
+    selected,
+    cards,
+  ]);
 
-  async function saveScore(finalMoves, finalTime) {
-    const token = localStorage.getItem("token");
+  async function saveScore(
+    finalMoves,
+    finalTime
+  ) {
+    const token =
+      localStorage.getItem(
+        "token"
+      );
 
-    if (!token || scoreSaved) {
+    if (
+      !token ||
+      scoreSaved
+    ) {
       return;
     }
 
-    const pairCount = cards.length / 2;
+    const pairCount =
+      cards.length / 2;
 
     const baseScore =
       difficulty === "Hard"
         ? 260
-        : difficulty === "Moderate"
+        : difficulty ===
+          "Moderate"
         ? 230
         : 200;
 
-    const score = Math.max(
-      baseScore -
-        finalMoves * 7 -
-        finalTime * 2 +
-        pairCount * 5,
-      10
-    );
-
-    try {
-      const response = await fetch(
-        "https://mindcare-ai-hesy.onrender.com/api/scores",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            game: "Memory Match",
-            score,
-            time: finalTime,
-            difficulty,
-          }),
-        }
+    const score =
+      Math.max(
+        baseScore -
+          finalMoves * 7 -
+          finalTime * 2 +
+          pairCount * 5,
+        10
       );
 
+    try {
+      const response =
+        await fetch(
+          "https://mindcare-ai-hesy.onrender.com/api/scores",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+                "application/json",
+              Authorization:
+                `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              game:
+                "Memory Match",
+              score,
+              time: finalTime,
+              difficulty,
+            }),
+          }
+        );
+
       if (!response.ok) {
-        throw new Error("Score save failed");
+        throw new Error(
+          "Score save failed"
+        );
       }
 
       setScoreSaved(true);
 
-      console.log("Memory Match score saved ✅");
+      console.log(
+        "Memory Match score saved ✅"
+      );
     } catch (error) {
-      console.error("Score save error:", error);
+      console.error(
+        "Score save error:",
+        error
+      );
     }
   }
 
   const completed =
     cards.length > 0 &&
-    cards.every((card) => card.matched);
+    cards.every(
+      (card) => card.matched
+    );
 
   useEffect(() => {
     if (
@@ -170,7 +224,10 @@ function MemoryMatch() {
       !scoreSaved &&
       cards.length > 0
     ) {
-      saveScore(moves, time);
+      saveScore(
+        moves,
+        time
+      );
     }
   }, [
     completed,
@@ -181,25 +238,39 @@ function MemoryMatch() {
     difficulty,
   ]);
 
-  function handleCardClick(index) {
-    if (selected.length === 2) {
+  function handleCardClick(
+    index
+  ) {
+    if (
+      selected.length === 2
+    ) {
       return;
     }
 
-    if (selected.includes(cards[index]?.id)) {
+    if (
+      selected.includes(
+        cards[index]?.id
+      )
+    ) {
       return;
     }
 
-    const card = cards[index];
+    const card =
+      cards[index];
 
-    if (!card || card.matched) {
+    if (
+      !card ||
+      card.matched
+    ) {
       return;
     }
 
-    setSelected((prev) => [
-      ...prev,
-      card.id,
-    ]);
+    setSelected(
+      (prev) => [
+        ...prev,
+        card.id,
+      ]
+    );
   }
 
   function restartGame() {
@@ -242,27 +313,36 @@ function MemoryMatch() {
               gap: "12px",
               width: "100%",
               maxWidth: "360px",
-              margin: "20px auto 0",
+              margin:
+                "20px auto 0",
             }}
           >
 
             <button
               className="primary-btn"
-              onClick={() => startGame("Easy")}
+              onClick={() =>
+                startGame("Easy")
+              }
             >
               🟢 Easy
             </button>
 
             <button
               className="primary-btn"
-              onClick={() => startGame("Moderate")}
+              onClick={() =>
+                startGame(
+                  "Moderate"
+                )
+              }
             >
               🟡 Moderate
             </button>
 
             <button
               className="primary-btn"
-              onClick={() => startGame("Hard")}
+              onClick={() =>
+                startGame("Hard")
+              }
             >
               🔴 Hard
             </button>
@@ -275,11 +355,13 @@ function MemoryMatch() {
     );
   }
 
-  const pairCount = cards.length / 2;
+  const pairCount =
+    cards.length / 2;
 
   const matchedPairs =
     cards.filter(
-      (card) => card.matched
+      (card) =>
+        card.matched
     ).length / 2;
 
   return (
@@ -306,7 +388,9 @@ function MemoryMatch() {
 
         <button
           className="secondary-btn"
-          onClick={restartGame}
+          onClick={
+            restartGame
+          }
         >
           Change Difficulty
         </button>
@@ -316,30 +400,43 @@ function MemoryMatch() {
       <div className="game-stats">
 
         <div>
-          <span>Difficulty</span>
+          <span>
+            Difficulty
+          </span>
+
           <strong>
             {difficulty}
           </strong>
         </div>
 
         <div>
-          <span>Moves</span>
+          <span>
+            Moves
+          </span>
+
           <strong>
             {moves}
           </strong>
         </div>
 
         <div>
-          <span>Time</span>
+          <span>
+            Time
+          </span>
+
           <strong>
             {time}s
           </strong>
         </div>
 
         <div>
-          <span>Pairs</span>
+          <span>
+            Pairs
+          </span>
+
           <strong>
-            {matchedPairs}/{pairCount}
+            {matchedPairs}/
+            {pairCount}
           </strong>
         </div>
 
@@ -380,7 +477,9 @@ function MemoryMatch() {
 
           <button
             className="primary-btn"
-            onClick={restartGame}
+            onClick={
+              restartGame
+            }
           >
             Play Again
           </button>
@@ -397,36 +496,42 @@ function MemoryMatch() {
           }}
         >
 
-          {cards.map((card, index) => {
+          {cards.map(
+            (card, index) => {
 
-            const isOpen =
-              selected.includes(card.id) ||
-              card.matched;
+              const isOpen =
+                selected.includes(
+                  card.id
+                ) ||
+                card.matched;
 
-            return (
-
-              <button
-                key={card.id}
-                className={`memory-card ${
-                  isOpen ? "open" : ""
-                } ${
-                  card.matched
-                    ? "matched"
-                    : ""
-                }`}
-                onClick={() =>
-                  handleCardClick(index)
-                }
-              >
-
-                {isOpen
-                  ? card.value
-                  : "?"}
-
-              </button>
-
-            );
-          })}
+              return (
+                <button
+                  key={
+                    card.id
+                  }
+                  className={`memory-card ${
+                    isOpen
+                      ? "open"
+                      : ""
+                  } ${
+                    card.matched
+                      ? "matched"
+                      : ""
+                  }`}
+                  onClick={() =>
+                    handleCardClick(
+                      index
+                    )
+                  }
+                >
+                  {isOpen
+                    ? card.value
+                    : "?"}
+                </button>
+              );
+            }
+          )}
 
         </div>
 

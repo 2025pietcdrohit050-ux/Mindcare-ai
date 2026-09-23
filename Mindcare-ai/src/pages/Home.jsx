@@ -1,40 +1,97 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useLanguage } from "../LanguageContext";
+
+const recommendedGames = [
+  {
+    name: "Memory Match",
+    icon: "🧠",
+    title: "Your memory training is underway.",
+    description:
+      "Practice visual memory and matching skills with a quick memory activity.",
+    path: "/memory-match",
+  },
+  {
+    name: "Sequence Recall",
+    icon: "🔢",
+    title: "Your recall training is underway.",
+    description:
+      "Challenge yourself to remember and reproduce sequences accurately.",
+    path: "/sequence-recall",
+  },
+  {
+    name: "Reaction Challenge",
+    icon: "⚡",
+    title: "Your attention training is underway.",
+    description:
+      "Continue practicing attention and reaction speed.",
+    path: "/reaction-challenge",
+  },
+  {
+    name: "Word Recall",
+    icon: "📝",
+    title: "Your word recall training is underway.",
+    description:
+      "Strengthen your word memory with a short recall exercise.",
+    path: "/word-recall",
+  },
+];
 
 function Home() {
-  const { t } = useLanguage();
-
   const user = JSON.parse(
-    localStorage.getItem("user") || "null"
+    localStorage.getItem("user")
   );
 
-  const userName = user?.name || "Friend";
-  const token = localStorage.getItem("token");
+  const userName =
+    user?.name || "Friend";
 
-  const [scores, setScores] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const token =
+    localStorage.getItem("token");
+
+  const [scores, setScores] =
+    useState([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [recommendedGame] = useState(() => {
+    const randomIndex = Math.floor(
+      Math.random() * recommendedGames.length
+    );
+
+    return recommendedGames[randomIndex];
+  });
 
   useEffect(() => {
     async function fetchScores() {
       try {
-        const response = await fetch(
-          "https://mindcare-ai-hesy.onrender.com/api/scores",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response =
+          await fetch(
+            "https://mindcare-ai-hesy.onrender.com/api/scores",
+            {
+              headers: {
+                Authorization:
+                  `Bearer ${token}`,
+              },
+            }
+          );
 
         if (!response.ok) {
-          throw new Error("Failed to fetch scores");
+          throw new Error(
+            "Failed to fetch scores"
+          );
         }
 
-        const data = await response.json();
-        setScores(data.scores || []);
+        const data =
+          await response.json();
+
+        setScores(
+          data.scores || []
+        );
       } catch (error) {
-        console.error("Score fetch error:", error);
+        console.error(
+          "Score fetch error:",
+          error
+        );
       } finally {
         setLoading(false);
       }
@@ -47,120 +104,184 @@ function Home() {
     }
   }, [token]);
 
-  const gamesPlayed = scores.length;
+  /*
+    BASIC STATS
+  */
+
+  const gamesPlayed =
+    scores.length;
 
   const bestScore =
     scores.length > 0
-      ? Math.max(...scores.map((item) => item.score || 0))
+      ? Math.max(
+          ...scores.map(
+            (item) => item.score || 0
+          )
+        )
       : 0;
 
-  const totalTime = scores.reduce(
-    (total, item) => total + (item.time || 0),
-    0
-  );
-
-  const totalMinutes = Math.floor(totalTime / 60);
-
-  const today = new Date().toDateString();
-
-  const completedToday = scores.filter((item) => {
-    if (!item.createdAt) return false;
-
-    return (
-      new Date(item.createdAt).toDateString() === today
+  const totalTime =
+    scores.reduce(
+      (total, item) =>
+        total + (item.time || 0),
+      0
     );
-  }).length;
 
-  const todayActivity = Math.min(
-    Math.round((completedToday / 4) * 100),
-    100
-  );
+  const totalMinutes =
+    Math.floor(
+      totalTime / 60
+    );
+
+  /*
+    TODAY'S ACTIVITY
+  */
+
+  const today =
+    new Date().toDateString();
+
+  const completedToday =
+    scores.filter((item) => {
+      if (!item.createdAt) {
+        return false;
+      }
+
+      return (
+        new Date(
+          item.createdAt
+        ).toDateString() === today
+      );
+    }).length;
+
+  const todayActivity =
+    Math.min(
+      Math.round(
+        (completedToday / 4) * 100
+      ),
+      100
+    );
+
+  /*
+    CURRENT STREAK
+  */
+
+  const activeDates =
+    new Set(
+      scores
+        .filter(
+          (item) => item.createdAt
+        )
+        .map((item) =>
+          new Date(
+            item.createdAt
+          ).toDateString()
+        )
+    );
+
+  let currentStreak = 0;
+
+  const streakDate =
+    new Date();
+
+  while (
+    activeDates.has(
+      streakDate.toDateString()
+    )
+  ) {
+    currentStreak++;
+
+    streakDate.setDate(
+      streakDate.getDate() - 1
+    );
+  }
+
+  /*
+    AVERAGE SCORE
+  */
 
   const averageScore =
     scores.length > 0
       ? Math.round(
           scores.reduce(
-            (total, item) => total + (item.score || 0),
+            (total, item) =>
+              total +
+              (item.score || 0),
             0
-          ) / scores.length
+          ) /
+            scores.length
         )
       : 0;
 
+  /*
+    BEST GAME
+  */
+
   const bestGame =
     scores.length > 0
-      ? scores.reduce((best, current) =>
-          (current.score || 0) > (best.score || 0)
-            ? current
-            : best
+      ? scores.reduce(
+          (best, current) =>
+            (current.score || 0) >
+            (best.score || 0)
+              ? current
+              : best
         )
       : null;
 
-  const gameNames = new Set(
-    scores.map((item) => item.game)
-  );
+  /*
+    UNIQUE GAMES
+  */
 
-  const achievements = Math.min(
-    gameNames.size + Math.floor(gamesPlayed / 5),
-    8
-  );
+  const gameNames =
+    new Set(
+      scores.map(
+        (item) => item.game
+      )
+    );
 
-  const cognitiveScore = averageScore;
+  /*
+    ACHIEVEMENTS
+  */
 
-  const recentScores = [...scores]
-    .sort(
-      (a, b) =>
-        new Date(b.createdAt) -
-        new Date(a.createdAt)
-    )
-    .slice(0, 5);
+  const achievements =
+    Math.min(
+      gameNames.size +
+        Math.floor(
+          gamesPlayed / 5
+        ),
+      8
+    );
 
-  let aiTitle = t("homeStartFirstTitle");
-  let aiText = t("homeStartFirstText");
+  /*
+    COGNITIVE SCORE
+  */
 
-  if (scores.length > 0) {
-    if (bestGame?.game === "Memory Match") {
-      aiTitle = t("homeMemoryTitle");
-      aiText = t("homeMemoryText");
-    } else if (bestGame?.game === "Sequence Recall") {
-      aiTitle = t("homeSequenceTitle");
-      aiText = t("homeSequenceText");
-    } else if (bestGame?.game === "Reaction Challenge") {
-      aiTitle = t("homeReactionTitle");
-      aiText = t("homeReactionText");
-    } else if (bestGame?.game === "Word Recall") {
-      aiTitle = t("homeWordTitle");
-      aiText = t("homeWordText");
-    } else {
-      aiTitle = t("homeGreatJobTitle");
-      aiText = t("homeGreatJobText");
-    }
-  }
+  const cognitiveScore =
+    averageScore;
 
-  let recommendedGame = "/games";
+  /*
+    RECENT ACTIVITY
+  */
 
-  if (bestGame?.game === "Memory Match") {
-    recommendedGame = "/games/memory-match";
-  } else if (bestGame?.game === "Sequence Recall") {
-    recommendedGame = "/games/sequence-recall";
-  } else if (bestGame?.game === "Reaction Challenge") {
-    recommendedGame = "/games/reaction-challenge";
-  } else if (bestGame?.game === "Word Recall") {
-    recommendedGame = "/games/word-recall";
-  }
-
-  function getGameIcon(game) {
-    if (game === "Memory Match") return "🧩";
-    if (game === "Sequence Recall") return "🔢";
-    if (game === "Reaction Challenge") return "⚡";
-    if (game === "Word Recall") return "📝";
-
-    return "🎮";
-  }
+  const recentScores =
+    [...scores]
+      .sort(
+        (a, b) =>
+          new Date(
+            b.createdAt
+          ) -
+          new Date(
+            a.createdAt
+          )
+      )
+      .slice(0, 5);
 
   function formatDate(date) {
-    if (!date) return "";
+    if (!date) {
+      return "";
+    }
 
-    return new Date(date).toLocaleDateString(
+    return new Date(
+      date
+    ).toLocaleDateString(
       "en-IN",
       {
         day: "numeric",
@@ -177,39 +298,52 @@ function Home() {
       <div className="dashboard-header">
 
         <div>
+
           <p className="small-title">
-            {t("personalDashboard")}
+            PERSONAL DASHBOARD
           </p>
 
           <h1>
-            {t("hello")}, {userName} 👋
+            Hello, {userName} 👋
           </h1>
 
           <p className="dashboard-subtitle">
-            {t("cognitiveWellnessSpace")}
+            Your personalized
+            cognitive wellness space.
           </p>
+
         </div>
 
         <div className="daily-badge">
 
-          <span>🔥</span>
+          <span>
+            🔥
+          </span>
 
           <div>
+
             <strong>
               {gamesPlayed > 0
-                ? t("activeLearner")
-                : t("startToday")}
+                ? "Active Learner"
+                : "Start Today"}
             </strong>
 
             <small>
               {gamesPlayed > 0
-                ? `${gamesPlayed} ${
-                    gamesPlayed > 1
-                      ? t("gamesCompleted")
-                      : t("gameCompleted")
-                  }`
-                : t("playFirstGame")}
+                ? currentStreak > 0
+                  ? `🔥 ${currentStreak} day streak · ${gamesPlayed} game${
+                      gamesPlayed > 1
+                        ? "s"
+                        : ""
+                    } completed`
+                  : `${gamesPlayed} game${
+                      gamesPlayed > 1
+                        ? "s"
+                        : ""
+                    } completed`
+                : "Play your first game"}
             </small>
+
           </div>
 
         </div>
@@ -228,13 +362,17 @@ function Home() {
           </div>
 
           <div>
+
             <span>
-              {t("cognitiveScore")}
+              Cognitive Score
             </span>
 
             <strong>
-              {loading ? "..." : cognitiveScore}
+              {loading
+                ? "..."
+                : cognitiveScore}
             </strong>
+
           </div>
 
         </div>
@@ -247,8 +385,9 @@ function Home() {
           </div>
 
           <div>
+
             <span>
-              {t("todaysActivity")}
+              Today's Activity
             </span>
 
             <strong>
@@ -256,6 +395,7 @@ function Home() {
                 ? "..."
                 : `${todayActivity}%`}
             </strong>
+
           </div>
 
         </div>
@@ -268,15 +408,17 @@ function Home() {
           </div>
 
           <div>
+
             <span>
-              {t("trainingTime")}
+              Training Time
             </span>
 
             <strong>
               {loading
                 ? "..."
-                : `${totalMinutes} ${t("minutes")}`}
+                : `${totalMinutes} min`}
             </strong>
+
           </div>
 
         </div>
@@ -289,8 +431,9 @@ function Home() {
           </div>
 
           <div>
+
             <span>
-              {t("achievements")}
+              Achievements
             </span>
 
             <strong>
@@ -298,6 +441,7 @@ function Home() {
                 ? "..."
                 : `${achievements}/8`}
             </strong>
+
           </div>
 
         </div>
@@ -320,44 +464,98 @@ function Home() {
         <div className="training-card">
 
           <span className="card-label">
-            {t("trainingSummary")}
+            TRAINING SUMMARY
           </span>
 
           <h2>
-            {t("yourActivity")}
+            Your activity
           </h2>
 
           <p className="card-description">
-            {t("activityHistoryText")}
+            Keep building your
+            personal cognitive
+            activity history.
           </p>
 
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "1fr 1fr",
+              gridTemplateColumns:
+                "1fr 1fr",
               gap: "12px",
               marginTop: "20px",
             }}
           >
 
             <div>
+
               <small>
-                {t("gamesPlayed")}
+                Games Played
               </small>
 
-              <h3 style={{ margin: "5px 0 0" }}>
+              <h3
+                style={{
+                  margin:
+                    "5px 0 0",
+                }}
+              >
                 {gamesPlayed}
               </h3>
+
             </div>
 
             <div>
+
               <small>
-                {t("averageScore")}
+                Best Score
               </small>
 
-              <h3 style={{ margin: "5px 0 0" }}>
-                {averageScore}
+              <h3
+                style={{
+                  margin:
+                    "5px 0 0",
+                }}
+              >
+                {bestScore}
               </h3>
+
+            </div>
+
+            <div>
+
+              <small>
+                Current Streak
+              </small>
+
+              <h3
+                style={{
+                  margin:
+                    "5px 0 0",
+                }}
+              >
+                🔥 {currentStreak} day
+                {currentStreak !== 1
+                  ? "s"
+                  : ""}
+              </h3>
+
+            </div>
+
+            <div>
+
+              <small>
+                Today's Games
+              </small>
+
+              <h3
+                style={{
+                  margin:
+                    "5px 0 0",
+                }}
+              >
+                {completedToday}
+              </h3>
+
             </div>
 
           </div>
@@ -365,29 +563,51 @@ function Home() {
         </div>
 
 
-        <div className="insight-card">
+        {/* RANDOM AI INSIGHT */}
 
-          <div className="insight-icon">
-            ✨
-          </div>
+        <div className="training-card">
 
           <span className="card-label">
-            {t("aiInsight")}
+            AI INSIGHT
           </span>
 
+          <div
+            style={{
+              fontSize: "42px",
+              marginTop: "16px",
+            }}
+          >
+            {recommendedGame.icon}
+          </div>
+
           <h2>
-            {aiTitle}
+            {recommendedGame.title}
           </h2>
 
-          <p>
-            {aiText}
+          <p className="card-description">
+            {recommendedGame.description}
           </p>
 
           <Link
-            to={recommendedGame}
-            className="primary-btn"
+            to={recommendedGame.path}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "100%",
+              marginTop: "20px",
+              padding: "16px 20px",
+              borderRadius: "16px",
+              background: "#7956ad",
+              color: "#fff",
+              textDecoration: "none",
+              fontSize: "17px",
+              fontWeight: "700",
+              textAlign: "center",
+              boxSizing: "border-box",
+            }}
           >
-            {t("startRecommendedExercise")} →
+            Start {recommendedGame.name} →
           </Link>
 
         </div>
@@ -395,394 +615,186 @@ function Home() {
       </div>
 
 
-      {/* DAILY TRAINING */}
+      {/* RECENT ACTIVITY */}
 
-      <div className="dashboard-main">
+      <div className="training-card">
 
-        <div className="training-card">
+        <span className="card-label">
+          RECENT ACTIVITY
+        </span>
 
-          <div className="card-heading">
+        <h2>
+          Your latest games
+        </h2>
 
-            <div>
-
-              <span className="card-label">
-                {t("yourProgress")}
-              </span>
-
-              <h2>
-                {t("dailyMindTraining")}
-              </h2>
-
-            </div>
-
-            <span className="completion">
-              {completedToday} / 4
-            </span>
-
-          </div>
+        {recentScores.length === 0 ? (
 
           <p className="card-description">
-            {t("dailyTrainingDescription")}
+            No games completed yet.
           </p>
 
-          <div className="training-progress">
+        ) : (
 
-            <div
-              className="training-progress-fill"
-              style={{
-                width: `${Math.min(
-                  (completedToday / 4) * 100,
-                  100
-                )}%`,
-              }}
-            ></div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection:
+                "column",
+              gap: "12px",
+              marginTop: "18px",
+            }}
+          >
 
-          </div>
+            {recentScores.map(
+              (item, index) => (
 
+                <div
+                  key={
+                    item._id ||
+                    index
+                  }
+                  style={{
+                    display:
+                      "flex",
+                    justifyContent:
+                      "space-between",
+                    alignItems:
+                      "center",
+                    padding:
+                      "12px 14px",
+                    background:
+                      "#faf9fd",
+                    borderRadius:
+                      "12px",
+                  }}
+                >
 
-          <div className="training-list">
+                  <div>
 
-            <div className="training-item">
-
-              <div className="training-icon">
-                🧩
-              </div>
-
-              <div className="training-info">
-
-                <strong>
-                  {t("memoryMatch")}
-                </strong>
-
-                <span>
-                  {t("visualMemory")} · 5 {t("minutes")}
-                </span>
-
-              </div>
-
-              <Link
-                to="/games/memory-match"
-                className="start-small"
-              >
-                {t("start")}
-              </Link>
-
-            </div>
-
-
-            <div className="training-item">
-
-              <div className="training-icon green-bg">
-                🔢
-              </div>
-
-              <div className="training-info">
-
-                <strong>
-                  {t("sequenceRecall")}
-                </strong>
-
-                <span>
-                  {t("recall")} · 5 {t("minutes")}
-                </span>
-
-              </div>
-
-              <Link
-                to="/games/sequence-recall"
-                className="start-small"
-              >
-                {t("start")}
-              </Link>
-
-            </div>
-
-
-            <div className="training-item">
-
-              <div className="training-icon peach-bg">
-                ⚡
-              </div>
-
-              <div className="training-info">
-
-                <strong>
-                  {t("reactionChallenge")}
-                </strong>
-
-                <span>
-                  {t("attention")} · 3 {t("minutes")}
-                </span>
-
-              </div>
-
-              <Link
-                to="/games/reaction-challenge"
-                className="start-small"
-              >
-                {t("start")}
-              </Link>
-
-            </div>
-
-
-            <div className="training-item">
-
-              <div
-                className="training-icon"
-                style={{
-                  background: "#f0e9fb",
-                }}
-              >
-                📝
-              </div>
-
-              <div className="training-info">
-
-                <strong>
-                  {t("wordRecall")}
-                </strong>
-
-                <span>
-                  {t("wordMemory")} · 5 {t("minutes")}
-                </span>
-
-              </div>
-
-              <Link
-                to="/games/word-recall"
-                className="start-small"
-              >
-                {t("start")}
-              </Link>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        {/* RECENT ACTIVITY */}
-
-        <div className="training-card">
-
-          <span className="card-label">
-            {t("recentActivity")}
-          </span>
-
-          <h2>
-            {t("latestGames")}
-          </h2>
-
-          {recentScores.length === 0 ? (
-
-            <div
-              style={{
-                padding: "30px 5px",
-                textAlign: "center",
-                color: "#817786",
-              }}
-            >
-
-              <div
-                style={{
-                  fontSize: "35px",
-                  marginBottom: "10px",
-                }}
-              >
-                🎮
-              </div>
-
-              <p>
-                {t("noGamesPlayed")}
-              </p>
-
-              <Link
-                to="/games"
-                className="primary-btn"
-              >
-                {t("startFirstGame")}
-              </Link>
-
-            </div>
-
-          ) : (
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "12px",
-                marginTop: "18px",
-              }}
-            >
-
-              {recentScores.map(
-                (item, index) => (
-
-                  <div
-                    key={item._id || index}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "12px",
-                      padding: "12px",
-                      borderRadius: "14px",
-                      background: "#faf8fc",
-                    }}
-                  >
-
-                    <div
-                      style={{
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "12px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        background: "#eee7fb",
-                        fontSize: "19px",
-                      }}
-                    >
-                      {getGameIcon(item.game)}
-                    </div>
-
-                    <div
-                      style={{
-                        flex: 1,
-                      }}
-                    >
-
-                      <strong>
-                        {item.game}
-                      </strong>
-
-                      <small
-                        style={{
-                          display: "block",
-                          marginTop: "3px",
-                          color: "#817786",
-                        }}
-                      >
-                        {item.difficulty || t("training")}{" "}
-                        ·{" "}
-                        {formatDate(item.createdAt)}
-                      </small>
-
-                    </div>
-
-                    <strong
-                      style={{
-                        color: "#74539f",
-                      }}
-                    >
-                      {item.score}
+                    <strong>
+                      {item.game}
                     </strong>
+
+                    <small
+                      style={{
+                        display:
+                          "block",
+                        color:
+                          "#888",
+                        marginTop:
+                          "3px",
+                      }}
+                    >
+                      {formatDate(
+                        item.createdAt
+                      )}
+                    </small>
 
                   </div>
 
-                )
-              )}
+                  <strong>
+                    {item.score}
+                  </strong>
 
-            </div>
+                </div>
 
-          )}
+              )
+            )}
 
-        </div>
+          </div>
+
+        )}
 
       </div>
 
 
-      {/* QUICK ACCESS */}
+      {/* QUICK ACTIONS */}
 
-      <section className="quick-section">
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns:
+            "repeat(3, 1fr)",
+          gap: "18px",
+          marginTop: "24px",
+        }}
+      >
 
-        <div className="section-title-row">
+        <Link
+          to="/games"
+          className="training-card"
+          style={{
+            textDecoration:
+              "none",
+          }}
+        >
 
-          <div>
+          <span className="card-label">
+            COGNITIVE TRAINING
+          </span>
 
-            <span className="card-label">
-              {t("quickAccess")}
-            </span>
+          <h2>
+            Play Games 🧠
+          </h2>
 
-            <h2>
-              {t("whatWouldYouLike")}
-            </h2>
+          <p className="card-description">
+            Challenge your memory,
+            attention and recall.
+          </p>
 
-          </div>
-
-        </div>
-
-
-        <div className="quick-grid">
-
-          <Link
-            to="/games"
-            className="quick-card"
-          >
-            <span>🎮</span>
-
-            <h3>
-              {t("playGames")}
-            </h3>
-
-            <p>
-              {t("trainMemoryAttention")}
-            </p>
-          </Link>
+        </Link>
 
 
-          <Link
-            to="/memory"
-            className="quick-card"
-          >
-            <span>🧠</span>
+        <Link
+          to="/memory"
+          className="training-card"
+          style={{
+            textDecoration:
+              "none",
+          }}
+        >
 
-            <h3>
-              {t("memoryVault")}
-            </h3>
+          <span className="card-label">
+            MEMORY VAULT
+          </span>
 
-            <p>
-              {t("reviewMemories")}
-            </p>
-          </Link>
+          <h2>
+            My Memories 💭
+          </h2>
 
+          <p className="card-description">
+            Keep important memories
+            and personal notes safe.
+          </p>
 
-          <Link
-            to="/progress"
-            className="quick-card"
-          >
-            <span>📊</span>
-
-            <h3>
-              {t("viewProgress")}
-            </h3>
-
-            <p>
-              {t("seeCognitiveActivity")}
-            </p>
-          </Link>
+        </Link>
 
 
-          <Link
-            to="/reminders"
-            className="quick-card"
-          >
-            <span>⏰</span>
+        <Link
+          to="/progress"
+          className="training-card"
+          style={{
+            textDecoration:
+              "none",
+          }}
+        >
 
-            <h3>
-              {t("reminders")}
-            </h3>
+          <span className="card-label">
+            PROGRESS
+          </span>
 
-            <p>
-              {t("manageSmartReminders")}
-            </p>
-          </Link>
+          <h2>
+            View Progress 📊
+          </h2>
 
-        </div>
+          <p className="card-description">
+            Review your cognitive
+            activity and progress.
+          </p>
 
-      </section>
+        </Link>
+
+      </div>
 
     </div>
   );

@@ -4674,3 +4674,192 @@ body.reduced-motion-mode *::after {
   background: #e6d8f5;
   transform: translateY(-1px);
 }
+/* =========================================
+   HIGH CONTRAST - BRIGHT TEXT MODE
+   ========================================= */
+
+body.high-contrast-mode {
+  background: #f8f7ff !important;
+  color: #171326 !important;
+}
+
+
+/* Main text */
+
+body.high-contrast-mode p,
+body.high-contrast-mode span,
+body.high-contrast-mode label,
+body.high-contrast-mode small {
+  color: #29233d !important;
+}
+
+
+/* Headings stand out */
+
+body.high-contrast-mode h1,
+body.high-contrast-mode h2,
+body.high-contrast-mode h3,
+body.high-contrast-mode h4 {
+  color: #4b2675 !important;
+  font-weight: 800 !important;
+}
+
+
+/* Small section titles */
+
+body.high-contrast-mode .small-title,
+body.high-contrast-mode .card-label {
+  color: #7139a5 !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.8px;
+}
+
+
+/* Description text */
+
+body.high-contrast-mode .description,
+body.high-contrast-mode .dashboard-subtitle,
+body.high-contrast-mode .card-description {
+  color: #3d3650 !important;
+  font-weight: 500 !important;
+}
+
+
+/* Cards */
+
+body.high-contrast-mode .training-card,
+body.high-contrast-mode .settings-section,
+body.high-contrast-mode .dashboard-stat {
+  background: #ffffff !important;
+  border: 2px solid #d9c7f2 !important;
+  box-shadow:
+    0 4px 18px rgba(91, 55, 135, 0.12) !important;
+}
+
+
+/* Important numbers */
+
+body.high-contrast-mode .dashboard-stat strong,
+body.high-contrast-mode .training-card h3 {
+  color: #6b35a0 !important;
+  font-weight: 900 !important;
+}
+
+
+/* Purple buttons */
+
+body.high-contrast-mode button.primary-btn,
+body.high-contrast-mode .primary-btn {
+  background: #7139a5 !important;
+  color: #ffffff !important;
+  border: 2px solid #57277f !important;
+  font-weight: 800 !important;
+}
+
+
+/* Button text */
+
+body.high-contrast-mode button {
+  font-weight: 700;
+}
+
+
+/* Links */
+
+body.high-contrast-mode a {
+  color: #5d2c91 !important;
+  font-weight: 700;
+}
+
+
+/* Help / Customer Care */
+
+body.high-contrast-mode .profile-help-link {
+  background: #eadcff !important;
+  color: #5d2c91 !important;
+  border: 2px solid #a96de0 !important;
+  font-weight: 800 !important;
+}
+
+
+/* Navigation */
+
+body.high-contrast-mode .nav-link,
+body.high-contrast-mode .admin-nav-btn {
+  color: #552b80 !important;
+  font-weight: 800 !important;
+}
+
+
+/* Icons */
+
+body.high-contrast-mode .stat-icon {
+  border: 2px solid #b98be3 !important;
+}
+
+
+/* Profile fields */
+
+body.high-contrast-mode .profile-field > div {
+  background: #ffffff !important;
+  color: #1c1730 !important;
+  border: 2px solid #cdb4e9 !important;
+  font-weight: 700 !important;
+}
+
+
+/* Setting text */
+
+body.high-contrast-mode .setting-row strong {
+  color: #4b2675 !important;
+  font-weight: 800 !important;
+}
+
+body.high-contrast-mode .setting-row p {
+  color: #3d3650 !important;
+}
+
+
+/* Toggle */
+
+body.high-contrast-mode .settings-toggle.on {
+  background: #7139a5 !important;
+  color: #ffffff !important;
+  border: 2px solid #57277f !important;
+  font-weight: 800 !important;
+}
+
+
+/* Select */
+
+body.high-contrast-mode select {
+  background: #ffffff !important;
+  color: #3f2161 !important;
+  border: 2px solid #8e58bc !important;
+  font-weight: 700 !important;
+}
+
+
+/* Recent activity */
+
+body.high-contrast-mode .training-card div[style*="background"] {
+  color: #211936 !important;
+}
+
+
+/* Hover = bright text focus */
+
+body.high-contrast-mode a:hover,
+body.high-contrast-mode button:hover {
+  filter: brightness(1.08);
+}
+
+
+/* Keyboard accessibility */
+
+body.high-contrast-mode button:focus-visible,
+body.high-contrast-mode a:focus-visible,
+body.high-contrast-mode select:focus-visible {
+  outline: 3px solid #f0b429 !important;
+  outline-offset: 3px;
+}

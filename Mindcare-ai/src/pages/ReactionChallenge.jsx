@@ -44,26 +44,25 @@ function getWaitTime(difficulty, round) {
     ) + minimum
   );
 }
-
 function calculatePoints(time, round, difficulty) {
-  let basePoints = 1200;
+  let basePoints = 120;
 
   if (difficulty === "Moderate") {
-    basePoints = 1400;
+    basePoints = 140;
   }
 
   if (difficulty === "Hard") {
-    basePoints = 1600;
+    basePoints = 160;
   }
 
+  const speedPenalty = Math.floor(time / 20);
+
   const speedPoints = Math.max(
-    10,
-    Math.floor(
-      basePoints - time * 1.5
-    )
+    20,
+    basePoints - speedPenalty
   );
 
-  const roundBonus = round * 10;
+  const roundBonus = round * 2;
 
   return speedPoints + roundBonus;
 }

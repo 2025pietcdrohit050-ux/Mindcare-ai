@@ -16,7 +16,9 @@ function Profile() {
     localStorage.getItem("mindcareReducedMotion") === "true"
   );
 
-  const user = JSON.parse(localStorage.getItem("user") || "null");
+  const user = JSON.parse(
+    localStorage.getItem("user") || "null"
+  );
 
   const userName = user?.name || "User";
   const userEmail = user?.email || "No email";
@@ -206,7 +208,6 @@ function Profile() {
             </p>
           </div>
 
-
           <select
             value={language}
             onChange={(event) =>
@@ -239,7 +240,6 @@ function Profile() {
               {t("easierToRead")}
             </p>
           </div>
-
 
           <button
             type="button"
@@ -275,7 +275,6 @@ function Profile() {
             </p>
           </div>
 
-
           <button
             type="button"
             className={
@@ -309,7 +308,6 @@ function Profile() {
               {t("reduceAnimations")}
             </p>
           </div>
-
 
           <button
             type="button"
@@ -393,6 +391,36 @@ function Profile() {
       </div>
 
 
+      {/* HELP & SUPPORT - MOVED UP */}
+
+      <div className="settings-section">
+
+        <div className="settings-heading">
+
+          <span>❓</span>
+
+          <div>
+            <h2>
+              Help & Support
+            </h2>
+
+            <p>
+              Get assistance and contact customer care.
+            </p>
+          </div>
+
+        </div>
+
+        <a
+          href="/help"
+          className="profile-help-link"
+        >
+          🎧 Customer Care
+        </a>
+
+      </div>
+
+
       {/* ACCOUNT */}
 
       <div className="settings-section">
@@ -412,14 +440,6 @@ function Profile() {
           </div>
 
         </div>
-
-
-        <a
-          href="/help"
-          className="profile-help-link"
-        >
-          ❓ {t("helpSupport")}
-        </a>
 
 
         <button
