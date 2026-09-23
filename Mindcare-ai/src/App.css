@@ -4863,3 +4863,210 @@ body.high-contrast-mode select:focus-visible {
   outline: 3px solid #f0b429 !important;
   outline-offset: 3px;
 }
+/* =========================================
+   VIBRANT HIGH CONTRAST MODE
+========================================= */
+
+body.high-contrast-mode {
+  background: #fffaff !important;
+  color: #17121f !important;
+}
+
+/* Main text */
+body.high-contrast-mode p,
+body.high-contrast-mode span,
+body.high-contrast-mode label,
+body.high-contrast-mode li {
+  color: #24152f !important;
+}
+
+/* Headings */
+body.high-contrast-mode h1,
+body.high-contrast-mode h2,
+body.high-contrast-mode h3,
+body.high-contrast-mode h4,
+body.high-contrast-mode strong {
+  color: #4b176d !important;
+  text-shadow: 0 1px 8px rgba(139, 63, 196, 0.18);
+}
+
+/* Navigation */
+body.high-contrast-mode nav,
+body.high-contrast-mode header {
+  background: #ffffff !important;
+  border-bottom: 2px solid #a855f7 !important;
+  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.18) !important;
+}
+
+body.high-contrast-mode nav a {
+  color: #4b176d !important;
+  font-weight: 700 !important;
+}
+
+body.high-contrast-mode nav a:hover {
+  color: #d946ef !important;
+  text-shadow: 0 0 10px rgba(217, 70, 239, 0.45);
+}
+
+/* Cards / sections */
+body.high-contrast-mode .settings-section,
+body.high-contrast-mode .progress-stat-card,
+body.high-contrast-mode .progress-chart-card,
+body.high-contrast-mode .game-performance-card {
+  background: #ffffff !important;
+  border: 2px solid #a855f7 !important;
+  box-shadow:
+    0 0 0 1px rgba(168, 85, 247, 0.12),
+    0 8px 28px rgba(168, 85, 247, 0.16) !important;
+}
+
+/* Setting rows */
+body.high-contrast-mode .setting-row {
+  border-color: #c026d3 !important;
+}
+
+/* Important descriptions */
+body.high-contrast-mode .description {
+  color: #54266f !important;
+}
+
+/* Buttons */
+body.high-contrast-mode button {
+  border-color: #8b5cf6 !important;
+  font-weight: 800 !important;
+}
+
+body.high-contrast-mode button:hover {
+  box-shadow:
+    0 0 12px rgba(168, 85, 247, 0.45),
+    0 0 25px rgba(217, 70, 239, 0.20) !important;
+}
+
+/* Purple action buttons */
+body.high-contrast-mode .settings-toggle.on {
+  background: linear-gradient(
+    135deg,
+    #7c3aed,
+    #a855f7,
+    #d946ef
+  ) !important;
+
+  color: #ffffff !important;
+
+  border: 2px solid #6d28d9 !important;
+
+  box-shadow:
+    0 0 10px rgba(124, 58, 237, 0.55),
+    0 0 22px rgba(217, 70, 239, 0.30) !important;
+}
+
+/* OFF button */
+body.high-contrast-mode .settings-toggle:not(.on) {
+  background: #ffffff !important;
+  color: #4b176d !important;
+  border: 2px solid #7c3aed !important;
+}
+
+/* Language dropdown */
+body.high-contrast-mode .setting-row select {
+  background: #ffffff !important;
+  color: #4b176d !important;
+  border: 2px solid #8b5cf6 !important;
+  font-weight: 800 !important;
+
+  box-shadow:
+    0 0 10px rgba(139, 92, 246, 0.18) !important;
+}
+
+body.high-contrast-mode .setting-row select:focus {
+  outline: 3px solid #f0abfc !important;
+  border-color: #c026d3 !important;
+}
+
+/* Profile help button */
+body.high-contrast-mode .profile-help-link {
+  background: linear-gradient(
+    135deg,
+    #7c3aed,
+    #c026d3
+  ) !important;
+
+  color: #ffffff !important;
+
+  border: 2px solid #6d28d9 !important;
+
+  box-shadow:
+    0 0 14px rgba(168, 85, 247, 0.35) !important;
+}
+
+/* Important accent text */
+body.high-contrast-mode .accent,
+body.high-contrast-mode .highlight,
+body.high-contrast-mode .stat-value {
+  color: #c026d3 !important;
+  font-weight: 900 !important;
+  text-shadow: 0 0 8px rgba(192, 38, 211, 0.22);
+}
+
+/* Links */
+body.high-contrast-mode a {
+  color: #6d28d9 !important;
+  font-weight: 700 !important;
+}
+
+body.high-contrast-mode a:hover {
+  color: #d946ef !important;
+  text-shadow: 0 0 8px rgba(217, 70, 239, 0.35);
+}
+
+/* Inputs */
+body.high-contrast-mode input,
+body.high-contrast-mode textarea {
+  background: #ffffff !important;
+  color: #21132b !important;
+  border: 2px solid #8b5cf6 !important;
+}
+
+body.high-contrast-mode input:focus,
+body.high-contrast-mode textarea:focus {
+  border-color: #d946ef !important;
+  outline: 3px solid rgba(217, 70, 239, 0.20) !important;
+  box-shadow: 0 0 14px rgba(217, 70, 239, 0.20) !important;
+}
+
+/* Icons / emoji containers */
+body.high-contrast-mode .profile-icon,
+body.high-contrast-mode .section-icon,
+body.high-contrast-mode .icon-box {
+  background: linear-gradient(
+    135deg,
+    #ede9fe,
+    #f5d0fe
+  ) !important;
+
+  border: 2px solid #a855f7 !important;
+
+  box-shadow:
+    0 0 15px rgba(168, 85, 247, 0.25) !important;
+}
+
+/* Important numbers */
+body.high-contrast-mode .score,
+body.high-contrast-mode .points,
+body.high-contrast-mode .value {
+  color: #7c3aed !important;
+  font-weight: 900 !important;
+  text-shadow: 0 0 10px rgba(124, 58, 237, 0.25);
+}
+
+/* Cards hover */
+body.high-contrast-mode .settings-section:hover,
+body.high-contrast-mode .progress-stat-card:hover,
+body.high-contrast-mode .progress-chart-card:hover,
+body.high-contrast-mode .game-performance-card:hover {
+  border-color: #d946ef !important;
+
+  box-shadow:
+    0 0 0 2px rgba(217, 70, 239, 0.12),
+    0 10px 32px rgba(168, 85, 247, 0.25) !important;
+}

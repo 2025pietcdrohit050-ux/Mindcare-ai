@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 const recommendedGames = [
@@ -8,7 +8,7 @@ const recommendedGames = [
     title: "Your memory training is underway.",
     description:
       "Practice visual memory and matching skills with a quick memory activity.",
-    path: "/memory-match",
+    path: "/games/memory-match",
   },
   {
     name: "Sequence Recall",
@@ -16,7 +16,7 @@ const recommendedGames = [
     title: "Your recall training is underway.",
     description:
       "Challenge yourself to remember and reproduce sequences accurately.",
-    path: "/sequence-recall",
+    path: "/games/sequence-recall",
   },
   {
     name: "Reaction Challenge",
@@ -24,7 +24,7 @@ const recommendedGames = [
     title: "Your attention training is underway.",
     description:
       "Continue practicing attention and reaction speed.",
-    path: "/reaction-challenge",
+    path: "/games/reaction-challenge",
   },
   {
     name: "Word Recall",
@@ -32,11 +32,13 @@ const recommendedGames = [
     title: "Your word recall training is underway.",
     description:
       "Strengthen your word memory with a short recall exercise.",
-    path: "/word-recall",
+    path: "/games/word-recall",
   },
 ];
 
 function Home() {
+  const navigate = useNavigate();
+
   const user = JSON.parse(
     localStorage.getItem("user")
   );
@@ -53,13 +55,42 @@ function Home() {
   const [loading, setLoading] =
     useState(true);
 
-  const [recommendedGame] = useState(() => {
-    const randomIndex = Math.floor(
-      Math.random() * recommendedGames.length
+  const [recommendedGame, setRecommendedGame] =
+    useState(() => {
+      const randomIndex = Math.floor(
+        Math.random() * recommendedGames.length
+      );
+
+      return recommendedGames[randomIndex];
+    });
+
+  function startRandomGame() {
+    const lastGame =
+      sessionStorage.getItem("mindcareLastRandomGame");
+
+    let availableGames = recommendedGames.filter(
+      (game) => game.path !== lastGame
     );
 
-    return recommendedGames[randomIndex];
-  });
+    if (availableGames.length === 0) {
+      availableGames = recommendedGames;
+    }
+
+    const randomIndex = Math.floor(
+      Math.random() * availableGames.length
+    );
+
+    const nextGame = availableGames[randomIndex];
+
+    setRecommendedGame(nextGame);
+
+    sessionStorage.setItem(
+      "mindcareLastRandomGame",
+      nextGame.path
+    );
+
+    navigate(nextGame.path);
+  }
 
   useEffect(() => {
     async function fetchScores() {
@@ -588,8 +619,9 @@ function Home() {
             {recommendedGame.description}
           </p>
 
-          <Link
-            to={recommendedGame.path}
+          <button
+            type="button"
+            onClick={startRandomGame}
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -600,15 +632,16 @@ function Home() {
               borderRadius: "16px",
               background: "#7956ad",
               color: "#fff",
-              textDecoration: "none",
+              border: "none",
               fontSize: "17px",
               fontWeight: "700",
               textAlign: "center",
               boxSizing: "border-box",
+              cursor: "pointer",
             }}
           >
-            Start {recommendedGame.name} →
-          </Link>
+            🎲 Start a Random Game →
+          </button>
 
         </div>
 
